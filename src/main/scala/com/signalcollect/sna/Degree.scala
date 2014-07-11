@@ -1,16 +1,13 @@
 package com.signalcollect.sna
 
+
+import com.signalcollect.DataGraphVertex
+import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
 import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
-import com.signalcollect.DataGraphVertex
-import com.signalcollect.DefaultEdge
-import com.signalcollect.interfaces.ComplexAggregation
-import com.signalcollect.AbstractVertex
-import com.sun.corba.se.spi.protocol.InitialServerRequestDispatcher
-import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.configuration.ExecutionMode
-import com.signalcollect.Edge
+import com.signalcollect.DefaultEdge
 
 object Degree extends App {
   run()
