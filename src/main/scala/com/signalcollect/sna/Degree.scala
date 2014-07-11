@@ -10,67 +10,90 @@ import com.signalcollect.AbstractVertex
 import com.sun.corba.se.spi.protocol.InitialServerRequestDispatcher
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.configuration.ExecutionMode
+import com.signalcollect.Edge
 
 object Degree extends App {
   run()
-  def run(){
-  val graph = GraphBuilder.build
-  graph.addVertex(new DegreeVertex(1))
-  graph.addVertex(new DegreeVertex(2))
-  graph.addVertex(new DegreeVertex(3))
-  graph.addVertex(new DegreeVertex(4))
-  graph.addVertex(new DegreeVertex(5))
-  graph.addVertex(new DegreeVertex(6))
-  graph.addEdge(1, new DegreeEdge(4))
-  graph.addEdge(1, new DegreeEdge(3))
-  graph.addEdge(2, new DegreeEdge(1))
-  graph.addEdge(2, new DegreeEdge(3))
-  graph.addEdge(4, new DegreeEdge(1))
-  graph.addEdge(4, new DegreeEdge(2))
-  graph.addEdge(5, new DegreeEdge(2))
-  graph.addEdge(5, new DegreeEdge(3))
+  def run() {
+    val graph = GraphBuilder.build
+    graph.addVertex(new AverageVertex('a'))
+    graph.addVertex(new DegreeVertex(1))
+    graph.addVertex(new DegreeVertex(2))
+    graph.addVertex(new DegreeVertex(3))
+    graph.addVertex(new DegreeVertex(4))
+    graph.addVertex(new DegreeVertex(5))
+    graph.addEdge(1, new DegreeEdge(4))
+    graph.addEdge(1, new DegreeEdge(3))
+    graph.addEdge(2, new DegreeEdge(1))
+    graph.addEdge(2, new DegreeEdge(3))
+    graph.addEdge(4, new DegreeEdge(1))
+    graph.addEdge(4, new DegreeEdge(2))
+    graph.addEdge(5, new DegreeEdge(2))
+    graph.addEdge(5, new DegreeEdge(3))
 
-  val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
-  val stats = graph.execute(execmode)
-  graph.foreachVertex(println(_))
-  
-  
-  average(graph)
-  
-  def average(g:Graph[Any,Any])={
-    var y = 0
-    
-    g.foreachVertex((v:Vertex[Any,_])=>(y=y+(Integer.valueOf(v.state.toString))))
-    println("average: " +y)
-  }
-  def getState(v:Vertex[Any,_]):Unit={
-    v.state
-  }
-  
-  graph.awaitIdle
-  graph.shutdown
-  println(stats)
+    average(graph, 'a')
+    def average(g: Graph[Any, Any], id: Any) = {
+      g.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(v.id, new AverageEdge(id)))
+      g.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(id, new AverageEdge(v.id)))
+    }
+    val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
+    val stats = graph.execute(execmode)
+    graph.awaitIdle
+    graph.foreachVertex(println(_))
+
+    graph.shutdown
+    println(stats)
   }
 }
-class AverageVertex (id:Any) extends DataGraphVertex(id,0){
-  
-  type State = Int
-  def collect:State={
-    1
-  }
-}
-class DegreeVertex(id: Any) extends DataGraphVertex(id, 1) {
 
-  type Signal = Int
-  type State = Int
-  lazy val neighbourIds = getTargetIdsOfOutgoingEdges.toSet
+class DegreeVertex(id: Any) extends DataGraphVertex(id, 0) {
 
+  type Signal = Set[Int]
+  type State = Int
+
+  lazy val edgeSet = outgoingEdges.values.toSet
+  lazy val signalSet = signals.toSet
   def collect: State = {
-    neighbourIds.size + signals.size
+    var degreeEdges = collection.mutable.Set(edgeSet.toSeq: _*)
+    for (edge <- degreeEdges) {
+      degreeEdges = degreeEdges.filter(edge => edge.getClass().toString().contains("DegreeEdge"))
+    }
+    var degreeSignals = collection.mutable.Set(mostRecentSignalMap.values.toSeq: _*)
+    //    println(degreeSignals)
+
+    for (signal <- degreeSignals) {
+      degreeSignals = degreeSignals.filter(signal => signal.toString().contains("DegreeEdge"))
+    }
+
+    degreeEdges.size + degreeSignals.size
   }
 
 }
 class DegreeEdge(t: Any) extends DefaultEdge(t) {
   type Source = DegreeVertex
-  def signal = source.neighbourIds
+  def signal = source.edgeSet
+}
+
+class AverageVertex(id: Char) extends DataGraphVertex(id, 0) {
+
+  type Signal = Int
+  type State = Int
+  def collect: State = {
+    //    println(signals)
+
+//    var states = mostRecentSignalMap.values
+//    var summ = 0.0
+//    for (state <- states) {
+//      //      summ += state
+//    }
+
+    //    var result = (summ/signals.size.toDouble).toDouble
+    //    result
+    0
+  }
+}
+
+class AverageEdge(t: Any) extends DefaultEdge(t) {
+  type Source = DegreeVertex
+  def signal = Set(this)
 }
