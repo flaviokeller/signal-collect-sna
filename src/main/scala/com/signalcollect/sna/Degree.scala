@@ -48,22 +48,13 @@ object Degree extends App {
 
 class DegreeVertex(id: Any) extends DataGraphVertex(id, 0) {
 
-  type Signal = Set[Int]
+  type Signal = Any
   type State = Int
 
   lazy val edgeSet = outgoingEdges.values.toSet
-  lazy val signalSet = signals.toSet
   def collect: State = {
-    var degreeEdges = collection.mutable.Set(edgeSet.toSeq: _*)
-    for (edge <- degreeEdges) {
-      degreeEdges = degreeEdges.filter(edge => edge.getClass().toString().contains("DegreeEdge"))
-    }
-    var degreeSignals = collection.mutable.Set(mostRecentSignalMap.values.toSeq: _*)
-    //    println(degreeSignals)
-
-    for (signal <- degreeSignals) {
-      degreeSignals = degreeSignals.filter(signal => signal.toString().contains("DegreeEdge"))
-    }
+    val degreeEdges = edgeSet.filter(edge => edge.getClass().toString().contains("DegreeEdge"))
+    val degreeSignals = mostRecentSignalMap.values.toList.filter(signal => signal.getClass.toString().contains("Integer"))
 
     degreeEdges.size + degreeSignals.size
   }
@@ -71,29 +62,24 @@ class DegreeVertex(id: Any) extends DataGraphVertex(id, 0) {
 }
 class DegreeEdge(t: Any) extends DefaultEdge(t) {
   type Source = DegreeVertex
-  def signal = source.edgeSet
+  def signal = source.state
 }
 
-class AverageVertex(id: Char) extends DataGraphVertex(id, 0) {
+class AverageVertex(id: Char) extends DataGraphVertex(id, 0.0) {
 
-  type Signal = Int
-  type State = Int
+  type Signal = Any
+  type State = Double
   def collect: State = {
-    //    println(signals)
-
-//    var states = mostRecentSignalMap.values
-//    var summ = 0.0
-//    for (state <- states) {
-//      //      summ += state
-//    }
-
-    //    var result = (summ/signals.size.toDouble).toDouble
-    //    result
-    0
+    val degreeSignals = mostRecentSignalMap.values.toList.filter(signal => signal.getClass().toString().contains("Integer"))
+    var sum = 0
+    for (signal <- degreeSignals) {
+      sum += Integer.valueOf(signal.toString)
+    }
+    sum.toDouble / degreeSignals.size.toDouble
   }
 }
 
 class AverageEdge(t: Any) extends DefaultEdge(t) {
-  type Source = DegreeVertex
-  def signal = Set(this)
+  type Source = DataGraphVertex[Any, Any]
+  def signal = source.state
 }
