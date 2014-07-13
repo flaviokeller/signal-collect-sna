@@ -1,7 +1,13 @@
 package com.signalcollect.sna;
 
-public interface SignalCollectGephiConnector {
+import java.util.List;
 
+public interface SignalCollectGephiConnector {
 	
+	public void executeGraph();
+
+	public int getAverage();
+	
+	public List<Integer> getAll();
 	
 }
