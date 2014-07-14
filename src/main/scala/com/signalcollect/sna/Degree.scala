@@ -1,43 +1,56 @@
 package com.signalcollect.sna
 
 import com.signalcollect.DataGraphVertex
+import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
 import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
-import com.signalcollect.DefaultEdge
+import scala.collection.mutable.ArrayBuffer
 
 object Degree extends App {
-//  getAverage
-//  getAll
-	run
-	
-//	var aId = Char
-//	
-//	def init(id:Char){
-//	  var a = (id)
-//	}
-	def run() {
+  //  getAverage
+  //  getAll
+  run
+
+  final private var aId = 'a'
+  final private var a = new AverageDegreeVertex(aId)
+  final var d = 0.0
+  final def init() {
+    aId = 'b'
+    a = new AverageDegreeVertex(aId)
+  }
+  def run(): ExecutionResult = {
     val graph = GraphBuilder.build
+
     baseGraph(graph)
     extendGraph(graph)
-    average(graph, 'a')
-//    graph.forVertexWithId(aId, (a:AverageDegreeVertex => a.state))
+    average(graph, aId)
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
-        val stats = graph.execute(execmode)
+    val stats = graph.execute(execmode)
     graph.awaitIdle
-        graph.foreachVertex(println(_))
-
+    graph.foreachVertex(println(_))
+    var s = ArrayBuffer[String]()
+    graph.foreachVertex(v => s += v.state.toString)
+    val il = filterInteger(s)
+    val res = new ExecutionResult(a.state, il)
     graph.shutdown
+    res
     //    println(stats)
   }
-  def getAverage(a: AverageDegreeVertex): Double = {
-    a.state
+
+  def filterInteger(l: ArrayBuffer[String]): java.util.List[java.lang.Integer] = {
+    var res = new java.util.ArrayList[java.lang.Integer]
+    val states = l.filter(s => !s.contains("."))
+    for (state <- states) {
+      res.add(Integer.valueOf(state))
+    }
+    res
   }
 
   def baseGraph(graph: Graph[Any, Any]) {
-    graph.addVertex(new AverageDegreeVertex('a'))
+    graph.addVertex(a)
     graph.addVertex(new DegreeVertex(1))
     graph.addVertex(new DegreeVertex(2))
     graph.addVertex(new DegreeVertex(3))
