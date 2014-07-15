@@ -1,6 +1,6 @@
 package com.signalcollect.sna;
 
-import java.util.List;
+import java.util.Map;
 
 
 public interface SignalCollectGephiConnector {
@@ -9,6 +9,6 @@ public interface SignalCollectGephiConnector {
 
 	public double getAverage();
 	
-	public List<Integer> getAll();
+	public Map<String,Integer> getAll();
 	
 }

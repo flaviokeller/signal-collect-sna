@@ -8,20 +8,18 @@ import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.JavaConversions._
 
 object Degree extends App {
-  //  getAverage
-  //  getAll
   run
 
   final private var aId = 'a'
   final private var a = new AverageDegreeVertex(aId)
-  final var d = 0.0
   final def init() {
-    aId = 'b'
+    aId = 'a'
     a = new AverageDegreeVertex(aId)
   }
-  def run(): ExecutionResult = {
+  final def run(): ExecutionResult = {
     val graph = GraphBuilder.build
 
     baseGraph(graph)
@@ -30,23 +28,24 @@ object Degree extends App {
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
     graph.awaitIdle
-    graph.foreachVertex(println(_))
-    var s = ArrayBuffer[String]()
-    graph.foreachVertex(v => s += v.state.toString)
-    val il = filterInteger(s)
-    val res = new ExecutionResult(a.state, il)
+    //    graph.foreachVertex(println(_))
+    var s = new java.util.ArrayList[Vertex[Any, _]]
+    graph.foreachVertex(v => s.add(v))
+    val vertexMap = filterInteger(s)
+    val res = new ExecutionResult(a.state, vertexMap)
     graph.shutdown
     res
     //    println(stats)
   }
 
-  def filterInteger(l: ArrayBuffer[String]): java.util.List[java.lang.Integer] = {
-    var res = new java.util.ArrayList[java.lang.Integer]
-    val states = l.filter(s => !s.contains("."))
-    for (state <- states) {
-      res.add(Integer.valueOf(state))
+  def filterInteger(l: java.util.ArrayList[Vertex[Any, _]]): java.util.HashMap[java.lang.String, java.lang.Integer] = {
+    var vertices = new java.util.HashMap[java.lang.String, java.lang.Integer]
+    for (vertex <- l) {
+      if (vertex.state.toString.matches("\\d+")) {
+        vertices.put(vertex.id.toString, Integer.valueOf(vertex.state.toString))
+      }
     }
-    res
+    vertices
   }
 
   def baseGraph(graph: Graph[Any, Any]) {

@@ -1,8 +1,8 @@
 package com.signalcollect.sna;
 
-import java.util.List;
+import java.util.Map;
 
-public class SignalCollectGephiConnectorImpl implements
+public class DegreeSignalCollectGephiConnectorImpl implements
 		SignalCollectGephiConnector {
 
 	private ExecutionResult degreeResult;
@@ -20,8 +20,8 @@ public class SignalCollectGephiConnectorImpl implements
 	}
 
 	@Override
-	public List<Integer> getAll() {
-		List<Integer> l = degreeResult.getNodeDegreeList();
+	public Map<String, Integer> getAll() {
+		Map<String, Integer> l = degreeResult.getNodeDegreeList();
 		if (l == null) {
 			executeGraph();
 			l = degreeResult.getNodeDegreeList();
@@ -38,18 +38,13 @@ public class SignalCollectGephiConnectorImpl implements
 
 	}
 
-	private void run() {
-		// TODO Auto-generated method stub
-
-	}
-
 	public static void main(String[] args) {
-		SignalCollectGephiConnector a = new SignalCollectGephiConnectorImpl();
+		SignalCollectGephiConnector a = new DegreeSignalCollectGephiConnectorImpl();
 		a.executeGraph();
 		double d = a.getAverage();
-		List<Integer> l = a.getAll();
+		Map<String, Integer> l = a.getAll();
 		System.out.println("The average degree is: " + d);
-		System.out.println("The degree edge is: " + l);
+		System.out.println("The single vertex degrees are: " + l);
 	}
 
 }

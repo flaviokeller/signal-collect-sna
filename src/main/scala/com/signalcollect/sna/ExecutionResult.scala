@@ -1,9 +1,9 @@
 package com.signalcollect.sna
 
-class ExecutionResult(var average: Double, var nodeDegreeList: java.util.List[java.lang.Integer]) {
-  type DegreeList = java.util.List[java.lang.Integer]
+class ExecutionResult(var average: Double, var nodeDegreeList: java.util.Map[java.lang.String,java.lang.Integer]) {
+  type VertexMap = java.util.Map[java.lang.String,java.lang.Integer]
   def setAverage(a: Double) = average = a
   def getAverage(): Double = average
-  def setNodeDegreeList(l: DegreeList) = nodeDegreeList = l
-  def getNodeDegreeList(): DegreeList = nodeDegreeList
+  def setNodeDegreeList(l: VertexMap) = nodeDegreeList = l
+  def getNodeDegreeList(): VertexMap = nodeDegreeList
 }
