@@ -20,11 +20,11 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 	}
 
 	@Override
-	public Map<String, Integer> getAll() {
-		Map<String, Integer> l = pageRankResult.getNodeDegreeList();
+	public Map<String, Object> getAll() {
+		Map<String, Object> l = pageRankResult.getNodeMap();
 		if (l == null) {
 			executeGraph();
-			l = pageRankResult.getNodeDegreeList();
+			l = pageRankResult.getNodeMap();
 			return l;
 		} else {
 			return l;
@@ -42,7 +42,7 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 		SignalCollectGephiConnector a = new PageRankSignalCollectGephiConnectorImpl();
 		a.executeGraph();
 		double d = a.getAverage();
-		Map<String, Integer> l = a.getAll();
+		Map<String, Object> l = a.getAll();
 		System.out.println("The average degree is: " + d);
 		System.out.println("The single vertex degrees are: " + l);
 	}

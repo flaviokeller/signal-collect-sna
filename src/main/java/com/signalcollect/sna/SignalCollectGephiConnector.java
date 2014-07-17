@@ -9,6 +9,6 @@ public interface SignalCollectGephiConnector {
 
 	public double getAverage();
 	
-	public Map<String,Integer> getAll();
+	public Map<String,Object> getAll();
 	
 }

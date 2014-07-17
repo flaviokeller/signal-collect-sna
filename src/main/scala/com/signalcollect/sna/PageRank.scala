@@ -8,22 +8,31 @@ import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import scala.collection.JavaConversions._
+import com.signalcollect.SumOfOutWeights
+import com.signalcollect.SumOfOutWeights
+import sun.awt.MostRecentKeyValue
+import com.signalcollect.interfaces.EdgeId
+import com.signalcollect.GraphEditor
+import com.signalcollect.Edge
+import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.SynchronizedBuffer
 
 object PageRank extends App {
+  init
   run
 
   final private var aId = 'a'
-  final private var a = new AverageDegreeVertex(aId)
+  final private var a = new AveragePageRankVertex(aId)
   final def init() {
     aId = 'a'
-    a = new AverageDegreeVertex(aId)
+    a = new AveragePageRankVertex(aId)
   }
   final def run(): ExecutionResult = {
     val graph = GraphBuilder.build
     //    baseGraph
     //    extendGraph
 
-    graph.addVertex(new AveragePageRankVertex('a'))
+    graph.addVertex(a)
     graph.addVertex(new PageRankVertex(1))
     graph.addVertex(new PageRankVertex(2))
     graph.addVertex(new PageRankVertex(3))
@@ -32,7 +41,7 @@ object PageRank extends App {
     graph.addEdge(1, new PageRankEdge(2))
     graph.addEdge(1, new PageRankEdge(3))
     graph.addEdge(2, new PageRankEdge(3))
-    graph.addEdge(2, new PageRankEdge(4))
+    //    graph.addEdge(2, new PageRankEdge(4))
     graph.addEdge(3, new PageRankEdge(4))
     def baseGraph() {
       graph.addVertex(new AveragePageRankVertex('a'))
@@ -67,16 +76,16 @@ object PageRank extends App {
       graph.addEdge(9, new PageRankEdge(6))
       graph.addEdge(10, new PageRankEdge(8))
     }
-    //  average(graph, 'a')
+    average(graph, 'a')
     def average(g: Graph[Any, Any], id: Any) = {
-      g.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(v.id, new PageRankEdge(id)))
+      g.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(v.id, new AveragePageRankEdge(id)))
       g.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(id, new AveragePageRankEdge(v.id)))
     }
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
     graph.awaitIdle
-    graph.foreachVertex(println(_))
-    var s = new java.util.ArrayList[Vertex[Any, _]]
+    //    graph.foreachVertex(println(_))
+    var s = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
     graph.foreachVertex(v => s.add(v))
     val vertexMap = filterInteger(s)
     val res = new ExecutionResult(a.state, vertexMap)
@@ -85,12 +94,10 @@ object PageRank extends App {
     //  println(stats)
   }
 
-  def filterInteger(l: java.util.ArrayList[Vertex[Any, _]]): java.util.HashMap[java.lang.String, java.lang.Integer] = {
-    var vertices = new java.util.HashMap[java.lang.String, java.lang.Integer]
+  def filterInteger(l: ArrayBuffer[Vertex[Any, _]]): java.util.Map[String, Object] = {
+    var vertices = new java.util.HashMap[String, Object]
     for (vertex <- l) {
-      if (vertex.state.toString.matches("\\d+")) {
-        vertices.put(vertex.id.toString, Integer.valueOf(vertex.state.toString))
-      }
+      vertices.put(vertex.id.toString, vertex.state.toString)
     }
     vertices
   }
@@ -105,18 +112,25 @@ class PageRankVertex(id: Any, dampingFactor: Double = 0.85) extends DataGraphVer
    *  received from neighbors and the damping factor.
    */
   def collect: State = {
-    val pageRankSignals = mostRecentSignalMap.values.toList.filter(signal => !signal.getClass.toString().contains("Character"))
+    val pageRankSignals = mostRecentSignalMap.filter(signal => !signal._1.getClass.toString().contains("Character"))
     var sum = 0.0
     if (pageRankSignals.isEmpty) {
       state
     } else {
       for (signal <- pageRankSignals) {
-        sum += java.lang.Double.valueOf(signal.toString)
+        sum += java.lang.Double.valueOf(signal._2.toString)
       }
       1 - dampingFactor + dampingFactor * sum
     }
   }
 
+  override def addEdge(e: Edge[_], graphEditor: GraphEditor[Any, Any]): Boolean = {
+    val added = super.addEdge(e, graphEditor)
+    if (added & e.weight < sumOfOutWeights & e.targetId.isInstanceOf[Char]) {
+      sumOfOutWeights -= e.weight
+    }
+    added
+  }
   override def scoreSignal: Double = {
     lastSignalState match {
       case None => 1
@@ -127,39 +141,43 @@ class PageRankVertex(id: Any, dampingFactor: Double = 0.85) extends DataGraphVer
 }
 class PageRankEdge(t: Any) extends DefaultEdge(t) {
   type Source = PageRankVertex
-  //   override def weight: Double = {
-  //    t.getClass match {
-  //      case i if i == classOf[Int] || i == classOf[java.lang.Integer]=> 1.0
-  //      case c if c == classOf[Char] || c == classOf[java.lang.Character] => 0.0
-  //    }
-  //  }
+
   /**
    * The signal function calculates how much rank the source vertex
    *  transfers to the target vertex.
    */
   def signal = {
-
     source.state * weight / source.sumOfOutWeights
   }
 }
 
-class AveragePageRankVertex(id: Char) extends DataGraphVertex(id, 1.0) {
+class AveragePageRankVertex(id: Char) extends DataGraphVertex(id, 0.0) {
 
   type Signal = Any
   type State = Double
+
+  override def addEdge(e: Edge[_], graphEditor: GraphEditor[Any, Any]): Boolean = {
+    var added = super.addEdge(e, graphEditor)
+    if (added & e.weight < sumOfOutWeights & e.targetId.isInstanceOf[Char]) {
+      sumOfOutWeights -= e.weight
+      if (e.sourceId == e.targetId) {
+        added = false
+      }
+    }
+    added
+  }
+
   def collect: State = {
-    val degreeSignals = mostRecentSignalMap.values.toList //.filter(signal => signal.getClass().toString().contains("Integer"))
+    val degreeSignals = mostRecentSignalMap.values.toList.filter(signal => !signal.getClass.toString().contains("Character")) //.filter(signal => signal
     var sum = 0.0
     for (signal <- degreeSignals) {
       sum += java.lang.Double.valueOf(signal.toString)
     }
     sum / degreeSignals.size.toDouble
-    //        sum
   }
 }
 
 class AveragePageRankEdge(t: Any) extends DefaultEdge(t) {
   type Source = DataGraphVertex[Any, Any]
-
-  def signal = source.id
+  def signal = source.state
 }

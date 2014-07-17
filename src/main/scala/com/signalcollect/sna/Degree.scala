@@ -9,8 +9,10 @@ import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.JavaConversions._
+import scala.collection.mutable.SynchronizedBuffer
 
 object Degree extends App {
+  init
   run
 
   final private var aId = 'a'
@@ -29,7 +31,7 @@ object Degree extends App {
     val stats = graph.execute(execmode)
     graph.awaitIdle
     //    graph.foreachVertex(println(_))
-    var s = new java.util.ArrayList[Vertex[Any, _]]
+    var s = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
     graph.foreachVertex(v => s.add(v))
     val vertexMap = filterInteger(s)
     val res = new ExecutionResult(a.state, vertexMap)
@@ -38,12 +40,10 @@ object Degree extends App {
     //    println(stats)
   }
 
-  def filterInteger(l: java.util.ArrayList[Vertex[Any, _]]): java.util.HashMap[java.lang.String, java.lang.Integer] = {
-    var vertices = new java.util.HashMap[java.lang.String, java.lang.Integer]
+  def filterInteger(l: ArrayBuffer[Vertex[Any, _]]): java.util.Map[String, Object] = {
+    var vertices = new java.util.HashMap[String, Object]
     for (vertex <- l) {
-      if (vertex.state.toString.matches("\\d+")) {
-        vertices.put(vertex.id.toString, Integer.valueOf(vertex.state.toString))
-      }
+        vertices.put(vertex.id.toString, vertex.state.toString)
     }
     vertices
   }
