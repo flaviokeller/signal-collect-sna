@@ -1,6 +1,7 @@
 package com.signalcollect.sna;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 public class DegreeSignalCollectGephiConnectorImpl implements
 		SignalCollectGephiConnector {
@@ -14,7 +15,9 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 
 	@Override
 	public Map<String, Object> getAll() {
-		return degreeResult.getNodeMap();
+		TreeMap<String,Object> result = new TreeMap<String, Object>(new NumbersThenWordsComparator());
+		result.putAll(degreeResult.getNodeMap());
+		return result;
 	}
 
 	@Override

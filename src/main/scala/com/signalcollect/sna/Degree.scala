@@ -40,8 +40,8 @@ object Degree extends App {
     //    println(stats)
   }
 
-  def filterInteger(l: ArrayBuffer[Vertex[Any, _]]): java.util.Map[String, Object] = {
-    var vertices = new java.util.HashMap[String, Object]
+  def filterInteger(l: ArrayBuffer[Vertex[Any, _]]): java.util.TreeMap[String, Object] = {
+    var vertices = new java.util.TreeMap[String, Object]
     for (vertex <- l) {
         vertices.put(vertex.id.toString, vertex.state.toString)
     }

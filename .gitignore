@@ -2,3 +2,5 @@
 /target
 build.sbt
 /project
+.cache
+.git
