@@ -1,6 +1,7 @@
 package com.signalcollect.sna;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 public class PageRankSignalCollectGephiConnectorImpl implements
 		SignalCollectGephiConnector {
@@ -9,31 +10,20 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 
 	@Override
 	public double getAverage() {
-		double d = pageRankResult.getAverage();
-		if (d == 0.0) {
-			executeGraph();
-			d = pageRankResult.getAverage();
-			return d;
-		} else {
-			return d;
-		}
+		return pageRankResult.getAverage();
 	}
 
 	@Override
 	public Map<String, Object> getAll() {
-		Map<String, Object> l = pageRankResult.getNodeMap();
-		if (l == null) {
-			executeGraph();
-			l = pageRankResult.getNodeMap();
-			return l;
-		} else {
-			return l;
-		}
+		TreeMap<String, Object> result = new TreeMap<String, Object>(
+				new NumbersThenWordsComparator());
+		result.putAll(pageRankResult.getNodeMap());
+		return result;
+
 	}
 
 	@Override
 	public void executeGraph() {
-		PageRank.init();
 		pageRankResult = PageRank.run();
 
 	}

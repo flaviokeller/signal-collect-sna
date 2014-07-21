@@ -22,7 +22,6 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 
 	@Override
 	public void executeGraph() {
-		Degree.init();
 		degreeResult = Degree.run();
 	}
 

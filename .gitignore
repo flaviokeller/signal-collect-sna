@@ -4,3 +4,4 @@ build.sbt
 /project
 .cache
 .git
+.DS_Store
