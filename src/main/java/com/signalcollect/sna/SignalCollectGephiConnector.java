@@ -9,6 +9,8 @@ public interface SignalCollectGephiConnector {
 
 	public double getAverage();
 	
+	public String getGraphProperties();
+	
 	public Map<String,Object> getAll();
 	
 }

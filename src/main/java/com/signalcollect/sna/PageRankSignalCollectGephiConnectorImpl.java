@@ -10,14 +10,14 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 
 	@Override
 	public double getAverage() {
-		return pageRankResult.getAverage();
+		return pageRankResult.compRes().average();
 	}
 
 	@Override
 	public Map<String, Object> getAll() {
 		TreeMap<String, Object> result = new TreeMap<String, Object>(
 				new NumbersThenWordsComparator());
-		result.putAll(pageRankResult.getNodeMap());
+		result.putAll(pageRankResult.compRes().vertexMap());
 		return result;
 
 	}
@@ -28,13 +28,21 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 
 	}
 
+
+	@Override
+	public String getGraphProperties() {
+		// TODO Auto-generated method stub
+		return pageRankResult.graphProps().toString();
+	}
+
 	public static void main(String[] args) {
 		SignalCollectGephiConnector a = new PageRankSignalCollectGephiConnectorImpl();
 		a.executeGraph();
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
+		String props = a.getGraphProperties();
 		System.out.println("The average degree is: " + d);
 		System.out.println("The single vertex degrees are: " + l);
+		System.out.println("Graph properties: " + props);
 	}
-
 }

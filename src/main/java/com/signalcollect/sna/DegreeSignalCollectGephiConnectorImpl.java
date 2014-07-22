@@ -7,16 +7,17 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 		SignalCollectGephiConnector {
 
 	private ExecutionResult degreeResult;
+	private GraphProperties degreeProps;
 
 	@Override
 	public double getAverage() {
-		return degreeResult.getAverage();
+		return degreeResult.compRes().average();
 	}
 
 	@Override
 	public Map<String, Object> getAll() {
 		TreeMap<String,Object> result = new TreeMap<String, Object>(new NumbersThenWordsComparator());
-		result.putAll(degreeResult.getNodeMap());
+		result.putAll(degreeResult.compRes().vertexMap());
 		return result;
 	}
 
@@ -25,13 +26,21 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 		degreeResult = Degree.run();
 	}
 
+
+	@Override
+	public String getGraphProperties() {
+		// TODO Auto-generated method stub
+		return degreeResult.graphProps().toString();
+	}
+
 	public static void main(String[] args) {
 		SignalCollectGephiConnector a = new DegreeSignalCollectGephiConnectorImpl();
 		a.executeGraph();
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
+		String p = a.getGraphProperties();
 		System.out.println("The average degree is: " + d);
 		System.out.println("The single vertex degrees are: " + l);
+		System.out.println(p);
 	}
-
 }

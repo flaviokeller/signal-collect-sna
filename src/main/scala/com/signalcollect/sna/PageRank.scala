@@ -28,7 +28,8 @@ object PageRank extends App{
     var s = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
     graph.foreachVertex(v => s.add(v))
     val vertexMap = filterInteger(s)
-    val res = new ExecutionResult(e.getAveragePageRankVertex.state, vertexMap)
+    val prCompRes = new ComputationResults(e.getAveragePageRankVertex.state, vertexMap)
+    val res = new ExecutionResult(prCompRes, null)
     graph.shutdown
     res
   }

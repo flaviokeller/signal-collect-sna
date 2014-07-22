@@ -27,7 +27,10 @@ object Degree {
     var s = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
     graph.foreachVertex(v => s.add(v))
     val vertexMap = filterInteger(s)
-    val res = new ExecutionResult(e.getAverageDegreeVertex.state, vertexMap)
+    val degreeCompRes = new ComputationResults(e.getAverageDegreeVertex.state, vertexMap)
+    val graphProps = new GraphProperties(1,1,1,1,1.0)
+    graphProps.calcSize(s)
+    val res = new ExecutionResult(degreeCompRes, graphProps)
     graph.shutdown
     res
   }
