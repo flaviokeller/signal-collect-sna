@@ -13,7 +13,7 @@ import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.DefaultEdge
 
-object PageRank extends App{
+object PageRank extends App {
   final def run(): ExecutionResult = {
     val e = new ExampleGraph
     val graph = GraphBuilder.build
@@ -29,7 +29,10 @@ object PageRank extends App{
     graph.foreachVertex(v => s.add(v))
     val vertexMap = filterInteger(s)
     val prCompRes = new ComputationResults(e.getAveragePageRankVertex.state, vertexMap)
-    val res = new ExecutionResult(prCompRes, null)
+    val graphProps = new GraphProperties(1, 1, 1, 1, 1.0)
+    graphProps.calcSize(s)
+    graphProps.calcDensity(s)
+    val res = new ExecutionResult(prCompRes, graphProps)
     graph.shutdown
     res
   }
@@ -45,7 +48,7 @@ object PageRank extends App{
 
 class PageRankVertex(id: Any, dampingFactor: Double = 0.85) extends DataGraphVertex(id, dampingFactor) {
 
-  type Signal = Pair[Any,Any]
+  type Signal = Pair[Any, Any]
   type State = Double
   /**
    * The collect function calculates the rank of this vertex based on the rank
@@ -87,13 +90,13 @@ class PageRankEdge(t: Any) extends DefaultEdge(t) {
    *  transfers to the target vertex.
    */
   def signal = {
-    Pair(source,source.state * weight / source.sumOfOutWeights)
+    Pair(source, source.state * weight / source.sumOfOutWeights)
   }
 }
 
 class AveragePageRankVertex(id: Char) extends DataGraphVertex(id, 0.0) {
 
-  type Signal = Pair[Any,Any]
+  type Signal = Pair[Any, Any]
   type State = Double
 
   override def addEdge(e: Edge[_], graphEditor: GraphEditor[Any, Any]): Boolean = {
@@ -119,5 +122,5 @@ class AveragePageRankVertex(id: Char) extends DataGraphVertex(id, 0.0) {
 
 class AveragePageRankEdge(t: Any) extends DefaultEdge(t) {
   type Source = DataGraphVertex[Any, Any]
-  def signal = Pair(source,source.state)
+  def signal = Pair(source, source.state)
 }

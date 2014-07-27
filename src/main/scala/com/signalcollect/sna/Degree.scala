@@ -16,7 +16,6 @@ object Degree {
   final def run(): ExecutionResult = {
     val e = new ExampleGraph
     val graph = GraphBuilder.build
-    
     e.initDegree
     e.baseDegreeGraph(graph)
     e.extendDegreeGraph(graph)
@@ -30,6 +29,7 @@ object Degree {
     val degreeCompRes = new ComputationResults(e.getAverageDegreeVertex.state, vertexMap)
     val graphProps = new GraphProperties(1,1,1,1,1.0)
     graphProps.calcSize(s)
+    graphProps.calcDensity(s)
     val res = new ExecutionResult(degreeCompRes, graphProps)
     graph.shutdown
     res
@@ -77,6 +77,6 @@ class AverageDegreeVertex(id: Char) extends DataGraphVertex(id, 0.0) {
 }
 
 class AverageDegreeEdge(t: Any) extends DefaultEdge(t) {
-  type Source = AverageDegreeVertex
+  type Source = DataGraphVertex[Any,Any]
   def signal = source
 }

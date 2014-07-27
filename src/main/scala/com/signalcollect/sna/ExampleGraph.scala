@@ -85,7 +85,7 @@ class ExampleGraph {
 
   def setAverageDegreeVertex(graph: Graph[Any, Any]) {
     graph.addVertex(avgDeg)
-    graph.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(v.id, new DegreeEdge(avgDeg.id)))
+    graph.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(v.id, new AverageDegreeEdge(avgDeg.id)))
     graph.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(avgDeg.id, new AverageDegreeEdge(v.id)))
   }
 

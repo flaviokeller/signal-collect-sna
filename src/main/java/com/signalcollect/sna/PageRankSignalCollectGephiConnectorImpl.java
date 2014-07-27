@@ -31,7 +31,6 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 
 	@Override
 	public String getGraphProperties() {
-		// TODO Auto-generated method stub
 		return pageRankResult.graphProps().toString();
 	}
 
@@ -40,9 +39,10 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 		a.executeGraph();
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
-		String props = a.getGraphProperties();
+		String p = a.getGraphProperties();
+
 		System.out.println("The average degree is: " + d);
 		System.out.println("The single vertex degrees are: " + l);
-		System.out.println("Graph properties: " + props);
+		System.out.println(p);
 	}
 }

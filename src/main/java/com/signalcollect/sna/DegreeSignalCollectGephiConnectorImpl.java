@@ -7,7 +7,6 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 		SignalCollectGephiConnector {
 
 	private ExecutionResult degreeResult;
-	private GraphProperties degreeProps;
 
 	@Override
 	public double getAverage() {
@@ -29,7 +28,6 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 
 	@Override
 	public String getGraphProperties() {
-		// TODO Auto-generated method stub
 		return degreeResult.graphProps().toString();
 	}
 
