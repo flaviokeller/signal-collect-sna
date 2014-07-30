@@ -1,26 +1,15 @@
 package com.signalcollect.sna
 
 import com.signalcollect.Vertex
-import com.signalcollect.Edge
-import com.signalcollect.AbstractVertex
-import com.signalcollect.DataGraphVertex
-import javax.lang.model.SourceVersion
+import scala.collection.mutable.LinkedList
 
-class Path(sourceVertex: PathTestVertex, targetVertex: PathTestVertex) {
-
-  var isShortestPath = false
-
-  def createPath(sourceVertex: PathTestVertex, targetVertex: PathTestVertex): List[Int] = {
-    
-    val targetIsNeighbour = targetVertex.neighbours.contains(sourceVertex.id)
-    if (targetIsNeighbour) {
-      List(sourceVertex.id,targetVertex.id)
-    } else {
-//      for()
-//      for(n<-targetVertex.neighbours){
-//        createPath(n, sourceVertex)
-//      }
-      null
-    }
+class Path(val sourceVertexId: Int, val targetVertexId: Int) {
+  var path = scala.collection.mutable.ArrayBuffer(sourceVertexId, targetVertexId)
+  var length = 2
+  override def toString(): String = {
+    "Path(Source Vertex: " + sourceVertexId + " Target Vertex: " + targetVertexId + " Path: " + path + " Number of Nodes on Path: " + length + ") "
+  }
+  def incrementSize(){
+    length +=1
   }
 }
