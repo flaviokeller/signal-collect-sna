@@ -28,15 +28,11 @@ class GraphPaths(val graph: Graph[Any, Any]) {
 
   def createPathsByVertexId(vertex: Int, passedVertices: scala.collection.mutable.Set[Int]): Set[Path] = {
     passedVertices.add(vertex)
-    //    println("Passed vertices: " + passedVertices)
     var paths = scala.collection.mutable.Set[Path]()
     val pathsToNeighbours = neighbourPaths.get(vertex).get
     paths = collection.mutable.Set(pathsToNeighbours.toSeq: _*)
     for (neighbourPath <- pathsToNeighbours) { //iterating through paths to neighbours
-      //      println(pathsToNeighbours)
       val neighbourPathsOfNeighbour = neighbourPaths.get(neighbourPath.targetVertexId).get
-      //      println(neighbourPathsOfNeighbour + " neighbour id: " + neighbourPath.sourceVertexId + " neighbour of neighbour: " + neighbourPath.targetVertexId)
-      //      println(1)
 
       def furtherPath(vertex: Int, verticesOnPath: Set[Int], nPaths: Set[Path]): Unit = {
         passedVertices.add(verticesOnPath.last)
@@ -50,7 +46,6 @@ class GraphPaths(val graph: Graph[Any, Any]) {
             }
             datpath.path += (x.sourceVertexId)
             datpath.incrementSize
-
             paths.add(datpath)
             furtherPath(vertex, verticesOnPath + (x.targetVertexId), neighbourPaths.get(x.targetVertexId).get)
           }
@@ -58,40 +53,14 @@ class GraphPaths(val graph: Graph[Any, Any]) {
       }
       for (t <- neighbourPathsOfNeighbour) {
         if (!passedVertices.contains(t.targetVertexId) /*&& !passedVertices.contains(x.sourceVertexId)*/ ) {
-
           val datpath = new Path(vertex, t.targetVertexId)
-//          for (pv <- passedVertices) {
-//            datpath.path += (pv)
-//            datpath.incrementSize
-//
-//          }
           datpath.path += (t.sourceVertexId)
           datpath.incrementSize
-
           paths.add(datpath)
         }
         furtherPath(vertex, Set(t.sourceVertexId), neighbourPaths.get(t.targetVertexId).get)
       }
-
     }
-
-    //      getNeighboursOfNeighbour(neighbourPath.targetVertexId, passedVertices)
-    //      def getNeighboursOfNeighbour(vertex: Int, passedVertices: scala.collection.mutable.Set[Int]): Set[Path] = {
-    //        //        for (x <- neighbourPathsOfNeighbour) { //iterating through paths to neighbours of neighbour
-    //        var neighboursOfNeighbour = neighbourPaths.get(vertex).get
-    //        for (x <- neighboursOfNeighbour) {
-    //          if (!passedVertices.contains(x.targetVertexId) && !passedVertices.contains(x.sourceVertexId)) {
-    //            val pa = new Path(vertex, x.targetVertexId)
-    //            pa.path = scala.collection.mutable.Set(vertex, x.sourceVertexId, x.targetVertexId)
-    //            paths.add(pa)
-    //          }
-    //        }
-    ////        val npaths = createPathsByVertexId(x.sourceVertexId, passedVertices)
-    ////        println(npaths)
-    //        paths.toSet
-    //        //          }
-    //      }
-    //    }
     neighbourPaths.put(vertex, paths.toSet)
     paths.toSet
   }

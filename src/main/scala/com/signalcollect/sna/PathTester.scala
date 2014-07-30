@@ -49,13 +49,10 @@ object PathTester extends App {
 class PathTestVertex(id: Int) extends DataGraphVertex(id, Set[Int]()) {
   type Signal = PathTestVertex
   type State = Set[Int]
-  //  var neighbours = mostRecentSignalMap.values.toList
   var d = scala.collection.mutable.Set[Int]()
   var e = scala.collection.mutable.Set[PathTestVertex]()
   def collect: State = {
     try {
-      //      println(mostRecentSignalMap.values.toList + " ID: " + id)
-      //      neighbours = mostRecentSignalMap.values.toList
       for (x <- mostRecentSignalMap) {
         d.add(Integer.valueOf(x._1.toString))
         e.add(x._2)
@@ -73,10 +70,6 @@ class PathTestVertex(id: Int) extends DataGraphVertex(id, Set[Int]()) {
 class PathTestEdge(t: Any) extends DefaultEdge(t) {
   type Source = PathTestVertex
   def signal = {
-    //    if (source.neighbours == null) {
-    //      List(id)
-    //    } else {
     source
-    //    }
   }
 }
