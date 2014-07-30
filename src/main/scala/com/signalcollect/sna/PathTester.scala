@@ -38,7 +38,7 @@ object PathTester extends App {
 //    var t = new ArrayBuffer[Set[PathTestVertex]] with SynchronizedBuffer[Set[PathTestVertex]]
     graph.foreachVertex(v => s.add(v.asInstanceOf[DataGraphVertex[Any,_]]))
     paths.createNeighbourPaths(s)
-    paths.createPathsByVertexId(1,scala.collection.mutable.Set[Int]())
+    paths.createPathsByVertexId(4,scala.collection.mutable.Set[Int]())
     println(paths)
 //    graph.foreachVertex(v => t.add(v.asInstanceOf[PathTestVertex].e.toSet))
 //    println(s)

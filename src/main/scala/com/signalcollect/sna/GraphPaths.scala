@@ -57,17 +57,20 @@ class GraphPaths(val graph: Graph[Any, Any]) {
         }
       }
       for (t <- neighbourPathsOfNeighbour) {
-        val datpath = new Path(vertex, t.targetVertexId)
-        for (pv <- passedVertices) {
-          datpath.path += (pv)
+        if (!passedVertices.contains(t.targetVertexId) /*&& !passedVertices.contains(x.sourceVertexId)*/ ) {
+
+          val datpath = new Path(vertex, t.targetVertexId)
+//          for (pv <- passedVertices) {
+//            datpath.path += (pv)
+//            datpath.incrementSize
+//
+//          }
+          datpath.path += (t.sourceVertexId)
           datpath.incrementSize
 
+          paths.add(datpath)
         }
-        datpath.path += (t.sourceVertexId)
-        datpath.incrementSize
-
-        paths.add(datpath)
-        furtherPath(vertex, Set(vertex, t.sourceVertexId), neighbourPaths.get(t.targetVertexId).get)
+        furtherPath(vertex, Set(t.sourceVertexId), neighbourPaths.get(t.targetVertexId).get)
       }
 
     }
