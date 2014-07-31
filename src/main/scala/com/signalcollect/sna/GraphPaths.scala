@@ -32,33 +32,39 @@ class GraphPaths(val graph: Graph[Any, Any]) {
     val pathsToNeighbours = neighbourPaths.get(vertex).get
     paths = collection.mutable.Set(pathsToNeighbours.toSeq: _*)
     for (neighbourPath <- pathsToNeighbours) { //iterating through paths to neighbours
-      val neighbourPathsOfNeighbour = neighbourPaths.get(neighbourPath.targetVertexId).get
+      val outgoingPathsOfNeighbour = neighbourPaths.get(neighbourPath.targetVertexId).get
 
+      /**
+       * Recursive Method to determine all outgoing neighbouring Paths of neighbour
+       */
       def furtherPath(vertex: Int, verticesOnPath: Set[Int], nPaths: Set[Path]): Unit = {
-        passedVertices.add(verticesOnPath.last)
+        passedVertices.add(verticesOnPath.last) //TODO:reset passedVertices to get all possible paths
         println("Passed vertices: " + passedVertices)
         for (x <- nPaths) {
           if (!passedVertices.contains(x.targetVertexId) && !passedVertices.contains(x.sourceVertexId)) {
-            val datpath = new Path(vertex, x.targetVertexId)
+            val wholePath = new Path(vertex, x.targetVertexId)
             for (pv <- verticesOnPath) {
-              datpath.path += (pv)
-              datpath.incrementSize
+              wholePath.path += (pv)
+              wholePath.incrementSize
             }
-            datpath.path += (x.sourceVertexId)
-            datpath.incrementSize
-            paths.add(datpath)
+            wholePath.path += (x.sourceVertexId)
+            wholePath.incrementSize
+
+            paths.add(wholePath)
             furtherPath(vertex, verticesOnPath + (x.targetVertexId), neighbourPaths.get(x.targetVertexId).get)
           }
         }
       }
-      for (t <- neighbourPathsOfNeighbour) {
-        if (!passedVertices.contains(t.targetVertexId) /*&& !passedVertices.contains(x.sourceVertexId)*/ ) {
-          val datpath = new Path(vertex, t.targetVertexId)
-          datpath.path += (t.sourceVertexId)
-          datpath.incrementSize
-          paths.add(datpath)
+      for (outgoingPath <- outgoingPathsOfNeighbour) {
+        if (!passedVertices.contains(outgoingPath.targetVertexId)) {
+          val pathWithSourceVertex = new Path(vertex, outgoingPath.targetVertexId)
+          pathWithSourceVertex.path += (outgoingPath.sourceVertexId)
+          pathWithSourceVertex.incrementSize
+          paths.add(pathWithSourceVertex)
         }
-        furtherPath(vertex, Set(t.sourceVertexId), neighbourPaths.get(t.targetVertexId).get)
+        furtherPath(vertex, Set(outgoingPath.sourceVertexId), neighbourPaths.get(outgoingPath.targetVertexId).get)
+        passedVertices.clear
+        passedVertices.add(vertex)
       }
     }
     neighbourPaths.put(vertex, paths.toSet)
@@ -68,7 +74,7 @@ class GraphPaths(val graph: Graph[Any, Any]) {
   override def toString(): String = {
     var res = "The resulting paths are: \n"
     for (p <- neighbourPaths) {
-      res += "Vertex ID: " + p._1 + "\n"
+      res += "Vertex ID: " + p._1 + " Number of Paths: " + p._2.size + "\n"
       for (v <- p._2) {
         res += v + "\n"
       }

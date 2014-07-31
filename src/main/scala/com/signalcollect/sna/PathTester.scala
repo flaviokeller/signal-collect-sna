@@ -14,19 +14,22 @@ import com.signalcollect.AbstractVertex
 
 object PathTester extends App {
     val graph = GraphBuilder.build
-    graph.addVertex(new PathTestVertex(1))
-    graph.addVertex(new PathTestVertex(2))
-    graph.addVertex(new PathTestVertex(3))
-    graph.addVertex(new PathTestVertex(4))
-    graph.addVertex(new PathTestVertex(5))
-    graph.addEdge(1, new PathTestEdge(4))
-    graph.addEdge(1, new PathTestEdge(3))
-    graph.addEdge(2, new PathTestEdge(1))
-    graph.addEdge(2, new PathTestEdge(3))
-    graph.addEdge(4, new PathTestEdge(1))
-    graph.addEdge(4, new PathTestEdge(2))
-    graph.addEdge(5, new PathTestEdge(2))
-    graph.addEdge(5, new PathTestEdge(3))
+    val eg = new ExampleGraph
+    eg.baseDegreeGraph(graph)
+    eg.extendDegreeGraph(graph)
+//    graph.addVertex(new PathTestVertex(1))
+//    graph.addVertex(new PathTestVertex(2))
+//    graph.addVertex(new PathTestVertex(3))
+//    graph.addVertex(new PathTestVertex(4))
+//    graph.addVertex(new PathTestVertex(5))
+//    graph.addEdge(1, new PathTestEdge(4))
+//    graph.addEdge(1, new PathTestEdge(3))
+//    graph.addEdge(2, new PathTestEdge(1))
+//    graph.addEdge(2, new PathTestEdge(3))
+//    graph.addEdge(4, new PathTestEdge(1))
+//    graph.addEdge(4, new PathTestEdge(2))
+//    graph.addEdge(5, new PathTestEdge(2))
+//    graph.addEdge(5, new PathTestEdge(3))
 
     val paths = new GraphPaths(graph)
     
@@ -38,7 +41,7 @@ object PathTester extends App {
 //    var t = new ArrayBuffer[Set[PathTestVertex]] with SynchronizedBuffer[Set[PathTestVertex]]
     graph.foreachVertex(v => s.add(v.asInstanceOf[DataGraphVertex[Any,_]]))
     paths.createNeighbourPaths(s)
-    paths.createPathsByVertexId(4,scala.collection.mutable.Set[Int]())
+    paths.createPathsByVertexId(5,scala.collection.mutable.Set[Int]())
     println(paths)
 //    graph.foreachVertex(v => t.add(v.asInstanceOf[PathTestVertex].e.toSet))
 //    println(s)
