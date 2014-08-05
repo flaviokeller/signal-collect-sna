@@ -82,6 +82,41 @@ class ExampleGraph {
 	  graph.addEdge(9, new PageRankEdge(6))
 	  graph.addEdge(10, new PageRankEdge(8))
   }
+  
+  
+  
+   def basePathTestGraph(graph: Graph[Any, Any]) {
+    graph.addVertex(new PathTestVertex(1))
+    graph.addVertex(new PathTestVertex(2))
+    graph.addVertex(new PathTestVertex(3))
+    graph.addVertex(new PathTestVertex(4))
+    graph.addVertex(new PathTestVertex(5))
+    graph.addEdge(1, new PathTestEdge(4))
+    graph.addEdge(1, new PathTestEdge(3))
+    graph.addEdge(2, new PathTestEdge(1))
+    graph.addEdge(2, new PathTestEdge(3))
+    graph.addEdge(4, new PathTestEdge(1))
+    graph.addEdge(4, new PathTestEdge(2))
+    graph.addEdge(5, new PathTestEdge(2))
+    graph.addEdge(5, new PathTestEdge(3))
+  }
+  def extendPathTestGraph(graph: Graph[Any, Any]) {
+    graph.addVertex(new PathTestVertex(6))
+    graph.addVertex(new PathTestVertex(7))
+    graph.addVertex(new PathTestVertex(8))
+    graph.addVertex(new PathTestVertex(9))
+    graph.addVertex(new PathTestVertex(10))
+    graph.addEdge(5, new PathTestEdge(6))
+    graph.addEdge(5, new PathTestEdge(7))
+    graph.addEdge(5, new PathTestEdge(8))
+    graph.addEdge(5, new PathTestEdge(9))
+    graph.addEdge(6, new PathTestEdge(7))
+    graph.addEdge(6, new PathTestEdge(10))
+    graph.addEdge(7, new PathTestEdge(10))
+    graph.addEdge(8, new PathTestEdge(7))
+    graph.addEdge(9, new PathTestEdge(6))
+    graph.addEdge(10, new PathTestEdge(8))
+  }
 
   def setAverageDegreeVertex(graph: Graph[Any, Any]) {
     graph.addVertex(avgDeg)

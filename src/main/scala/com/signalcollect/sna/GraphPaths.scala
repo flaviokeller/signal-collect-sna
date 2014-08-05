@@ -38,13 +38,14 @@ class GraphPaths(val graph: Graph[Any, Any]) {
        * Recursive Method to determine all outgoing neighbouring Paths of neighbour
        */
       def furtherPath(vertex: Int, verticesOnPath: Set[Int], nPaths: Set[Path]): Unit = {
-        passedVertices.add(verticesOnPath.last) //TODO:reset passedVertices to get all possible paths
+        passedVertices.add(verticesOnPath.last) 
         println("Passed vertices: " + passedVertices)
+        println("Vertices on path: " + verticesOnPath)
         for (x <- nPaths) {
           if (!passedVertices.contains(x.targetVertexId) && !passedVertices.contains(x.sourceVertexId)) {
             val wholePath = new Path(vertex, x.targetVertexId)
             for (pv <- verticesOnPath) {
-              wholePath.path += (pv)
+              wholePath.path += pv
               wholePath.incrementSize
             }
             wholePath.path += (x.sourceVertexId)
