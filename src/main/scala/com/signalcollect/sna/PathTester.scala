@@ -35,14 +35,15 @@ object PathTester extends App {
   graph.foreachVertex(v => vertexArray.add(v.asInstanceOf[PathTestVertex]))
   graph.shutdown
 
-  allShortestPaths
+  allShortestPathsAsMap
+  allShortestPathsAsList
 
   /**
- * @param sourceVertexId
- * @param targetVertexId
- * @return
- */
-def getAllPaths(sourceVertexId: Int, targetVertexId: Int): List[Path] = {
+   * @param sourceVertexId
+   * @param targetVertexId
+   * @return
+   */
+  def getAllPaths(sourceVertexId: Int, targetVertexId: Int): List[Path] = {
     val targetVertex = vertexArray.filter(v => v.id.equals(targetVertexId))
     if (targetVertex.size != 1) throw new NoSuchElementException("The vertex with id " + targetVertexId + " doesn't exist or exists multiple times!")
     val actualVertex = targetVertex.get(0)
@@ -60,10 +61,10 @@ def getAllPaths(sourceVertexId: Int, targetVertexId: Int): List[Path] = {
     shortestpath
   }
 
-  def allShortestPaths(): Map[Int, List[Path]] = {
+  def allShortestPathsAsMap(): Map[Int, List[Path]] = {
     var shortestPathMap = scala.collection.mutable.Map[Int, List[Path]]()
     for (sourceVertex <- vertexArray) {
-      println("\n----------------\n  Vertex id: " + sourceVertex.id + "\n  shortest Paths: \n----------------")
+      //      println("\n----------------\n  Vertex id: " + sourceVertex.id + "\n  shortest Paths: \n----------------")
       var pathList = scala.collection.mutable.ListBuffer[Path]()
       for (targetVertex <- vertexArray.filter(v => !v.id.equals(sourceVertex.id))) {
         try {
@@ -75,9 +76,30 @@ def getAllPaths(sourceVertexId: Int, targetVertexId: Int): List[Path] = {
       shortestPathMap.put(sourceVertex.id, pathList.toList)
     }
     println()
-    for(path<-shortestPathMap){
-    println(path._1 + "\t " + path._2)}
+    var mapsize = 0
+    for (path <- shortestPathMap) {
+      //      println(path._1 + "\t " + path._2)
+      mapsize += path._2.size
+    }
+    println("Size: " + mapsize)
     shortestPathMap.toMap
+  }
+  def allShortestPathsAsList(): List[Path] = {
+    var shortestPathList = scala.collection.mutable.ListBuffer[Path]()
+    for (sourceVertex <- vertexArray) {
+      for (targetVertex <- vertexArray.filter(v => !v.id.equals(sourceVertex.id))) {
+        try {
+          shortestPathList.add(getShortestPath(sourceVertex.id, targetVertex.id))
+        } catch {
+          case noPath: NoSuchElementException => //do nothing
+        }
+      }
+    }
+    println("Size: " + shortestPathList.size)
+    //    for (path <- shortestPathList) {
+    //      println(path)
+    //    }
+    shortestPathList.toList
   }
 
 }
