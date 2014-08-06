@@ -30,8 +30,9 @@ object Degree {
     val graphProps = new GraphProperties(1,1,1,1,1.0)
     graphProps.calcSize(s)
     graphProps.calcDensity(s)
-    val res = new ExecutionResult(degreeCompRes, graphProps)
     graph.shutdown
+    graphProps.calcDiameter
+    val res = new ExecutionResult(degreeCompRes, graphProps)
     res
   }
 

@@ -20,23 +20,26 @@ import java.lang.Throwable
  *
  */
 object PathTester extends App {
-  val graph = GraphBuilder.build
+
   var vertexArray = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
-  val eg = new ExampleGraph
+  def run {
+    vertexArray = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
+    val graph = GraphBuilder.build
+    val eg = new ExampleGraph
 
-  eg.basePathTestGraph(graph)
-  eg.extendPathTestGraph(graph)
+    eg.basePathTestGraph(graph)
+    eg.extendPathTestGraph(graph)
 
-  val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
-  val stats = graph.execute(execmode)
+    val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
+    val stats = graph.execute(execmode)
 
-  graph.awaitIdle
+    graph.awaitIdle
 
-  graph.foreachVertex(v => vertexArray.add(v.asInstanceOf[PathTestVertex]))
-  graph.shutdown
-
-  allShortestPathsAsMap
-  allShortestPathsAsList
+    graph.foreachVertex(v => vertexArray.add(v.asInstanceOf[PathTestVertex]))
+    graph.shutdown
+  }
+  //  allShortestPathsAsMap
+  //  allShortestPathsAsList
 
   /**
    * @param sourceVertexId
