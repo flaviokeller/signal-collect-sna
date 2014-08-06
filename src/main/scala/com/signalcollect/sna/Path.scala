@@ -7,7 +7,7 @@ class Path(val sourceVertexId: Int, var targetVertexId: Int) {
   var path = scala.collection.mutable.ArrayBuffer(sourceVertexId, targetVertexId)
   var length = 2
   override def toString(): String = {
-    "Path(Source Vertex: " + sourceVertexId + " Target Vertex: " + targetVertexId + "\tVertices on Path: " + path + /*"\tNumber of Nodes on Path: " + length +*/ "\n) "
+    "Path(Source Vertex: " + sourceVertexId + " Target Vertex: " + targetVertexId + "\tVertices on Path: " + path + /*"\tNumber of Nodes on Path: " + length +*/ ")"
   }
   def incrementSize(){
     length +=1

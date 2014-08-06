@@ -13,22 +13,73 @@ import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import sun.awt.MostRecentKeyValue
 import sun.awt.MostRecentKeyValue
+import java.lang.Throwable
 
+/**
+ * @author flaviokeller
+ *
+ */
 object PathTester extends App {
   val graph = GraphBuilder.build
+  var vertexArray = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
   val eg = new ExampleGraph
+
   eg.basePathTestGraph(graph)
   eg.extendPathTestGraph(graph)
 
   val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
   val stats = graph.execute(execmode)
+
   graph.awaitIdle
-  var s = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
-  graph.foreachVertex(v => s.add(v.asInstanceOf[PathTestVertex]))
-  for (d <- s) {
-    println("Vertex: " + d.id + " size: " + d.allIncomingPaths.size + " incoming paths: " + d.allIncomingPaths)
-  }
+
+  graph.foreachVertex(v => vertexArray.add(v.asInstanceOf[PathTestVertex]))
   graph.shutdown
+
+  allShortestPaths
+
+  /**
+ * @param sourceVertexId
+ * @param targetVertexId
+ * @return
+ */
+def getAllPaths(sourceVertexId: Int, targetVertexId: Int): List[Path] = {
+    val targetVertex = vertexArray.filter(v => v.id.equals(targetVertexId))
+    if (targetVertex.size != 1) throw new NoSuchElementException("The vertex with id " + targetVertexId + " doesn't exist or exists multiple times!")
+    val actualVertex = targetVertex.get(0)
+    val allPaths = actualVertex.allIncomingPaths.filter(p => p.sourceVertexId == sourceVertexId).toList
+    if (allPaths.isEmpty)
+      throw new NoSuchElementException("No Path exists between vertex " + sourceVertexId + " and vertex " + targetVertexId + "!")
+    else allPaths
+  }
+
+  def getShortestPath(sourceVertexId: Int, targetVertexId: Int): Path = {
+    def shortest(p1: Path, p2: Path): Path = if (p1.path.size < p2.path.size) p1 else p2
+    val allPaths = getAllPaths(sourceVertexId, targetVertexId)
+    val shortestpath = allPaths.reduceLeft(shortest)
+    println(shortestpath)
+    shortestpath
+  }
+
+  def allShortestPaths(): Map[Int, List[Path]] = {
+    var shortestPathMap = scala.collection.mutable.Map[Int, List[Path]]()
+    for (sourceVertex <- vertexArray) {
+      println("\n----------------\n  Vertex id: " + sourceVertex.id + "\n  shortest Paths: \n----------------")
+      var pathList = scala.collection.mutable.ListBuffer[Path]()
+      for (targetVertex <- vertexArray.filter(v => !v.id.equals(sourceVertex.id))) {
+        try {
+          pathList.add(getShortestPath(sourceVertex.id, targetVertex.id))
+        } catch {
+          case noPath: NoSuchElementException => //do nothing
+        }
+      }
+      shortestPathMap.put(sourceVertex.id, pathList.toList)
+    }
+    println()
+    for(path<-shortestPathMap){
+    println(path._1 + "\t " + path._2)}
+    shortestPathMap.toMap
+  }
+
 }
 
 class PathTestVertex(id: Int) extends DataGraphVertex(id, ArrayBuffer[Path]()) {
@@ -36,25 +87,19 @@ class PathTestVertex(id: Int) extends DataGraphVertex(id, ArrayBuffer[Path]()) {
   type State = ArrayBuffer[Path]
   var allIncomingPaths = ArrayBuffer[Path]()
   def collect: State = {
-    try {
-      var mostRecentPaths = new ArrayBuffer[Path]()
-      for (x <- mostRecentSignalMap.values) {
-        for (y <- x) {
-          val isNonExistentPath = allIncomingPaths.filter(p => p.path.sameElements(y.path) /* && p.sourceVertexId == y.sourceVertexId && p.targetVertexId == y.targetVertexId*/ ).isEmpty
-          if (isNonExistentPath) {
-            val incomingPath = new Path(y.sourceVertexId, y.targetVertexId)
-            incomingPath.path = y.path
-            allIncomingPaths.add(incomingPath)
-            mostRecentPaths.add(y)
-          }
+    var mostRecentPaths = new ArrayBuffer[Path]()
+    for (x <- mostRecentSignalMap.values) {
+      for (y <- x) {
+        val isNonExistentPath = allIncomingPaths.filter(p => p.path.sameElements(y.path) /* && p.sourceVertexId == y.sourceVertexId && p.targetVertexId == y.targetVertexId*/ ).isEmpty
+        if (isNonExistentPath) {
+          val incomingPath = new Path(y.sourceVertexId, y.targetVertexId)
+          incomingPath.path = y.path
+          allIncomingPaths.add(incomingPath)
+          mostRecentPaths.add(y)
         }
       }
-      mostRecentPaths
-    } catch {
-      case t: Throwable =>
-        println("some error " + t.getCause + " " + t.getStackTraceString) // todo: handle error
-        Breaks.break
     }
+    mostRecentPaths
   }
 }
 
@@ -80,3 +125,4 @@ class PathTestEdge(t: Int) extends DefaultEdge(t) {
     currentPathArray
   }
 }
+
