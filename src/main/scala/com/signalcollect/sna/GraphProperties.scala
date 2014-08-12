@@ -5,7 +5,7 @@ import scala.collection.mutable.ArrayBuffer
 import com.signalcollect.Vertex
 import com.signalcollect.DataGraphVertex
 
-class GraphProperties(var size: Int, var density: Double, var diameter: Int, val reciprocity: Int, val degreeDistribution: Double) {
+class GraphProperties(var size: Int, var density: Double, var diameter: Int, var reciprocity: Double, val degreeDistribution: Double) {
 
   override def toString(): String = {
     "The Properties of the graph are:\n\nSize: " + size + "\nDensity: " + density + "\nDiameter: " + diameter + "\nReciprocity: " + reciprocity + "\nDegree Distribution: " + degreeDistribution + "\n"
@@ -29,9 +29,23 @@ class GraphProperties(var size: Int, var density: Double, var diameter: Int, val
   }
 
   def calcDiameter() = {
-    PathTester.run
+//    PathTester.run
     val listOfShortestPaths = PathTester.allShortestPathsAsList
     def getdiameter(p1: Path, p2: Path): Path = if (p1.path.size > p2.path.size) p1 else p2
     diameter = listOfShortestPaths.reduceLeft(getdiameter).path.size
+  }
+
+  def calcReciprocity() = {
+//    PathTester.run
+    val listOfShortestPaths = PathTester.allShortestPathsAsList
+    var numberOfReciprocalPaths = 0
+    for (path <- listOfShortestPaths) {
+      val reciprocalPathExists = !listOfShortestPaths.filter(p => p.sourceVertexId == path.targetVertexId && p.targetVertexId == path.sourceVertexId).isEmpty
+      if (reciprocalPathExists) numberOfReciprocalPaths += 1
+    }
+    println(numberOfReciprocalPaths + "/" + listOfShortestPaths.size)
+    //    def getreciprocity(p1: Path, p2: Path): Path = if (p1.path.size > p2.path.size) p1 else p2
+    reciprocity = numberOfReciprocalPaths.toDouble / listOfShortestPaths.size.toDouble
+
   }
 }

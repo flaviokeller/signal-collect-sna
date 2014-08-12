@@ -14,6 +14,7 @@ import com.signalcollect.configuration.ExecutionMode
 import sun.awt.MostRecentKeyValue
 import sun.awt.MostRecentKeyValue
 import java.lang.Throwable
+import com.signalcollect.Graph
 
 /**
  * @author flaviokeller
@@ -22,7 +23,7 @@ import java.lang.Throwable
 object PathTester extends App {
 
   var vertexArray = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
-  def run {
+  def run() {
     vertexArray = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
     val graph = GraphBuilder.build
     val eg = new ExampleGraph

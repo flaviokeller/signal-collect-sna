@@ -32,6 +32,7 @@ object Degree {
     graphProps.calcDensity(s)
     graph.shutdown
     graphProps.calcDiameter
+    graphProps.calcReciprocity
     val res = new ExecutionResult(degreeCompRes, graphProps)
     res
   }
