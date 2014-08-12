@@ -17,18 +17,9 @@ object Closeness extends App {
   for (c <- closenessMap) {
     println(c._1 + " " + c._2)
   }
-  //
-  //    val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
-  //    val stats = graph.execute(execmode)
-  //
-  //    graph.awaitIdle
-  //
-  //    graph.foreachVertex(v => vertexArray.add(v))
-  //    graph.shutdown
-
+ 
   // TODO: implement closeness just as computation and assign paths to vertices
 
-  //TODO: desired implementation here
 
   def getClosenessForVertexId(id: Int, shortestPathList: List[Path]): Double = {
 
@@ -51,31 +42,3 @@ object Closeness extends App {
     closenessMap.toMap
   }
 }
-//      }
-//    }
-//    mostRecentPaths
-//  }
-//}
-//
-//class ClosenessEdge(t: Int) extends DefaultEdge(t) {
-//  var startingState = true
-//  type Source = ClosenessVertex
-//  def signal = {
-//    var currentPathArray = ArrayBuffer[Path]()
-//
-//    for (path <- source.state) {
-//      if (!path.path.contains(t)) {
-//        val pathToAdd = new Path(path.sourceVertexId, t)
-//        pathToAdd.path = path.path.clone
-//        pathToAdd.path.add(t)
-//        path.incrementSize
-//        currentPathArray += pathToAdd
-//      }
-//    }
-//    if (startingState) {
-//      currentPathArray += new Path(source.id, t)
-//    }
-//    startingState = false
-//    currentPathArray
-//  }
-//}
