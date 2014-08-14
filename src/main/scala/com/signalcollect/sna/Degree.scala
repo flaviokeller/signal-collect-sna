@@ -13,7 +13,7 @@ import com.signalcollect.DefaultEdge
 
 object Degree {
   
-  final def run(): ExecutionResult = {
+  final def run(): ExecutionResult= {
     val e = new ExampleGraph
     val graph = GraphBuilder.build
     e.initDegree
@@ -25,16 +25,16 @@ object Degree {
     graph.awaitIdle
     var s = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
     graph.foreachVertex(v => s.add(v))
+    graph.shutdown
+
     val vertexMap = filterInteger(s)
     val degreeCompRes = new ComputationResults(e.getAverageDegreeVertex.state, vertexMap)
-    val graphProps = new GraphProperties(1,1,1,1,1.0)
-    graphProps.calcSize(s)
-    graphProps.calcDensity(s)
-    graph.shutdown
-    graphProps.calcDiameter
-    graphProps.calcReciprocity
-    val res = new ExecutionResult(degreeCompRes, graphProps)
-    res
+    val graphProps = new GraphProperties(s)
+//    graphProps.calcSize()
+//    graphProps.calcDensity()
+//    graphProps.calcDiameter
+//    graphProps.calcReciprocity
+    new ExecutionResult(degreeCompRes, s)
   }
 
   def filterInteger(l: ArrayBuffer[Vertex[Any, _]]): java.util.TreeMap[String, Object] = {

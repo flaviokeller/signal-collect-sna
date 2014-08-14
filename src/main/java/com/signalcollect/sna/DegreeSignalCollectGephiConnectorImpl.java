@@ -7,6 +7,7 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 		SignalCollectGephiConnector {
 
 	private ExecutionResult degreeResult;
+	private GraphProperties graphProps;
 
 	@Override
 	public double getAverage() {
@@ -15,20 +16,26 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 
 	@Override
 	public Map<String, Object> getAll() {
-		TreeMap<String,Object> result = new TreeMap<String, Object>(new NumbersThenWordsComparator());
+		TreeMap<String, Object> result = new TreeMap<String, Object>(
+				new NumbersThenWordsComparator());
 		result.putAll(degreeResult.compRes().vertexMap());
 		return result;
 	}
 
 	@Override
 	public void executeGraph() {
-		degreeResult = Degree.run();
+		if (degreeResult == null) {
+			degreeResult = Degree.run();
+		}
 	}
-
 
 	@Override
 	public String getGraphProperties() {
-		return degreeResult.graphProps().toString();
+		if (degreeResult == null) {
+			executeGraph();
+		}
+		graphProps = new GraphProperties(degreeResult.vertexArray());
+		return graphProps.toString();
 	}
 
 	public static void main(String[] args) {

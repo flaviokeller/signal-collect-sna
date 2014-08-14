@@ -7,6 +7,7 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 		SignalCollectGephiConnector {
 
 	private ExecutionResult pageRankResult;
+	private GraphProperties graphProps;
 
 	@Override
 	public double getAverage() {
@@ -31,7 +32,11 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 
 	@Override
 	public String getGraphProperties() {
-		return pageRankResult.graphProps().toString();
+		if(pageRankResult == null){
+			executeGraph();
+		}
+		graphProps = new GraphProperties(pageRankResult.vertexArray());
+		return graphProps.toString();
 	}
 
 	public static void main(String[] args) {

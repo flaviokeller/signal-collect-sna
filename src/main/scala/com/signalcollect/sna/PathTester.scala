@@ -22,9 +22,9 @@ import com.signalcollect.Graph
  */
 object PathTester extends App {
 
-  var vertexArray = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
-  def run() {
-    vertexArray = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
+  var vertexArray = new ArrayBuffer[Vertex[Any,_]] with SynchronizedBuffer[Vertex[Any,_]]
+  def run() : ArrayBuffer[Vertex[Any,_]] ={
+    vertexArray = new ArrayBuffer[Vertex[Any,_]] with SynchronizedBuffer[Vertex[Any,_]]
     val graph = GraphBuilder.build
     val eg = new ExampleGraph
 
@@ -33,11 +33,12 @@ object PathTester extends App {
 
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
-
+    println("executed path graph!")
     graph.awaitIdle
 
     graph.foreachVertex(v => vertexArray.add(v.asInstanceOf[PathTestVertex]))
     graph.shutdown
+    vertexArray
   }
   //  allShortestPathsAsMap
   //  allShortestPathsAsList
@@ -48,7 +49,7 @@ object PathTester extends App {
    * @return
    */
   def getAllPaths(sourceVertexId: Int, targetVertexId: Int): List[Path] = {
-    val targetVertex = vertexArray.filter(v => v.id.equals(targetVertexId))
+    val targetVertex = vertexArray.filter(v => v.id.equals(targetVertexId)).asInstanceOf[ArrayBuffer[PathTestVertex]]
     if (targetVertex.size != 1) throw new NoSuchElementException("The vertex with id " + targetVertexId + " doesn't exist or exists multiple times!")
     val actualVertex = targetVertex.get(0)
     val allPaths = actualVertex.allIncomingPaths.filter(p => p.sourceVertexId == sourceVertexId).toList
@@ -61,16 +62,14 @@ object PathTester extends App {
     def shortest(p1: Path, p2: Path): Path = if (p1.path.size < p2.path.size) p1 else p2
     val allPaths = getAllPaths(sourceVertexId, targetVertexId)
     val shortestpath = allPaths.reduceLeft(shortest)
-    println(shortestpath)
     shortestpath
   }
 
   def allShortestPathsAsMap(): Map[Int, List[Path]] = {
     var shortestPathMap = scala.collection.mutable.Map[Int, List[Path]]()
-    for (sourceVertex <- vertexArray) {
-      //      println("\n----------------\n  Vertex id: " + sourceVertex.id + "\n  shortest Paths: \n----------------")
+    for (sourceVertex <- vertexArray.asInstanceOf[ArrayBuffer[PathTestVertex]]) {
       var pathList = scala.collection.mutable.ListBuffer[Path]()
-      for (targetVertex <- vertexArray.filter(v => !v.id.equals(sourceVertex.id))) {
+      for (targetVertex <- vertexArray.filter(v => !v.id.equals(sourceVertex.id)).asInstanceOf[ArrayBuffer[PathTestVertex]]) {
         try {
           pathList.add(getShortestPath(sourceVertex.id, targetVertex.id))
         } catch {
@@ -82,16 +81,14 @@ object PathTester extends App {
     println()
     var mapsize = 0
     for (path <- shortestPathMap) {
-      //      println(path._1 + "\t " + path._2)
       mapsize += path._2.size
     }
-    println("Size: " + mapsize)
     shortestPathMap.toMap
   }
   def allShortestPathsAsList(): List[Path] = {
     var shortestPathList = scala.collection.mutable.ListBuffer[Path]()
-    for (sourceVertex <- vertexArray) {
-      for (targetVertex <- vertexArray.filter(v => !v.id.equals(sourceVertex.id))) {
+    for (sourceVertex <- vertexArray.asInstanceOf[ArrayBuffer[PathTestVertex]]) {
+      for (targetVertex <- vertexArray.filter(v => !v.id.equals(sourceVertex.id)).asInstanceOf[ArrayBuffer[PathTestVertex]]) {
         try {
           shortestPathList.add(getShortestPath(sourceVertex.id, targetVertex.id))
         } catch {
@@ -99,10 +96,6 @@ object PathTester extends App {
         }
       }
     }
-    println("Size: " + shortestPathList.size)
-    //    for (path <- shortestPathList) {
-    //      println(path)
-    //    }
     shortestPathList.toList
   }
 
@@ -140,7 +133,6 @@ class PathTestEdge(t: Int) extends DefaultEdge(t) {
         val pathToAdd = new Path(path.sourceVertexId, t)
         pathToAdd.path = path.path.clone
         pathToAdd.path.add(t)
-        path.incrementSize
         currentPathArray += pathToAdd
       }
     }

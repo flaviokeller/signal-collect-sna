@@ -26,10 +26,3 @@ class NumbersThenWordsComparator implements Comparator<String> {
         }
     }       
 }
-//
-//public void myMethod(Map<String, String[]> originalMap) {
-//    TreeMap<String, String[]> t =
-//        new TreeMap<String, String[]>(new NumbersThenWordsComparator());
-//    t.putAll(originalMap);
-//    // now iterate over t, which will produce entries in the desired order
-//}

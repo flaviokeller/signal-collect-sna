@@ -9,15 +9,12 @@ import com.signalcollect.DefaultEdge
 object Betweenness /*extends App*/ {
   var vertexIds = Set[Int]()
   def run: ExecutionResult = {
-    PathTester.run
+    val vertexArray = PathTester.run
     val shortestPathList = PathTester.allShortestPathsAsList
     vertexIds = PathTester.allShortestPathsAsMap.keySet
     val betweennessMap = getBetweennessForAll(shortestPathList)
     val bla = new ComputationResults(0.0, betweennessMap)
-    val compres = new ExecutionResult(bla, null)
-    //    for (c <- closenessMap) {
-    //      println(c._1 + " " + c._2)
-    //    }
+    val compres = new ExecutionResult(bla, vertexArray)
     compres
   }
   // TODO: implement closeness just as computation and assign paths to vertices

@@ -12,15 +12,11 @@ object Closeness /*extends App*/ {
     var vertexArray = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
 
     vertexArray = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
-    PathTester.run
+    val execRes = PathTester.run
     val shortestPathList = PathTester.allShortestPathsAsMap
     val closenessMap = getClosenessForAll(shortestPathList)
-    val bla = new ComputationResults(0.0, closenessMap)
-    val compres = new ExecutionResult(bla, null)
-    //    for (c <- closenessMap) {
-    //      println(c._1 + " " + c._2)
-    //    }
-    compres
+    val compres = new ComputationResults(0.0, closenessMap)
+    new ExecutionResult(compres, execRes)
   }
   // TODO: implement closeness just as computation and assign paths to vertices
 

@@ -5,18 +5,28 @@ import scala.collection.mutable.ArrayBuffer
 import com.signalcollect.Vertex
 import com.signalcollect.DataGraphVertex
 
-class GraphProperties(var size: Int, var density: Double, var diameter: Int, var reciprocity: Double, val degreeDistribution: Double) {
+class GraphProperties(l: ArrayBuffer[Vertex[Any, _]]) {
 
+  val pathInstance = PathTester
+  var pathVertexArray = ArrayBuffer[Vertex[Any, _]]()
+  def setPathVertexArray(pva: ArrayBuffer[Vertex[Any, _]]) = pathVertexArray = pva
   override def toString(): String = {
-    "The Properties of the graph are:\n\nSize: " + size + "\nDensity: " + density + "\nDiameter: " + diameter + "\nReciprocity: " + reciprocity + "\nDegree Distribution: " + degreeDistribution + "\n"
+    "\nThe Properties of the graph are:\n\nSize: " + calcSize + "\nDensity: " + calcDensity + "\nDiameter: " + calcDiameter + "\nReciprocity: " + calcReciprocity + "\nDegree Distribution: " + "degreeDistribution" + "\n"
   }
 
-  def calcSize(l: ArrayBuffer[Vertex[Any, _]]) {
+//  def getProperties() = {
+//    println("Size: " + calcSize)
+//    println("Density: " + calcDensity)
+//    println("Diameter: " + calcDiameter)
+//    println("Reciprocity: " + calcReciprocity)
+//    println("Degree distribution: " + "degreeDistr.")
+//  }
+  def calcSize(): Int = {
     val averageVertices = l.filter(v => v.getClass().toString().contains("Average"))
-    size = l.size - averageVertices.size
+    l.size - averageVertices.size
   }
 
-  def calcDensity(l: ArrayBuffer[Vertex[Any, _]]) {
+  def calcDensity(): Double = {
     var edges = 0.0
     val nonAverageVertices = l.filter(v => !v.getClass().toString().contains("Average"))
     for (v <- nonAverageVertices) {
@@ -25,27 +35,32 @@ class GraphProperties(var size: Int, var density: Double, var diameter: Int, var
       val currentOutgoingEdges = currentVertex.outgoingEdges.filter(e => !e._2.getClass().toString().contains("Average"))
       edges += currentOutgoingEdges.size
     }
-    density = edges / (size * (size - 1))
+    edges / (nonAverageVertices.size * (nonAverageVertices.size - 1))
   }
 
-  def calcDiameter() = {
-//    PathTester.run
-    val listOfShortestPaths = PathTester.allShortestPathsAsList
+  def calcDiameter(): Double = {
+    if (pathVertexArray == null || pathVertexArray.isEmpty) {
+      pathVertexArray = pathInstance.run
+      println("pathtester as diameter")
+    }
+    val listOfShortestPaths = pathInstance.allShortestPathsAsList
     def getdiameter(p1: Path, p2: Path): Path = if (p1.path.size > p2.path.size) p1 else p2
-    diameter = listOfShortestPaths.reduceLeft(getdiameter).path.size
+    listOfShortestPaths.reduceLeft(getdiameter).path.size
   }
 
-  def calcReciprocity() = {
-//    PathTester.run
-    val listOfShortestPaths = PathTester.allShortestPathsAsList
+  def calcReciprocity(): Double = {
+    if (pathVertexArray == null || pathVertexArray.isEmpty) {
+      pathVertexArray = pathInstance.run
+      println("pathtester as reciprocity")
+    }
+    val listOfShortestPaths = pathInstance.allShortestPathsAsList
     var numberOfReciprocalPaths = 0
     for (path <- listOfShortestPaths) {
       val reciprocalPathExists = !listOfShortestPaths.filter(p => p.sourceVertexId == path.targetVertexId && p.targetVertexId == path.sourceVertexId).isEmpty
       if (reciprocalPathExists) numberOfReciprocalPaths += 1
     }
     println(numberOfReciprocalPaths + "/" + listOfShortestPaths.size)
-    //    def getreciprocity(p1: Path, p2: Path): Path = if (p1.path.size > p2.path.size) p1 else p2
-    reciprocity = numberOfReciprocalPaths.toDouble / listOfShortestPaths.size.toDouble
+    numberOfReciprocalPaths.toDouble / listOfShortestPaths.size.toDouble
 
   }
 }

@@ -27,14 +27,11 @@ object PageRank extends App {
     graph.awaitIdle
     var s = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
     graph.foreachVertex(v => s.add(v))
+    graph.shutdown
     val vertexMap = filterInteger(s)
     val prCompRes = new ComputationResults(e.getAveragePageRankVertex.state, vertexMap)
-    val graphProps = new GraphProperties(1, 1, 1, 1, 1.0)
-    graphProps.calcSize(s)
-    graphProps.calcDensity(s)
-    val res = new ExecutionResult(prCompRes, graphProps)
-    graph.shutdown
-    res
+    val graphProps = new GraphProperties(s)
+    new ExecutionResult(prCompRes, s)
   }
 
   def filterInteger(l: ArrayBuffer[Vertex[Any, _]]): java.util.Map[String, Object] = {
