@@ -3,17 +3,14 @@ package com.signalcollect.sna
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SynchronizedBuffer
 
-import com.signalcollect.DataGraphVertex
-import com.signalcollect.DefaultEdge
-import com.signalcollect.GraphBuilder
-
-object Closeness /*extends App*/ {
+object Closeness {
   def run: ExecutionResult = {
     var vertexArray = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
 
     vertexArray = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
-    val execRes = PathTester.run
-    val shortestPathList = PathTester.allShortestPathsAsMap
+    val pathCollector = new PathCollector
+    val execRes = pathCollector.run
+    val shortestPathList = pathCollector.allShortestPathsAsMap
     val closenessMap = getClosenessForAll(shortestPathList)
     val compres = new ComputationResults(0.0, closenessMap)
     new ExecutionResult(compres, execRes)

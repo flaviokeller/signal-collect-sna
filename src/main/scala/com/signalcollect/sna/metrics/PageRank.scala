@@ -1,16 +1,17 @@
-package com.signalcollect.sna
-
-import scala.collection.JavaConversions.bufferAsJavaList
+package com.signalcollect.sna.metrics
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SynchronizedBuffer
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.Edge
 import com.signalcollect.ExecutionConfiguration
-import com.signalcollect.Graph
 import com.signalcollect.GraphBuilder
 import com.signalcollect.GraphEditor
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
+import com.signalcollect.sna.ComputationResults
+import com.signalcollect.sna.ExampleGraph
+import com.signalcollect.sna.ExecutionResult
+import com.signalcollect.sna.GraphProperties
 import com.signalcollect.DefaultEdge
 
 object PageRank extends App {
@@ -26,7 +27,7 @@ object PageRank extends App {
     val stats = graph.execute(execmode)
     graph.awaitIdle
     var s = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
-    graph.foreachVertex(v => s.add(v))
+    graph.foreachVertex(v => s+=v)
     graph.shutdown
     val vertexMap = filterInteger(s)
     val prCompRes = new ComputationResults(e.getAveragePageRankVertex.state, vertexMap)

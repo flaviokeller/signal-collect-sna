@@ -20,9 +20,10 @@ import com.signalcollect.Graph
  * @author flaviokeller
  *
  */
-object PathTester extends App {
+class PathCollector {
 
   var vertexArray = new ArrayBuffer[Vertex[Any,_]] with SynchronizedBuffer[Vertex[Any,_]]
+  
   def run() : ArrayBuffer[Vertex[Any,_]] ={
     vertexArray = new ArrayBuffer[Vertex[Any,_]] with SynchronizedBuffer[Vertex[Any,_]]
     val graph = GraphBuilder.build
@@ -33,15 +34,12 @@ object PathTester extends App {
 
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
-    println("executed path graph!")
     graph.awaitIdle
 
     graph.foreachVertex(v => vertexArray.add(v.asInstanceOf[PathTestVertex]))
     graph.shutdown
     vertexArray
   }
-  //  allShortestPathsAsMap
-  //  allShortestPathsAsList
 
   /**
    * @param sourceVertexId

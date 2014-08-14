@@ -3,6 +3,8 @@ package com.signalcollect.sna;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.signalcollect.sna.metrics.PageRank;
+
 public class PageRankSignalCollectGephiConnectorImpl implements
 		SignalCollectGephiConnector {
 

@@ -7,20 +7,13 @@ import com.signalcollect.DataGraphVertex
 
 class GraphProperties(l: ArrayBuffer[Vertex[Any, _]]) {
 
-  val pathInstance = PathTester
+  val pathInstance = new PathCollector
   var pathVertexArray = ArrayBuffer[Vertex[Any, _]]()
   def setPathVertexArray(pva: ArrayBuffer[Vertex[Any, _]]) = pathVertexArray = pva
   override def toString(): String = {
     "\nThe Properties of the graph are:\n\nSize: " + calcSize + "\nDensity: " + calcDensity + "\nDiameter: " + calcDiameter + "\nReciprocity: " + calcReciprocity + "\nDegree Distribution: " + "degreeDistribution" + "\n"
   }
 
-//  def getProperties() = {
-//    println("Size: " + calcSize)
-//    println("Density: " + calcDensity)
-//    println("Diameter: " + calcDiameter)
-//    println("Reciprocity: " + calcReciprocity)
-//    println("Degree distribution: " + "degreeDistr.")
-//  }
   def calcSize(): Int = {
     val averageVertices = l.filter(v => v.getClass().toString().contains("Average"))
     l.size - averageVertices.size
@@ -41,7 +34,6 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _]]) {
   def calcDiameter(): Double = {
     if (pathVertexArray == null || pathVertexArray.isEmpty) {
       pathVertexArray = pathInstance.run
-      println("pathtester as diameter")
     }
     val listOfShortestPaths = pathInstance.allShortestPathsAsList
     def getdiameter(p1: Path, p2: Path): Path = if (p1.path.size > p2.path.size) p1 else p2
@@ -51,7 +43,6 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _]]) {
   def calcReciprocity(): Double = {
     if (pathVertexArray == null || pathVertexArray.isEmpty) {
       pathVertexArray = pathInstance.run
-      println("pathtester as reciprocity")
     }
     val listOfShortestPaths = pathInstance.allShortestPathsAsList
     var numberOfReciprocalPaths = 0
@@ -59,7 +50,6 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _]]) {
       val reciprocalPathExists = !listOfShortestPaths.filter(p => p.sourceVertexId == path.targetVertexId && p.targetVertexId == path.sourceVertexId).isEmpty
       if (reciprocalPathExists) numberOfReciprocalPaths += 1
     }
-    println(numberOfReciprocalPaths + "/" + listOfShortestPaths.size)
     numberOfReciprocalPaths.toDouble / listOfShortestPaths.size.toDouble
 
   }

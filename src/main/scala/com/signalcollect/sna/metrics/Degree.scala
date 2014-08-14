@@ -1,15 +1,18 @@
-package com.signalcollect.sna
+package com.signalcollect.sna.metrics
 
-import scala.collection.JavaConversions.bufferAsJavaList
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.SynchronizedBuffer
+
 import com.signalcollect.DataGraphVertex
+import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
-import com.signalcollect.Graph
 import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
-import com.signalcollect.DefaultEdge
+import com.signalcollect.sna.ComputationResults
+import com.signalcollect.sna.ExampleGraph
+import com.signalcollect.sna.ExecutionResult
+import com.signalcollect.sna.GraphProperties
+import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.SynchronizedBuffer
 
 object Degree {
   
@@ -24,16 +27,12 @@ object Degree {
     val stats = graph.execute(execmode)
     graph.awaitIdle
     var s = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
-    graph.foreachVertex(v => s.add(v))
+    graph.foreachVertex(v => s+=v)
     graph.shutdown
 
     val vertexMap = filterInteger(s)
     val degreeCompRes = new ComputationResults(e.getAverageDegreeVertex.state, vertexMap)
     val graphProps = new GraphProperties(s)
-//    graphProps.calcSize()
-//    graphProps.calcDensity()
-//    graphProps.calcDiameter
-//    graphProps.calcReciprocity
     new ExecutionResult(degreeCompRes, s)
   }
 

@@ -3,6 +3,14 @@ package com.signalcollect.sna
 import com.signalcollect.Graph
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.Vertex
+import com.signalcollect.sna.metrics.DegreeVertex
+import com.signalcollect.sna.metrics.DegreeEdge
+import com.signalcollect.sna.metrics.AverageDegreeVertex
+import com.signalcollect.sna.metrics.AverageDegreeEdge
+import com.signalcollect.sna.metrics.PageRankVertex
+import com.signalcollect.sna.metrics.PageRankEdge
+import com.signalcollect.sna.metrics.AveragePageRankVertex
+import com.signalcollect.sna.metrics.AveragePageRankEdge
 
 class ExampleGraph {
 

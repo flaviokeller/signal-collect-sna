@@ -3,6 +3,9 @@ package com.signalcollect.sna;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.signalcollect.sna.metrics.Closeness;
+
+
 public class ClosenessSignalCollectGephiConnectorImpl implements
 		SignalCollectGephiConnector {
 
@@ -35,6 +38,8 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 			executeGraph();
 		}
 		graphProps = new GraphProperties(closenessResult.vertexArray());
+		graphProps.setPathVertexArray(closenessResult.vertexArray());
+
 		return graphProps.toString();
 	}
 

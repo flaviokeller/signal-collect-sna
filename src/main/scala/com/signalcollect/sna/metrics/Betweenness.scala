@@ -1,17 +1,17 @@
-package com.signalcollect.sna
+package com.signalcollect.sna.metrics
 
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.SynchronizedBuffer
+import com.signalcollect.sna.ComputationResults
+import com.signalcollect.sna.ExecutionResult
+import com.signalcollect.sna.Path
+import com.signalcollect.sna.PathCollector
 
-import com.signalcollect.DataGraphVertex
-import com.signalcollect.DefaultEdge
-
-object Betweenness /*extends App*/ {
+object Betweenness {
   var vertexIds = Set[Int]()
   def run: ExecutionResult = {
-    val vertexArray = PathTester.run
-    val shortestPathList = PathTester.allShortestPathsAsList
-    vertexIds = PathTester.allShortestPathsAsMap.keySet
+    val pathCollector = new PathCollector
+    val vertexArray = pathCollector.run
+    val shortestPathList = pathCollector.allShortestPathsAsList
+    vertexIds = pathCollector.allShortestPathsAsMap.keySet
     val betweennessMap = getBetweennessForAll(shortestPathList)
     val bla = new ComputationResults(0.0, betweennessMap)
     val compres = new ExecutionResult(bla, vertexArray)
@@ -23,7 +23,7 @@ object Betweenness /*extends App*/ {
     var betweennessMap = new java.util.TreeMap[String, Object]
     for (s <- vertexIds) {
       val pathsThroughVertex = shortestPathList.filter(p => p.sourceVertexId != s && p.targetVertexId != s && p.path.contains(s))
-      val betweenness = BigDecimal(pathsThroughVertex.size.toDouble/shortestPathList.size.toDouble).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble
+      val betweenness = BigDecimal(pathsThroughVertex.size.toDouble / shortestPathList.size.toDouble).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble
       betweennessMap.put(s.toString, betweenness.asInstanceOf[Object])
       println(s + " " + betweenness)
     }

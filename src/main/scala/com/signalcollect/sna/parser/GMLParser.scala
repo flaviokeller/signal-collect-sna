@@ -17,7 +17,7 @@
  *  
  */
 
-package com.signalcollect.parser
+package com.signalcollect.sna.parser
 
 import java.io.File
 import java.io.FileReader
