@@ -14,15 +14,15 @@ import com.signalcollect.sna.metrics.AveragePageRankEdge
 
 class ExampleGraph {
 
-  final private var avgId = 'a'
+  final private var avgId = "Average"
   final private var avgDeg = new AverageDegreeVertex(avgId)
   final private var avgPR = new AveragePageRankVertex(avgId)
   final def initDegree() {
-    avgId = 'a'
+    avgId = "Average"
     avgDeg = new AverageDegreeVertex(avgId)
   }
   final def initPageRank() {
-    avgId = 'a'
+    avgId = "Average"
     avgPR = new AveragePageRankVertex(avgId)
   }
 

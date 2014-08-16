@@ -13,26 +13,28 @@ import com.signalcollect.sna.ExampleGraph
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.GraphProperties
 import com.signalcollect.DefaultEdge
+import com.signalcollect.Graph
 
 object PageRank extends App {
-  final def run(): ExecutionResult = {
-    val e = new ExampleGraph
-    val graph = GraphBuilder.build
+  final def run(graph: Graph[Any, Any]): ExecutionResult = {
+    //    val e = new ExampleGraph
+    //    val graph = GraphBuilder.build
 
-    e.initPageRank
-    e.basePageRankGraph(graph)
-    e.extendPageRankGraph(graph)
-    e.setAveragePageRankVertex(graph)
+    //    e.initPageRank
+    //    e.basePageRankGraph(graph)
+    //    e.extendPageRankGraph(graph)
+    //    e.setAveragePageRankVertex(graph)
+    val avgVertex = new AveragePageRankVertex("Average")
+    graph.addVertex(avgVertex)
+    graph.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(v.id, new AveragePageRankEdge(avgVertex.id)))
+    graph.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(avgVertex.id, new AveragePageRankEdge(v.id)))
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
     graph.awaitIdle
     var s = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
-    graph.foreachVertex(v => s+=v)
+    graph.foreachVertex(v => s += v)
     graph.shutdown
-    val vertexMap = filterInteger(s)
-    val prCompRes = new ComputationResults(e.getAveragePageRankVertex.state, vertexMap)
-    val graphProps = new GraphProperties(s)
-    new ExecutionResult(prCompRes, s)
+    new ExecutionResult(new ComputationResults(avgVertex.state, filterInteger(s)), s)
   }
 
   def filterInteger(l: ArrayBuffer[Vertex[Any, _]]): java.util.Map[String, Object] = {
@@ -92,7 +94,7 @@ class PageRankEdge(t: Any) extends DefaultEdge(t) {
   }
 }
 
-class AveragePageRankVertex(id: Char) extends DataGraphVertex(id, 0.0) {
+class AveragePageRankVertex(id: String) extends DataGraphVertex(id, 0.0) {
 
   type Signal = Pair[Any, Any]
   type State = Double
