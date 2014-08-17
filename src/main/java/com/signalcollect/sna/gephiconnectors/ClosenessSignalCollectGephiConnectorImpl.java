@@ -9,7 +9,6 @@ import com.signalcollect.sna.GraphProperties;
 import com.signalcollect.sna.metrics.Closeness;
 import com.signalcollect.sna.parser.ParserImplementor;
 
-
 public class ClosenessSignalCollectGephiConnectorImpl implements
 		SignalCollectGephiConnector {
 
@@ -17,10 +16,11 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 	private GraphProperties graphProps;
 	private Graph closenessGraph;
 	private String closenessFileName;
-	
-	public ClosenessSignalCollectGephiConnectorImpl(String fileName){
+
+	public ClosenessSignalCollectGephiConnectorImpl(String fileName) {
 		closenessFileName = fileName;
-		closenessGraph = ParserImplementor.getGraph(fileName, SNAClassNames.PATH);
+		closenessGraph = ParserImplementor.getGraph(fileName,
+				SNAClassNames.PATH);
 	}
 
 	@Override
@@ -30,25 +30,26 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 
 	@Override
 	public Map<String, Object> getAll() {
-		TreeMap<String,Object> result = new TreeMap<String, Object>(new NumbersThenWordsComparator());
+		TreeMap<String, Object> result = new TreeMap<String, Object>(
+				new NumbersThenWordsComparator());
 		result.putAll(closenessResult.compRes().vertexMap());
 		return result;
 	}
 
 	@Override
 	public void executeGraph() {
-		if(closenessResult == null){
+		if (closenessResult == null) {
 			closenessResult = Closeness.run(closenessGraph);
 		}
 	}
 
-
 	@Override
 	public String getGraphProperties() {
-		if(closenessResult == null){
+		if (closenessResult == null) {
 			executeGraph();
 		}
-		graphProps = new GraphProperties(closenessResult.vertexArray(),closenessGraph);
+		graphProps = new GraphProperties(closenessResult.vertexArray(),
+				closenessGraph);
 		graphProps.setPathVertexArray(closenessResult.vertexArray());
 
 		return graphProps.toString();
@@ -56,16 +57,17 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
-		SignalCollectGephiConnector a = new ClosenessSignalCollectGephiConnectorImpl("/power.gml");
+		SignalCollectGephiConnector a = new ClosenessSignalCollectGephiConnectorImpl(
+				"/Users/flaviokeller/Desktop/power.gml");
 		a.executeGraph();
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
-//		String p = a.getGraphProperties();
+		String p = a.getGraphProperties();
 		System.out.println("The average degree is: " + d);
 		System.out.println("The single vertex closeness values are: " + l);
-//		System.out.println(p);
+		System.out.println(p);
 		long stopTime = System.currentTimeMillis();
-		double elapsedTime = Double.valueOf(stopTime-startTime)/1000d;
+		double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
 		System.out.println("elapsed Time: " + elapsedTime + " seconds");
 	}
 }

@@ -11,16 +11,17 @@ import com.signalcollect.sna.metrics.DegreeVertex
 import com.signalcollect.sna.metrics.PageRankEdge
 import com.signalcollect.sna.metrics.PageRankVertex
 import com.signalcollect.sna.gephiconnectors.SNAClassNames
+import java.io.BufferedReader
+import scala.collection.mutable.ArrayBuffer
+import java.net.URL
+import java.io.InputStreamReader
+import java.nio.file.Files
 
 object ParserImplementor {
-  val graphFile = "/power.gml"
-  //  val daGraph = getGraph
-  def getGraph(fileName: String, className: SNAClassNames /*vertexLabels: MutableList[String]*/ ): com.signalcollect.Graph[Any, Any] = {
-//    println(className)
+
+  def getGraph(fileName: String, className: SNAClassNames): com.signalcollect.Graph[Any, Any] = {
     val parser = new GmlParser
-    val parsedGraphs: List[Graph] = parser.parse(Source.fromFile(getResourcePath(fileName)).mkString) //Kann auch ein File-Objekt sein
-//    println(parsedGraphs)
-//    println(fileName.getClass())
+    val parsedGraphs: List[Graph] = parser.parse(Source.fromFile(fileName)) //Kann auch ein File-Objekt sein
     val graph = GraphBuilder.build
     parsedGraphs foreach {
       case g: UndirectedGraph =>
@@ -38,10 +39,6 @@ object ParserImplementor {
     graph
   }
 
-  def getResourcePath(resourcePath: String): String = {
-    this.getClass().getResource(resourcePath).getPath()
-  }
-  //TODO: create enum or constant for matching
   def createVertex(id: Int, vertexClass: SNAClassNames): Vertex[Any, _] = {
     vertexClass match {
       case SNAClassNames.DEGREE => new DegreeVertex(id)
