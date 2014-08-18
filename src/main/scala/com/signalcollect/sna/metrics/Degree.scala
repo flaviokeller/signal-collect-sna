@@ -1,10 +1,8 @@
 package com.signalcollect.sna.metrics
 
 import java.math.MathContext
-
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SynchronizedBuffer
-
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
@@ -13,10 +11,11 @@ import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
+import com.signalcollect.GraphBuilder
 
 object Degree {
 
-  final def run(graph: Graph[Any, Any]): ExecutionResult = {
+  final def run(pGraph: Graph[Any, Any]): ExecutionResult = {
     //    graph2.shutdown
     //    val e = new ExampleGraph
     //    val graph = GraphBuilder.build
@@ -24,10 +23,19 @@ object Degree {
     //    e.baseDegreeGraph(graph)
     //    e.extendDegreeGraph(graph)
     //    e.setAverageDegreeVertex(graph)
+
     val avgVertex = new AverageDegreeVertex("Average")
+    var graph: Graph[Any, Any] = null
+    if (pGraph == null) {
+      graph = GraphBuilder.build
+    } else {
+      graph = pGraph
+    }
     graph.addVertex(avgVertex)
     graph.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(v.id, new AverageDegreeEdge(avgVertex.id)))
     graph.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(avgVertex.id, new AverageDegreeEdge(v.id)))
+    //    println(graph)
+    //    println("graph instantiated")
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
     graph.awaitIdle

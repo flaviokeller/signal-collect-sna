@@ -1,17 +1,23 @@
 package com.signalcollect.sna
 
-import com.signalcollect.Graph
-import scala.collection.mutable.ArrayBuffer
-import com.signalcollect.Vertex
-import com.signalcollect.DataGraphVertex
+import java.lang.Double
 import java.math.MathContext
 
-class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], graph: Graph[Any, Any]) {
+import scala.collection.mutable.ArrayBuffer
+
+import com.signalcollect.DataGraphVertex
+import com.signalcollect.Graph
+import com.signalcollect.Vertex
+import com.signalcollect.sna.metrics.Degree
+import com.sun.java.util.jar.pack.Histogram
+import com.sun.java.util.jar.pack.Histogram
+
+class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], pathGraph: Graph[Any, Any]) {
 
   var pathVertexArray = ArrayBuffer[Vertex[Any, _]]()
   def setPathVertexArray(pva: ArrayBuffer[Vertex[Any, _]]) = pathVertexArray = pva
   override def toString(): String = {
-    "\nThe Properties of the graph are:\n\nSize:\t" + calcSize + "\nDensity:\t" + calcDensity + "\nDiameter:\t" + calcDiameter + "\nReciprocity:\t" + calcReciprocity + "\nDegree Distribution:\t" + "degreeDistribution" + "\n"
+    "\nThe Properties of the graph are:\n\nSize:\t" + calcSize + "\nDensity:\t" + calcDensity + "\nDiameter:\t" + calcDiameter + "\nReciprocity:\t" + calcReciprocity + "\n"
   }
 
   def calcSize(): Int = {
@@ -34,7 +40,7 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], graph: Graph[Any, Any]) {
 
   def calcDiameter(): Double = {
     if (pathVertexArray == null || pathVertexArray.isEmpty) {
-      pathVertexArray = PathCollector.run(graph)
+      pathVertexArray = PathCollector.run(pathGraph)
     }
     val listOfShortestPaths = PathCollector.allShortestPathsAsList
     def getdiameter(p1: Path, p2: Path): Path = if (p1.path.size > p2.path.size) p1 else p2
@@ -44,7 +50,7 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], graph: Graph[Any, Any]) {
   def calcReciprocity(): Double = {
     if (pathVertexArray == null || pathVertexArray.isEmpty) {
       println("in if-statement")
-      pathVertexArray = PathCollector.run(graph)
+      pathVertexArray = PathCollector.run(pathGraph)
     }
     val mapOfShortestPathsForTargetVertices = PathCollector.allShortestPathsAsMap
     var numberOfReciprocalPaths = 0
@@ -57,4 +63,6 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], graph: Graph[Any, Any]) {
     numberOfReciprocalPaths.toDouble / mapOfShortestPathsForTargetVertices.size.toDouble
 
   }
+
+  
 }

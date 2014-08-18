@@ -5,3 +5,5 @@ build.sbt
 .cache
 .git
 .DS_Store
+.png
+.jpg

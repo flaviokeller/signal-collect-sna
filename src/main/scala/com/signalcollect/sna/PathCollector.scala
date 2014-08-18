@@ -15,14 +15,11 @@ import com.signalcollect.configuration.ExecutionMode
  *
  */
 object PathCollector {
-  //run
   var vertexArray = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
 
   def run(pGraph: Graph[Any, Any]): ArrayBuffer[Vertex[Any, _]] = {
 
-    //TODO: pass graph (probably with nullcheck)
     vertexArray = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
-    //      var graph = Graph[Any, Any]
     var graph: Graph[Any, Any] = null
     if (pGraph == null) {
       graph = GraphBuilder.build
