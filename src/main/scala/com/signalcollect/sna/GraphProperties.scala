@@ -14,10 +14,23 @@ import com.sun.java.util.jar.pack.Histogram
 
 class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], pathGraph: Graph[Any, Any]) {
 
+  var size: Integer = null
+  var density: Double = null
+  var diameter: Double = null
+  var reciprocity: Double = null
+
   var pathVertexArray = ArrayBuffer[Vertex[Any, _]]()
+
   def setPathVertexArray(pva: ArrayBuffer[Vertex[Any, _]]) = pathVertexArray = pva
+
+  def calcProperties {
+    size = calcSize
+    density = calcDensity
+    diameter = calcDiameter
+    reciprocity = calcReciprocity
+  }
   override def toString(): String = {
-    "\nThe Properties of the graph are:\n\nSize:\t" + calcSize + "\nDensity:\t" + calcDensity + "\nDiameter:\t" + calcDiameter + "\nReciprocity:\t" + calcReciprocity + "\n"
+    "\nThe Properties of the graph are:\n\nSize:\t\t" + size + "\nDensity:\t" + density + "\nDiameter:\t" + diameter + "\nReciprocity:\t" + reciprocity + "\n"
   }
 
   def calcSize(): Int = {
@@ -49,7 +62,6 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], pathGraph: Graph[Any, Any]
 
   def calcReciprocity(): Double = {
     if (pathVertexArray == null || pathVertexArray.isEmpty) {
-      println("in if-statement")
       pathVertexArray = PathCollector.run(pathGraph)
     }
     val mapOfShortestPathsForTargetVertices = PathCollector.allShortestPathsAsMap
@@ -64,5 +76,4 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], pathGraph: Graph[Any, Any]
 
   }
 
-  
 }

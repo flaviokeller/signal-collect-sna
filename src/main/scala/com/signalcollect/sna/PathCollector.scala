@@ -37,7 +37,6 @@ object PathCollector {
     graph.foreachVertex(v => vertexArray += v.asInstanceOf[PathTestVertex])
 
     graph.shutdown
-    val thalist = allShortestPathsAsList
     vertexArray
   }
 

@@ -68,6 +68,7 @@ public class BetweennessSignalCollectGephiConnectorImpl implements
 		graphProps = new GraphProperties(betweennessResult.vertexArray(),
 				betweennessGraph);
 		graphProps.setPathVertexArray(betweennessResult.vertexArray());
+		graphProps.calcProperties();
 		return graphProps;
 	}
 
@@ -79,7 +80,7 @@ public class BetweennessSignalCollectGephiConnectorImpl implements
 		degreeGraph = ParserImplementor.getGraph(betweennessFileName,
 				SNAClassNames.DEGREE);
 		degreeDistribution = new DegreeDistribution(degreeGraph);
-
+		degreeDistribution.calcDistribution();
 		return degreeDistribution;
 
 	}
@@ -108,7 +109,7 @@ public class BetweennessSignalCollectGephiConnectorImpl implements
 		plot.setRenderer(0, renderer0);
 		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
 				Color.BLUE);
-		ChartUtilities.saveChartAsPNG(new File("hello.png"), chart, 750, 450);
+		ChartUtilities.saveChartAsPNG(new File("degreeDistribution.png"), chart, 750, 450);
 	}
 
 	public static void main(String[] args) {

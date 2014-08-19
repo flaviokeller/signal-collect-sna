@@ -9,14 +9,19 @@ import scala.collection.mutable.SynchronizedBuffer
 
 class DegreeDistribution(degreeGraph: Graph[Any, Any]) {
 
-  var degreeVertexArray = new ArrayBuffer[Vertex[Any,_]]()
-  
-  def setVertexArray(dva: ArrayBuffer[Vertex[Any, _]]) = degreeVertexArray = dva
-  override def toString(): String = "degree Distribution: " + gatherDegreeeDistribution
+  var degreeVertexArray = new ArrayBuffer[Vertex[Any, _]]()
 
-  def gatherDegreeeDistribution(): java.util.Map[Integer, Integer] = {
+  var degreeDistribution = new java.util.TreeMap[Integer, Integer]()
+
+  def calcDistribution {
+	  degreeDistribution = gatherDegreeeDistribution
+  }
+
+  def setVertexArray(dva: ArrayBuffer[Vertex[Any, _]]) = degreeVertexArray = dva
+  override def toString(): String = "degree Distribution: " + degreeDistribution
+
+  def gatherDegreeeDistribution(): java.util.TreeMap[Integer, Integer] = {
     if (degreeVertexArray == null || degreeVertexArray.isEmpty) {
-      println("in if-statement")
       degreeVertexArray = Degree.run(degreeGraph).vertexArray
     }
     val degreeDistrMap = new java.util.TreeMap[Integer, Integer]()

@@ -67,7 +67,7 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 		graphProps = new GraphProperties(closenessResult.vertexArray(),
 				closenessGraph);
 		graphProps.setPathVertexArray(closenessResult.vertexArray());
-
+		graphProps.calcProperties();
 		return graphProps;
 	}
 	
@@ -78,7 +78,7 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 		}
 		degreeGraph = ParserImplementor.getGraph(closenessFileName, SNAClassNames.DEGREE);
 		degreeDistribution = new DegreeDistribution(degreeGraph);
-
+		degreeDistribution.calcDistribution();
 		return degreeDistribution;
 		
 	}
@@ -107,7 +107,7 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 		plot.setRenderer(0, renderer0);
 		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
 				Color.BLUE);
-		ChartUtilities.saveChartAsPNG(new File("hello.png"), chart, 750, 450);
+		ChartUtilities.saveChartAsPNG(new File("degreeDistribution.png"), chart, 750, 450);
 	}
 
 	public static void main(String[] args) {

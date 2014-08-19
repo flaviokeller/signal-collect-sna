@@ -70,6 +70,7 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 				SNAClassNames.PATH);
 		graphProps = new GraphProperties(pageRankResult.vertexArray(),
 				propertiesGraph);
+		graphProps.calcProperties();
 		return graphProps;
 	}
 
@@ -81,7 +82,7 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 		degreeGraph = ParserImplementor.getGraph(pageRankFileName,
 				SNAClassNames.DEGREE);
 		degreeDistribution = new DegreeDistribution(degreeGraph);
-
+		degreeDistribution.calcDistribution();
 		return degreeDistribution;
 
 	}
@@ -110,7 +111,7 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 		plot.setRenderer(0, renderer0);
 		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
 				Color.BLUE);
-		ChartUtilities.saveChartAsPNG(new File("hello.png"), chart, 750, 450);
+		ChartUtilities.saveChartAsPNG(new File("degreeDistribution.png"), chart, 750, 450);
 	}
 
 	public static void main(String[] args) {
