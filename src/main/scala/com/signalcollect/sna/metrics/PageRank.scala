@@ -1,10 +1,16 @@
 package com.signalcollect.sna.metrics
+
+import java.math.BigDecimal
+import java.math.MathContext
+
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SynchronizedBuffer
+
 import com.signalcollect.DataGraphVertex
+import com.signalcollect.DefaultEdge
 import com.signalcollect.Edge
 import com.signalcollect.ExecutionConfiguration
-import com.signalcollect.GraphBuilder
+import com.signalcollect.Graph
 import com.signalcollect.GraphEditor
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
@@ -12,8 +18,7 @@ import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExampleGraph
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.GraphProperties
-import com.signalcollect.DefaultEdge
-import com.signalcollect.Graph
+import java.math.MathContext
 
 object PageRank extends App {
   final def run(graph: Graph[Any, Any]): ExecutionResult = {
@@ -63,7 +68,7 @@ class PageRankVertex(id: Any, dampingFactor: Double = 0.85) extends DataGraphVer
       for (signal <- pageRankSignals) {
         sum += java.lang.Double.valueOf(signal._2.toString)
       }
-      1 - dampingFactor + dampingFactor * sum
+      scala.math.BigDecimal.valueOf(1 - dampingFactor + dampingFactor * sum).round(new MathContext(3)).toDouble
     }
   }
 
@@ -116,7 +121,7 @@ class AveragePageRankVertex(id: String) extends DataGraphVertex(id, 0.0) {
     for (signal <- pageRankSignals) {
       sum += java.lang.Double.valueOf(signal._2.toString)
     }
-    sum / pageRankSignals.size.toDouble
+    scala.math.BigDecimal.valueOf(sum / pageRankSignals.size.toDouble).round(new MathContext(3)).toDouble
   }
 }
 

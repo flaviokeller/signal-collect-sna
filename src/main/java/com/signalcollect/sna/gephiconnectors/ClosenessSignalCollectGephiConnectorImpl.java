@@ -85,7 +85,7 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 
 
 	@Override
-	public void createImageFile(Map<Integer, Integer> degreeDistribution)
+	public JFreeChart createImageFile(Map<Integer, Integer> degreeDistribution)
 			throws IOException {
 		XYSeries dSeries = new XYSeries("number of occurences");
         for (Iterator it = degreeDistribution.entrySet().iterator(); it.hasNext();) {
@@ -108,6 +108,7 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
 				Color.BLUE);
 		ChartUtilities.saveChartAsPNG(new File("degreeDistribution.png"), chart, 750, 450);
+		return chart;
 	}
 
 	public static void main(String[] args) {

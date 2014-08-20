@@ -42,9 +42,6 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 	private Graph propertiesGraph;
 	private DegreeDistribution degreeDistribution;
 
-	public DegreeSignalCollectGephiConnectorImpl() {
-
-	}
 
 	public DegreeSignalCollectGephiConnectorImpl(String fileName) {
 		degreeFileName = fileName;
@@ -100,7 +97,7 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 	}
 
 	@Override
-	public void createImageFile(Map<Integer, Integer> degreeDistribution)
+	public JFreeChart createImageFile(Map<Integer, Integer> degreeDistribution)
 			throws IOException {
 		XYSeries dSeries = new XYSeries("number of occurences");
 		for (Iterator it = degreeDistribution.entrySet().iterator(); it
@@ -125,6 +122,7 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 				Color.BLUE);
 		
 		ChartUtilities.saveChartAsPNG(new File("degreeDistribution.png"), chart, 750, 450);
+		return chart;
 	}
 
 	public static void main(String[] args) {
