@@ -30,12 +30,10 @@ object PathCollector {
     //
     //  eg.basePathTestGraph(graph)
     //  eg.extendPathTestGraph(graph)
-
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
     graph.awaitIdle
     graph.foreachVertex(v => vertexArray += v.asInstanceOf[PathTestVertex])
-
     graph.shutdown
     vertexArray
   }

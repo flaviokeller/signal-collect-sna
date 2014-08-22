@@ -20,7 +20,7 @@ import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.GraphProperties
 import java.math.MathContext
 
-object PageRank extends App {
+object PageRank {
   final def run(graph: Graph[Any, Any]): ExecutionResult = {
     //    val e = new ExampleGraph
     //    val graph = GraphBuilder.build

@@ -15,27 +15,19 @@ import com.signalcollect.GraphBuilder
 
 object Degree {
 
-  final def run(pGraph: Graph[Any, Any]): ExecutionResult = {
-    //    graph2.shutdown
-    //    val e = new ExampleGraph
-    //    val graph = GraphBuilder.build
-    //    e.initDegree
-    //    e.baseDegreeGraph(graph)
-    //    e.extendDegreeGraph(graph)
-    //    e.setAverageDegreeVertex(graph)
+  def run(pGraph: Graph[Any, Any]): ExecutionResult = {
 
     val avgVertex = new AverageDegreeVertex("Average")
     var graph: Graph[Any, Any] = null
     if (pGraph == null) {
       graph = GraphBuilder.build
+      println("built new graph for degrees")
     } else {
       graph = pGraph
     }
     graph.addVertex(avgVertex)
     graph.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(v.id, new AverageDegreeEdge(avgVertex.id)))
     graph.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(avgVertex.id, new AverageDegreeEdge(v.id)))
-    //    println(graph)
-    //    println("graph instantiated")
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
     graph.awaitIdle

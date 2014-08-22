@@ -64,22 +64,15 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 		if (closenessResult == null) {
 			executeGraph();
 		}
-		graphProps = new GraphProperties(closenessResult.vertexArray(),
-				closenessGraph);
+		graphProps = new GraphProperties(closenessResult.vertexArray(), closenessFileName);
 		graphProps.setPathVertexArray(closenessResult.vertexArray());
-		graphProps.calcProperties();
 		return graphProps;
 	}
 	
 	@Override
-	public DegreeDistribution getDegreeDistrbution(){
-		if (closenessResult == null) {
-			executeGraph();
-		}
-		degreeGraph = ParserImplementor.getGraph(closenessFileName, SNAClassNames.DEGREE);
-		degreeDistribution = new DegreeDistribution(degreeGraph);
-		degreeDistribution.calcDistribution();
-		return degreeDistribution;
+	public Map<Integer,Integer> getDegreeDistrbution(){
+		degreeDistribution = new DegreeDistribution(closenessFileName);
+		return degreeDistribution.gatherDegreeeDistribution();
 		
 	}
 
@@ -107,7 +100,6 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 		plot.setRenderer(0, renderer0);
 		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
 				Color.BLUE);
-		ChartUtilities.saveChartAsPNG(new File("degreeDistribution.png"), chart, 750, 450);
 		return chart;
 	}
 
@@ -119,7 +111,7 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
 		GraphProperties p = a.getGraphProperties();
-		DegreeDistribution dd = a.getDegreeDistrbution();
+		Map<Integer,Integer> dd = a.getDegreeDistrbution();
 		System.out.println("The average closeness is: " + d);
 		System.out.println("The single vertex closeness values are: " + l);
 		System.out.println(p);
@@ -128,7 +120,7 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 		double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
 		System.out.println("elapsed time until image creation: " + elapsedTime + " seconds");
 		try {
-			a.createImageFile(dd.gatherDegreeeDistribution());
+			a.createImageFile(dd);
 			long stopTime2 = System.currentTimeMillis();
 			elapsedTime = Double.valueOf(stopTime2 - startTime) / 1000d;
 			System.out.println("full elapsed time: " + elapsedTime + " seconds");

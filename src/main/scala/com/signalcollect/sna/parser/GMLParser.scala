@@ -28,12 +28,6 @@ import scala.util.parsing.combinator.syntactical.StdTokenParsers
 import scala.util.parsing.input.Reader
 import scala.util.parsing.input.StreamReader
 
-object Main extends App {
-  val parser = new GmlParser
-  val f = new File("/Users/daniel/Desktop/karate/karate.gml")
-  val graphs: List[Graph] = parser.parse(f)
-  println(graphs)
-}
 
 abstract class Graph(nodes: List[Node], edges: List[Edge])
 case class DirectedGraph(nodes: List[Node], edges: List[Edge]) extends Graph(nodes, edges)
@@ -90,7 +84,7 @@ class GmlParser extends StdTokenParsers
     "label"~>(ident|stringLit)
   }
   lazy val value: Parser[String] = {
-    "value"~>(ident|stringLit)
+    "value"~>(ident|stringLit|numericLit)
   }
 
   lazy val edge: Parser[Edge] = {

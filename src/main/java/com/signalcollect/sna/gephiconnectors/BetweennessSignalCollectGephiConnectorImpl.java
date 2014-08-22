@@ -17,6 +17,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import com.signalcollect.Graph;
+import com.signalcollect.GraphBuilder;
 import com.signalcollect.sna.DegreeDistribution;
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
@@ -66,23 +67,15 @@ public class BetweennessSignalCollectGephiConnectorImpl implements
 			executeGraph();
 		}
 		graphProps = new GraphProperties(betweennessResult.vertexArray(),
-				betweennessGraph);
+				betweennessFileName);
 		graphProps.setPathVertexArray(betweennessResult.vertexArray());
-		graphProps.calcProperties();
 		return graphProps;
 	}
 
 	@Override
-	public DegreeDistribution getDegreeDistrbution() {
-		if (betweennessResult == null) {
-			executeGraph();
-		}
-		degreeGraph = ParserImplementor.getGraph(betweennessFileName,
-				SNAClassNames.DEGREE);
-		degreeDistribution = new DegreeDistribution(degreeGraph);
-		degreeDistribution.calcDistribution();
-		return degreeDistribution;
-
+	public Map<Integer,Integer> getDegreeDistrbution() {
+		degreeDistribution = new DegreeDistribution(betweennessFileName);
+		return degreeDistribution.gatherDegreeeDistribution();
 	}
 
 	@Override
@@ -109,7 +102,6 @@ public class BetweennessSignalCollectGephiConnectorImpl implements
 		plot.setRenderer(0, renderer0);
 		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
 				Color.BLUE);
-		ChartUtilities.saveChartAsPNG(new File("degreeDistribution.png"), chart, 750, 450);
 		return chart;
 	}
 
@@ -121,7 +113,7 @@ public class BetweennessSignalCollectGephiConnectorImpl implements
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
 		GraphProperties p = a.getGraphProperties();
-		DegreeDistribution dd = a.getDegreeDistrbution();
+		Map<Integer,Integer> dd = a.getDegreeDistrbution();
 		System.out.println("The average closeness is: " + d);
 		System.out.println("The single vertex closeness values are: " + l);
 		System.out.println(p);
@@ -130,7 +122,7 @@ public class BetweennessSignalCollectGephiConnectorImpl implements
 		double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
 		System.out.println("elapsed time until image creation: " + elapsedTime + " seconds");
 		try {
-			a.createImageFile(dd.gatherDegreeeDistribution());
+			a.createImageFile(dd);
 			long stopTime2 = System.currentTimeMillis();
 			elapsedTime = Double.valueOf(stopTime2 - startTime) / 1000d;
 			System.out.println("full elapsed time: " + elapsedTime + " seconds");

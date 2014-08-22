@@ -16,7 +16,7 @@ public interface SignalCollectGephiConnector {
 
 	public GraphProperties getGraphProperties();
 	
-	public DegreeDistribution getDegreeDistrbution();
+	public Map<Integer,Integer> getDegreeDistrbution();
 
 	public Map<String, Object> getAll();
 

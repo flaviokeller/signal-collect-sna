@@ -23,6 +23,7 @@ object ParserImplementor {
     val parser = new GmlParser
     val parsedGraphs: List[Graph] = parser.parse(Source.fromFile(fileName)) //Kann auch ein File-Objekt sein
     val graph = GraphBuilder.build
+    println("built new graph for parser with class " + className.name())
     parsedGraphs foreach {
       case g: UndirectedGraph =>
         g.nodes.foreach({ n: Node =>

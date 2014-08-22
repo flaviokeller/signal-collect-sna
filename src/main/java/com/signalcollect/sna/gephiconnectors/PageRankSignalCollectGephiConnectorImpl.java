@@ -66,25 +66,18 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 		if (pageRankResult == null) {
 			executeGraph();
 		}
-		propertiesGraph = ParserImplementor.getGraph(pageRankFileName,
-				SNAClassNames.PATH);
 		graphProps = new GraphProperties(pageRankResult.vertexArray(),
-				propertiesGraph);
-		graphProps.calcProperties();
+				pageRankFileName);
 		return graphProps;
 	}
 
 	@Override
-	public DegreeDistribution getDegreeDistrbution() {
+	public Map<Integer,Integer> getDegreeDistrbution() {
 		if (pageRankResult == null) {
 			executeGraph();
 		}
-		degreeGraph = ParserImplementor.getGraph(pageRankFileName,
-				SNAClassNames.DEGREE);
-		degreeDistribution = new DegreeDistribution(degreeGraph);
-		degreeDistribution.calcDistribution();
-		return degreeDistribution;
-
+		degreeDistribution = new DegreeDistribution(pageRankFileName);
+		return degreeDistribution.gatherDegreeeDistribution();
 	}
 
 	@Override
@@ -111,7 +104,6 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 		plot.setRenderer(0, renderer0);
 		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
 				Color.BLUE);
-		ChartUtilities.saveChartAsPNG(new File("degreeDistribution.png"), chart, 750, 450);
 		return chart;
 	}
 
@@ -123,19 +115,15 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
 		GraphProperties p = a.getGraphProperties();
-		DegreeDistribution dd = a.getDegreeDistrbution();
-		System.out.println("The average closeness is: " + d);
+		Map<Integer,Integer>dd = a.getDegreeDistrbution();
+		System.out.println("The average pageRank is: " + d);
 		System.out.println("The single vertex closeness values are: " + l);
-		System.out.println(p);
+		System.out.println("diameter: " +p.calcDiameter());
 		System.out.println(dd);
-		long stopTime = System.currentTimeMillis();
-		double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
-		System.out.println("elapsed time until image creation: " + elapsedTime
-				+ " seconds");
 		try {
-			a.createImageFile(dd.gatherDegreeeDistribution());
+			a.createImageFile(dd);
 			long stopTime2 = System.currentTimeMillis();
-			elapsedTime = Double.valueOf(stopTime2 - startTime) / 1000d;
+			double elapsedTime = Double.valueOf(stopTime2 - startTime) / 1000d;
 			System.out
 					.println("full elapsed time: " + elapsedTime + " seconds");
 		} catch (Exception e) {

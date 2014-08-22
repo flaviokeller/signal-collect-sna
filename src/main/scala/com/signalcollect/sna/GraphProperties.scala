@@ -2,17 +2,17 @@ package com.signalcollect.sna
 
 import java.lang.Double
 import java.math.MathContext
-
 import scala.collection.mutable.ArrayBuffer
-
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.Graph
 import com.signalcollect.Vertex
 import com.signalcollect.sna.metrics.Degree
 import com.sun.java.util.jar.pack.Histogram
 import com.sun.java.util.jar.pack.Histogram
+import com.signalcollect.sna.parser.ParserImplementor
+import com.signalcollect.sna.gephiconnectors.SNAClassNames
 
-class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], pathGraph: Graph[Any, Any]) {
+class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], fileName: String) {
 
   var size: Integer = null
   var density: Double = null
@@ -23,13 +23,19 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], pathGraph: Graph[Any, Any]
 
   def setPathVertexArray(pva: ArrayBuffer[Vertex[Any, _]]) = pathVertexArray = pva
 
-  def calcProperties {
-    size = calcSize
-    density = calcDensity
-    diameter = calcDiameter
-    reciprocity = calcReciprocity
-  }
   override def toString(): String = {
+    if(size == null){
+      size = calcSize
+    }
+    if(density == null){
+    	density = calcDensity
+    }
+    if(diameter == null){
+    	diameter = calcDiameter
+    }
+    if(reciprocity == null){
+    	reciprocity = calcReciprocity
+    }
     "\nThe Properties of the graph are:\n\nSize:\t\t" + size + "\nDensity:\t" + density + "\nDiameter:\t" + diameter + "\nReciprocity:\t" + reciprocity + "\n"
   }
 
@@ -53,6 +59,7 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], pathGraph: Graph[Any, Any]
 
   def calcDiameter(): Double = {
     if (pathVertexArray == null || pathVertexArray.isEmpty) {
+      val pathGraph = ParserImplementor.getGraph(fileName, SNAClassNames.PATH)
       pathVertexArray = PathCollector.run(pathGraph)
     }
     val listOfShortestPaths = PathCollector.allShortestPathsAsList
@@ -62,6 +69,7 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], pathGraph: Graph[Any, Any]
 
   def calcReciprocity(): Double = {
     if (pathVertexArray == null || pathVertexArray.isEmpty) {
+      val pathGraph = ParserImplementor.getGraph(fileName, SNAClassNames.PATH)
       pathVertexArray = PathCollector.run(pathGraph)
     }
     val mapOfShortestPathsForTargetVertices = PathCollector.allShortestPathsAsMap

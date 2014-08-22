@@ -1,29 +1,20 @@
 package com.signalcollect.sna.gephiconnectors;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Stroke;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.swing.border.StrokeBorder;
-
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.StrokeMap;
-import org.jfree.chart.entity.StandardEntityCollection;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.util.StrokeList;
 
 import com.signalcollect.Graph;
 import com.signalcollect.sna.DegreeDistribution;
@@ -65,8 +56,6 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 	@Override
 	public void executeGraph() {
 		if (degreeResult == null) {
-			// if(degreeGraph.)
-			// degreeGraph.shutdown();
 			degreeResult = Degree.run(degreeGraph);
 		}
 	}
@@ -76,23 +65,19 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 		if (degreeResult == null) {
 			executeGraph();
 		}
-		propertiesGraph = ParserImplementor.getGraph(degreeFileName,
-				SNAClassNames.PATH);
 		graphProps = new GraphProperties(degreeResult.vertexArray(),
-				propertiesGraph);
-		graphProps.calcProperties();
+				degreeFileName);
 		return graphProps;
 	}
 
 	@Override
-	public DegreeDistribution getDegreeDistrbution() {
+	public Map<Integer,Integer> getDegreeDistrbution() {
 		if (degreeResult == null) {
 			executeGraph();
 		}
-		degreeDistribution = new DegreeDistribution(degreeGraph);
+		degreeDistribution = new DegreeDistribution(degreeFileName);
 		degreeDistribution.setVertexArray(degreeResult.vertexArray());
-		degreeDistribution.calcDistribution();
-		return degreeDistribution;
+		return degreeDistribution.gatherDegreeeDistribution();
 
 	}
 
@@ -116,34 +101,40 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 
 		XYPlot plot = chart.getXYPlot();
 		plot.setDataset(0, dataset);
-		XYBarRenderer renderer0 = new XYBarRenderer();
+		XYLineAndShapeRenderer renderer0 = new XYLineAndShapeRenderer();
 		plot.setRenderer(0, renderer0);
 		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
 				Color.BLUE);
-		
-		ChartUtilities.saveChartAsPNG(new File("degreeDistribution.png"), chart, 750, 450);
+		ChartUtilities.saveChartAsPNG(new File("hello.png"), chart, 750, 450);
 		return chart;
 	}
 
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new DegreeSignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/power.gml");
+				"/Users/flaviokeller/Desktop/as-22july06.gml");
 		a.executeGraph();
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
-		GraphProperties p = a.getGraphProperties();
-		DegreeDistribution dd = a.getDegreeDistrbution();
-		System.out.println("The average closeness is: " + d);
-		System.out.println("The single vertex closeness values are: " + l);
-		System.out.println(p);
+		long intermediate = System.currentTimeMillis();
+		double intermediateTime = Double.valueOf(intermediate-startTime)/1000d;
+		System.out.println("execution time: " + intermediateTime + " seconds");
+//		GraphProperties p = a.getGraphProperties();
+		Map<Integer,Integer> dd = a.getDegreeDistrbution();
+		System.out.println("The average degree is: " + d);
+		System.out.println("The single vertex degree values are: " + l);
+//		System.out.println(p);
+		long intermediate2 = System.currentTimeMillis();
+		double intermediateTime2 = Double.valueOf(intermediate2-intermediate)/1000d;
+		System.out.println("properties time: " + intermediateTime2 +" seconds");
 		System.out.println(dd);
 		long stopTime = System.currentTimeMillis();
 		double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
 		System.out.println("elapsed time until image creation: " + elapsedTime
 				+ " seconds");
+		
 		try {
-			a.createImageFile(dd.gatherDegreeeDistribution());
+			a.createImageFile(dd);
 			long stopTime2 = System.currentTimeMillis();
 			elapsedTime = Double.valueOf(stopTime2 - startTime) / 1000d;
 			System.out
