@@ -4,18 +4,13 @@ import scala.io.Source
 import com.signalcollect.DefaultEdge
 import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
-import com.signalcollect.sna.PathTestEdge
-import com.signalcollect.sna.PathTestVertex
+import com.signalcollect.sna.PathCollectorVertex
+import com.signalcollect.sna.gephiconnectors.SNAClassNames
 import com.signalcollect.sna.metrics.DegreeEdge
 import com.signalcollect.sna.metrics.DegreeVertex
 import com.signalcollect.sna.metrics.PageRankEdge
 import com.signalcollect.sna.metrics.PageRankVertex
-import com.signalcollect.sna.gephiconnectors.SNAClassNames
-import java.io.BufferedReader
-import scala.collection.mutable.ArrayBuffer
-import java.net.URL
-import java.io.InputStreamReader
-import java.nio.file.Files
+import com.signalcollect.sna.PathCollectorEdge
 
 object ParserImplementor {
 
@@ -44,14 +39,14 @@ object ParserImplementor {
     vertexClass match {
       case SNAClassNames.DEGREE => new DegreeVertex(id)
       case SNAClassNames.PAGERANK => new PageRankVertex(id)
-      case SNAClassNames.PATH => new PathTestVertex(id)
+      case SNAClassNames.PATH => new PathCollectorVertex(id)
     }
   }
   def createEdge(targetId: Int, edgeClass: SNAClassNames): DefaultEdge[_] = {
     edgeClass match {
       case SNAClassNames.DEGREE => new DegreeEdge(targetId)
       case SNAClassNames.PAGERANK => new PageRankEdge(targetId)
-      case SNAClassNames.PATH => new PathTestEdge(targetId)
+      case SNAClassNames.PATH => new PathCollectorEdge(targetId)
     }
   }
 

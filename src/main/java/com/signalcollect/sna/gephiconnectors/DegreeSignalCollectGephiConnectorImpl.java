@@ -3,6 +3,7 @@ package com.signalcollect.sna.gephiconnectors;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -10,9 +11,12 @@ import java.util.TreeMap;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.data.xy.XYBarDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -32,7 +36,6 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 	private Graph degreeGraph;
 	private Graph propertiesGraph;
 	private DegreeDistribution degreeDistribution;
-
 
 	public DegreeSignalCollectGephiConnectorImpl(String fileName) {
 		degreeFileName = fileName;
@@ -71,7 +74,7 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 	}
 
 	@Override
-	public Map<Integer,Integer> getDegreeDistrbution() {
+	public Map<Integer, Integer> getDegreeDistrbution() {
 		if (degreeResult == null) {
 			executeGraph();
 		}
@@ -94,14 +97,16 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 		}
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		dataset.addSeries(dSeries);
+		// dataset.setAutoWidth(true);
+		XYBarDataset dset = new XYBarDataset(dataset, 10.0);
 
 		JFreeChart chart = ChartFactory.createHistogram("Degree Distribution",
-				"degree value", "number of occurences", dataset,
+				"degree value", "number of occurences", dset,
 				PlotOrientation.VERTICAL, true, true, true);
 
 		XYPlot plot = chart.getXYPlot();
-		plot.setDataset(0, dataset);
-		XYLineAndShapeRenderer renderer0 = new XYLineAndShapeRenderer();
+		plot.setDataset(0, dset);
+		XYBarRenderer renderer0 = new XYBarRenderer();
 		plot.setRenderer(0, renderer0);
 		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
 				Color.BLUE);
@@ -117,22 +122,23 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
 		long intermediate = System.currentTimeMillis();
-		double intermediateTime = Double.valueOf(intermediate-startTime)/1000d;
+		double intermediateTime = Double.valueOf(intermediate - startTime) / 1000d;
 		System.out.println("execution time: " + intermediateTime + " seconds");
-//		GraphProperties p = a.getGraphProperties();
-		Map<Integer,Integer> dd = a.getDegreeDistrbution();
+		// GraphProperties p = a.getGraphProperties();
+		Map<Integer, Integer> dd = a.getDegreeDistrbution();
 		System.out.println("The average degree is: " + d);
 		System.out.println("The single vertex degree values are: " + l);
-//		System.out.println(p);
+		// System.out.println(p);
 		long intermediate2 = System.currentTimeMillis();
-		double intermediateTime2 = Double.valueOf(intermediate2-intermediate)/1000d;
-		System.out.println("properties time: " + intermediateTime2 +" seconds");
+		double intermediateTime2 = Double.valueOf(intermediate2 - intermediate) / 1000d;
+		System.out
+				.println("properties time: " + intermediateTime2 + " seconds");
 		System.out.println(dd);
 		long stopTime = System.currentTimeMillis();
 		double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
 		System.out.println("elapsed time until image creation: " + elapsedTime
 				+ " seconds");
-		
+
 		try {
 			a.createImageFile(dd);
 			long stopTime2 = System.currentTimeMillis();

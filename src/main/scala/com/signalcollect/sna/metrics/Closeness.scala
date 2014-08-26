@@ -9,13 +9,13 @@ import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.Path
 import com.signalcollect.sna.PathCollector
-import com.signalcollect.sna.PathTestVertex
+import com.signalcollect.sna.PathCollectorVertex
 
 object Closeness {
   def run(graph: Graph[Any, Any]): ExecutionResult = {
-    var vertexArray = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
+    var vertexArray = new ArrayBuffer[PathCollectorVertex] with SynchronizedBuffer[PathCollectorVertex]
 
-    vertexArray = new ArrayBuffer[PathTestVertex] with SynchronizedBuffer[PathTestVertex]
+    vertexArray = new ArrayBuffer[PathCollectorVertex] with SynchronizedBuffer[PathCollectorVertex]
     val execRes = PathCollector.run(graph)
     val shortestPathMap = PathCollector.allShortestPathsAsMap
     val closenessMap = getClosenessForAll(shortestPathMap)

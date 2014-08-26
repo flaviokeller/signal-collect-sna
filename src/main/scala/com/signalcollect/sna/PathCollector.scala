@@ -33,14 +33,14 @@ object PathCollector {
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
     graph.awaitIdle
-    graph.foreachVertex(v => vertexArray += v.asInstanceOf[PathTestVertex])
+    graph.foreachVertex(v => vertexArray += v.asInstanceOf[PathCollectorVertex])
     graph.shutdown
     vertexArray
   }
 
   def allShortestPathsAsMap(): Map[Int, List[Path]] = {
     var shortestPathMap = scala.collection.mutable.Map[Int, List[Path]]()
-    for (targetVertex <- vertexArray.asInstanceOf[ArrayBuffer[PathTestVertex]]) {
+    for (targetVertex <- vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]]) {
       var pathList = scala.collection.mutable.ListBuffer[Path]()
       try {
         pathList ++= targetVertex.shortestPaths.toList
@@ -53,7 +53,7 @@ object PathCollector {
   }
   def allShortestPathsAsList(): List[Path] = {
     var shortestPathList = scala.collection.mutable.ListBuffer[Path]()
-    for (targetVertex <- vertexArray.asInstanceOf[ArrayBuffer[PathTestVertex]]) {
+    for (targetVertex <- vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]]) {
       try {
         shortestPathList ++= targetVertex.shortestPaths.toList
       } catch {
@@ -65,7 +65,7 @@ object PathCollector {
 
 }
 
-class PathTestVertex(id: Int) extends DataGraphVertex(id, ArrayBuffer[Path]()) {
+class PathCollectorVertex(id: Int) extends DataGraphVertex(id, ArrayBuffer[Path]()) {
   type Signal = ArrayBuffer[Path]
   type State = ArrayBuffer[Path]
   var allIncomingPaths = ArrayBuffer[Path]()
@@ -98,9 +98,9 @@ class PathTestVertex(id: Int) extends DataGraphVertex(id, ArrayBuffer[Path]()) {
   }
 }
 
-class PathTestEdge(t: Int) extends DefaultEdge(t) {
+class PathCollectorEdge(t: Int) extends DefaultEdge(t) {
   var startingState = true
-  type Source = PathTestVertex
+  type Source = PathCollectorVertex
   def signal = {
     var currentPathArray = ArrayBuffer[Path]()
 
