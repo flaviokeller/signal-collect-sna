@@ -11,14 +11,15 @@ import com.signalcollect.sna.metrics.DegreeVertex
 import com.signalcollect.sna.metrics.PageRankEdge
 import com.signalcollect.sna.metrics.PageRankVertex
 import com.signalcollect.sna.PathCollectorEdge
+import com.signalcollect.sna.metrics.LocalClusterCoefficientEdge
+import com.signalcollect.sna.metrics.LocalClusterCoefficientVertex
 
 object ParserImplementor {
 
   def getGraph(fileName: String, className: SNAClassNames): com.signalcollect.Graph[Any, Any] = {
     val parser = new GmlParser
-    val parsedGraphs: List[Graph] = parser.parse(Source.fromFile(fileName)) //Kann auch ein File-Objekt sein
+    val parsedGraphs: List[Graph] = parser.parse(Source.fromFile(fileName)("ISO8859_1")) //Kann auch ein File-Objekt sein
     val graph = GraphBuilder.build
-    println("built new graph for parser with class " + className.name())
     parsedGraphs foreach {
       case g: UndirectedGraph =>
         g.nodes.foreach({ n: Node =>
@@ -40,6 +41,7 @@ object ParserImplementor {
       case SNAClassNames.DEGREE => new DegreeVertex(id)
       case SNAClassNames.PAGERANK => new PageRankVertex(id)
       case SNAClassNames.PATH => new PathCollectorVertex(id)
+      case SNAClassNames.LOCALCLUSTERCOEFFICIENT => new LocalClusterCoefficientVertex(id)
     }
   }
   def createEdge(targetId: Int, edgeClass: SNAClassNames): DefaultEdge[_] = {
@@ -47,6 +49,7 @@ object ParserImplementor {
       case SNAClassNames.DEGREE => new DegreeEdge(targetId)
       case SNAClassNames.PAGERANK => new PageRankEdge(targetId)
       case SNAClassNames.PATH => new PathCollectorEdge(targetId)
+      case SNAClassNames.LOCALCLUSTERCOEFFICIENT => new LocalClusterCoefficientEdge(targetId)
     }
   }
 

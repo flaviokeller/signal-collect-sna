@@ -4,7 +4,8 @@ public enum SNAClassNames {
 	
 	DEGREE("Degree"),
 	PAGERANK("PageRank"),
-	PATH("Path");
+	PATH("Path"),
+	LOCALCLUSTERCOEFFICIENT("LocalClusterCoefficient");
 
 	
 	private final String className;
