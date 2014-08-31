@@ -15,20 +15,12 @@ import com.signalcollect.GraphEditor
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.ComputationResults
-import com.signalcollect.sna.ExampleGraph
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.GraphProperties
 import java.math.MathContext
 
 object PageRank {
   final def run(graph: Graph[Any, Any]): ExecutionResult = {
-    //    val e = new ExampleGraph
-    //    val graph = GraphBuilder.build
-
-    //    e.initPageRank
-    //    e.basePageRankGraph(graph)
-    //    e.extendPageRankGraph(graph)
-    //    e.setAveragePageRankVertex(graph)
     val avgVertex = new AveragePageRankVertex("Average")
     graph.addVertex(avgVertex)
     graph.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(v.id, new AveragePageRankEdge(avgVertex.id)))

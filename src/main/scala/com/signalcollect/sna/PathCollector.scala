@@ -26,10 +26,6 @@ object PathCollector {
     } else {
       graph = pGraph
     }
-    //  val eg = new ExampleGraph
-    //
-    //  eg.basePathTestGraph(graph)
-    //  eg.extendPathTestGraph(graph)
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
     graph.awaitIdle

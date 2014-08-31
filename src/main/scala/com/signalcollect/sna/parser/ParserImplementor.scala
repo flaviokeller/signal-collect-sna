@@ -13,6 +13,8 @@ import com.signalcollect.sna.metrics.PageRankVertex
 import com.signalcollect.sna.PathCollectorEdge
 import com.signalcollect.sna.metrics.LocalClusterCoefficientEdge
 import com.signalcollect.sna.metrics.LocalClusterCoefficientVertex
+import com.signalcollect.sna.metrics.TransitivityVertex
+import com.signalcollect.sna.metrics.TransitivityEdge
 
 object ParserImplementor {
 
@@ -42,6 +44,7 @@ object ParserImplementor {
       case SNAClassNames.PAGERANK => new PageRankVertex(id)
       case SNAClassNames.PATH => new PathCollectorVertex(id)
       case SNAClassNames.LOCALCLUSTERCOEFFICIENT => new LocalClusterCoefficientVertex(id)
+      case SNAClassNames.TRANSITIVITY => new TransitivityVertex(id)
     }
   }
   def createEdge(targetId: Int, edgeClass: SNAClassNames): DefaultEdge[_] = {
@@ -50,6 +53,7 @@ object ParserImplementor {
       case SNAClassNames.PAGERANK => new PageRankEdge(targetId)
       case SNAClassNames.PATH => new PathCollectorEdge(targetId)
       case SNAClassNames.LOCALCLUSTERCOEFFICIENT => new LocalClusterCoefficientEdge(targetId)
+      case SNAClassNames.TRANSITIVITY=> new TransitivityEdge(targetId)
     }
   }
 
