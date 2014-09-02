@@ -13,9 +13,10 @@ import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.DefaultEdge
 import com.signalcollect.sna.NodeTriad
 import com.signalcollect.sna.NodeTriad
+import com.signalcollect.sna.TriadType
 
 object Transitivity extends App {
- 
+
   def run(graph: Graph[Any, Any]): ExecutionResult = {
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
@@ -25,50 +26,34 @@ object Transitivity extends App {
     graph.foreachVertex(v => s += v)
     var vertexMap = scala.collection.mutable.Map[Int, TransitivityVertex]()
     for (v <- s) {
-      println(v)
       vertexMap.put(Integer.valueOf(v.id.toString), v.asInstanceOf[TransitivityVertex])
     }
     graph.shutdown
 
-    var sumOfLCC = 0.0
     var treeMap = new java.util.TreeMap[String, Object]()
-    //    for (d <- vertexMap) {
-    //      val lcc = gatherNeighbours(d._2, vertexMap.toMap)
-    //      sumOfLCC += lcc
-    //      treeMap.put(d._1.toString, BigDecimal(lcc).round(new MathContext(3)))
-    //    }
-    val averageclcoeff = sumOfLCC / vertexMap.toMap.size.toDouble
+    for (d <- vertexMap) {
+      determineTriadType(d._2, vertexMap.toMap)
+      //      val lcc = gatherNeighbours(d._2, vertexMap.toMap)
+      //      sumOfLCC += lcc
+      //      treeMap.put(d._1.toString, BigDecimal(lcc).round(new MathContext(3)))
+    }
 
-    new ExecutionResult(new ComputationResults(BigDecimal(averageclcoeff).round(new MathContext(3)).toDouble, treeMap), s)
-
+    //    new ExecutionResult(new ComputationResults(BigDecimal(averageclcoeff).round(new MathContext(3)).toDouble, treeMap), s)
+    null
   }
 
-  //  def gatherNeighbours(vertex: TransitivityVertex, vertexMap: Map[Int, TransitivityVertex]): Double = {
-  //    var connectedNeighbours = 0.0
-  //    var passedNeighbours = scala.collection.mutable.Set[Int]()
-  //    val neighbourSet = vertex.state.keySet.union(vertex.outgoingEdges.keySet.asInstanceOf[Set[Int]])
-  //    val nrOfPossibleConnections = if (neighbourSet.size == 1) 1 else (neighbourSet.size * (neighbourSet.size - 1)).toDouble
-  //    for (outgoingNeighbour <- vertex.outgoingEdges) {
-  //      val neighbourVertex = vertexMap.get(Integer.valueOf(outgoingNeighbour._2.targetId.toString)).get
-  //      if (!passedNeighbours.contains(Integer.valueOf(outgoingNeighbour._1.toString))) {
-  //        val outgoingneighboursOfneighbour = neighbourVertex.state.filter(p => neighbourSet.contains(p._1))
-  //        connectedNeighbours += outgoingneighboursOfneighbour.size
-  //      }
-  //      passedNeighbours.add(Integer.valueOf(outgoingNeighbour._1.toString))
-  //    }
-  //
-  //    for (incomingNeighbour <- vertex.state) {
-  //      val neighbourVertex = vertexMap.get(incomingNeighbour._1).get
-  //      val neighbourSet = vertex.state.keySet.union(vertex.outgoingEdges.keySet.asInstanceOf[Set[Int]])
-  //      if (!passedNeighbours.contains(incomingNeighbour._1)) {
-  //        val outgoingneighboursOfneighbour = neighbourVertex.state.filter(p => neighbourSet.contains(p._1))
-  //        connectedNeighbours += outgoingneighboursOfneighbour.size
-  //      }
-  //      passedNeighbours.add(Integer.valueOf(incomingNeighbour._1.toString))
-  //    }
-  //    val localClusterCoefficient = connectedNeighbours / nrOfPossibleConnections
-  //    localClusterCoefficient
-  //  }
+  def determineTriadType(vertex: TransitivityVertex, vertexMap: Map[Int, TransitivityVertex]): Double = {
+    if (vertex.state != 0) {
+      for (triad <- vertex.triadSet) {
+        if (vertexMap.get(triad.headId).get.outgoingEdges.contains(triad.tailId)) {
+          triad.triadType = TriadType.transitive
+        		  println("id: " + vertex.id + "\ttriad: " + triad)
+        }
+//        if (Integer.valueOf(vertex.id.toString) < 15)
+      }
+    }
+    0.0
+  }
 }
 class TransitivityVertex(id: Any) extends DataGraphVertex(id, 0) {
   type Signal = Int
@@ -90,7 +75,7 @@ class TransitivityVertex(id: Any) extends DataGraphVertex(id, 0) {
     }
     triadSet.size
   }
-  
+
 }
 class TransitivityEdge(t: Int) extends DefaultEdge(t) {
   type Source = DataGraphVertex[Any, Any]

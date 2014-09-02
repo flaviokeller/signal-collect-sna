@@ -112,37 +112,37 @@ public class TransitivitySignalCollectGephiConnectorImpl implements
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new TransitivitySignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/examplegraph.gml");
+				"/Users/flaviokeller/Desktop/power.gml");
 		a.executeGraph();
-		double d = a.getAverage();
-		Map<String, Object> l = a.getAll();
+//		double d = a.getAverage();
+//		Map<String, Object> l = a.getAll();
 		long intermediate = System.currentTimeMillis();
 		double intermediateTime = Double.valueOf(intermediate - startTime) / 1000d;
 		System.out.println("execution time: " + intermediateTime + " seconds");
 		// GraphProperties p = a.getGraphProperties();
-		Map<Integer, Integer> dd = a.getDegreeDistrbution();
-		System.out.println("The average transitivity is: " + d);
-		System.out.println("The single vertex transitivity values are: " + l);
+//		Map<Integer, Integer> dd = a.getDegreeDistrbution();
+//		System.out.println("The average transitivity is: " + d);
+//		System.out.println("The single vertex transitivity values are: " + l);
 		// System.out.println(p);
 		long intermediate2 = System.currentTimeMillis();
 		double intermediateTime2 = Double.valueOf(intermediate2 - intermediate) / 1000d;
 		System.out
 				.println("properties time: " + intermediateTime2 + " seconds");
-		System.out.println("Degree distribution: " + dd);
+//		System.out.println("Degree distribution: " + dd);
 		long stopTime = System.currentTimeMillis();
 		double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
 		System.out.println("elapsed time until image creation: " + elapsedTime
 				+ " seconds");
 
-		try {
-			a.createImageFile(dd);
-			long stopTime2 = System.currentTimeMillis();
-			elapsedTime = Double.valueOf(stopTime2 - startTime) / 1000d;
-			System.out
-					.println("full elapsed time: " + elapsedTime + " seconds");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			a.createImageFile(dd);
+//			long stopTime2 = System.currentTimeMillis();
+//			elapsedTime = Double.valueOf(stopTime2 - startTime) / 1000d;
+//			System.out
+//					.println("full elapsed time: " + elapsedTime + " seconds");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 
 }
