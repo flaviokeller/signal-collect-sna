@@ -112,7 +112,7 @@ public class TransitivitySignalCollectGephiConnectorImpl implements
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new TransitivitySignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/power.gml");
+				"/Users/flaviokeller/Desktop/examplegraph.gml");
 		a.executeGraph();
 //		double d = a.getAverage();
 //		Map<String, Object> l = a.getAll();
