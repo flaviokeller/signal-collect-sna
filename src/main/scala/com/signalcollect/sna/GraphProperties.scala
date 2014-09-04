@@ -10,7 +10,7 @@ import com.signalcollect.sna.metrics.Degree
 import com.sun.java.util.jar.pack.Histogram
 import com.sun.java.util.jar.pack.Histogram
 import com.signalcollect.sna.parser.ParserImplementor
-import com.signalcollect.sna.gephiconnectors.SNAClassNames
+import com.signalcollect.sna.constants.SNAClassNames
 
 class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], fileName: String) {
 

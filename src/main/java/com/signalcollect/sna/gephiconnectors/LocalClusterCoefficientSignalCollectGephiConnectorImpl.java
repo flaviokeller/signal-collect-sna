@@ -1,3 +1,22 @@
+/*
+ *  @author Flavio Keller
+ *
+ *  Copyright 2014 University of Zurich
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
 package com.signalcollect.sna.gephiconnectors;
 
 import java.awt.Color;
@@ -13,7 +32,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.jfree.data.xy.XYBarDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -21,10 +39,9 @@ import com.signalcollect.Graph;
 import com.signalcollect.sna.DegreeDistribution;
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
-import com.signalcollect.sna.metrics.Degree;
+import com.signalcollect.sna.constants.SNAClassNames;
 import com.signalcollect.sna.metrics.LocalClusterCoefficient;
 import com.signalcollect.sna.parser.ParserImplementor;
-import com.sun.corba.se.spi.orb.ParserImplBase;
 
 public class LocalClusterCoefficientSignalCollectGephiConnectorImpl implements
 		SignalCollectGephiConnector {
@@ -33,8 +50,6 @@ public class LocalClusterCoefficientSignalCollectGephiConnectorImpl implements
 	private GraphProperties graphProps;
 	private String localClusterCoefficientFileName;
 	private Graph localClusterCoefficientGraph;
-	private Graph degreeGraph;
-	private Graph propertiesGraph;
 	private DegreeDistribution degreeDistribution;
 
 	public LocalClusterCoefficientSignalCollectGephiConnectorImpl(
@@ -89,7 +104,7 @@ public class LocalClusterCoefficientSignalCollectGephiConnectorImpl implements
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		dataset.addSeries(dSeries);
 		// dataset.setAutoWidth(true);
-//		XYBarDataset dset = new XYBarDataset(dataset, 10.0);
+		// XYBarDataset dset = new XYBarDataset(dataset, 10.0);
 
 		JFreeChart chart = ChartFactory.createHistogram("Degree Distribution",
 				"degree value", "number of occurences", dataset,
@@ -129,7 +144,9 @@ public class LocalClusterCoefficientSignalCollectGephiConnectorImpl implements
 		// GraphProperties p = a.getGraphProperties();
 		Map<Integer, Integer> dd = a.getDegreeDistrbution();
 		System.out.println("The average local cluster coefficient is: " + d);
-		System.out.println("The single vertex local cluster coefficient values are: " + l);
+		System.out
+				.println("The single vertex local cluster coefficient values are: "
+						+ l);
 		// System.out.println(p);
 		long intermediate2 = System.currentTimeMillis();
 		double intermediateTime2 = Double.valueOf(intermediate2 - intermediate) / 1000d;

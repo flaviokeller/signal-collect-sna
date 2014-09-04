@@ -17,8 +17,16 @@
  *
  */
 
-package com.signalcollect.sna
+package com.signalcollect.sna.constants;
 
-class ComputationResults(val average: Double, val vertexMap: java.util.Map[String, Object]) {
+public enum SNAClassNames {
 
+	DEGREE("Degree"), PAGERANK("PageRank"), PATH("Path"), LOCALCLUSTERCOEFFICIENT(
+			"LocalClusterCoefficient"), TRANSITIVITY("Transitivty");
+
+	private final String className;
+
+	SNAClassNames(String name) {
+		this.className = name;
+	}
 }

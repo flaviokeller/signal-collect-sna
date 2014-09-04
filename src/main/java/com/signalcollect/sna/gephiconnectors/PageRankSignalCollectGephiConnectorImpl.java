@@ -1,14 +1,31 @@
+/*
+ *  @author Flavio Keller
+ *
+ *  Copyright 2014 University of Zurich
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
 package com.signalcollect.sna.gephiconnectors;
 
 import java.awt.Color;
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
@@ -20,6 +37,7 @@ import com.signalcollect.Graph;
 import com.signalcollect.sna.DegreeDistribution;
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
+import com.signalcollect.sna.constants.SNAClassNames;
 import com.signalcollect.sna.metrics.PageRank;
 import com.signalcollect.sna.parser.ParserImplementor;
 
@@ -29,8 +47,6 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 	private ExecutionResult pageRankResult;
 	private GraphProperties graphProps;
 	private Graph pageRankGraph;
-	private Graph propertiesGraph;
-	private Graph degreeGraph;
 	private String pageRankFileName;
 	private DegreeDistribution degreeDistribution;
 
@@ -72,7 +88,7 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 	}
 
 	@Override
-	public Map<Integer,Integer> getDegreeDistrbution() {
+	public Map<Integer, Integer> getDegreeDistrbution() {
 		if (pageRankResult == null) {
 			executeGraph();
 		}
@@ -115,10 +131,10 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
 		GraphProperties p = a.getGraphProperties();
-		Map<Integer,Integer>dd = a.getDegreeDistrbution();
+		Map<Integer, Integer> dd = a.getDegreeDistrbution();
 		System.out.println("The average pageRank is: " + d);
 		System.out.println("The single vertex closeness values are: " + l);
-		System.out.println("diameter: " +p.calcDiameter());
+		System.out.println("diameter: " + p.calcDiameter());
 		System.out.println(dd);
 		try {
 			a.createImageFile(dd);

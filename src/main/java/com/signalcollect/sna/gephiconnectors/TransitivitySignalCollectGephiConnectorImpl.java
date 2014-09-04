@@ -1,3 +1,22 @@
+/*
+ *  @author Flavio Keller
+ *
+ *  Copyright 2014 University of Zurich
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
 package com.signalcollect.sna.gephiconnectors;
 
 import java.awt.Color;
@@ -20,6 +39,7 @@ import com.signalcollect.Graph;
 import com.signalcollect.sna.DegreeDistribution;
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
+import com.signalcollect.sna.constants.SNAClassNames;
 import com.signalcollect.sna.metrics.Transitivity;
 import com.signalcollect.sna.parser.ParserImplementor;
 
@@ -30,8 +50,6 @@ public class TransitivitySignalCollectGephiConnectorImpl implements
 	private GraphProperties graphProps;
 	private String transitivityFileName;
 	private Graph transitivityGraph;
-	private Graph degreeGraph;
-	private Graph propertiesGraph;
 	private DegreeDistribution degreeDistribution;
 
 	public TransitivitySignalCollectGephiConnectorImpl(String fileName) {
@@ -112,37 +130,37 @@ public class TransitivitySignalCollectGephiConnectorImpl implements
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new TransitivitySignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/examplegraph.gml");
+				"/Users/flaviokeller/Desktop/power.gml");
 		a.executeGraph();
-//		double d = a.getAverage();
-//		Map<String, Object> l = a.getAll();
+		double d = a.getAverage();
+		Map<String, Object> l = a.getAll();
 		long intermediate = System.currentTimeMillis();
 		double intermediateTime = Double.valueOf(intermediate - startTime) / 1000d;
 		System.out.println("execution time: " + intermediateTime + " seconds");
 		// GraphProperties p = a.getGraphProperties();
-//		Map<Integer, Integer> dd = a.getDegreeDistrbution();
-//		System.out.println("The average transitivity is: " + d);
-//		System.out.println("The single vertex transitivity values are: " + l);
+		// Map<Integer, Integer> dd = a.getDegreeDistrbution();
+		System.out.println("The average transitivity is: " + d);
+		System.out.println("The single vertex transitivity values are: " + l);
 		// System.out.println(p);
 		long intermediate2 = System.currentTimeMillis();
 		double intermediateTime2 = Double.valueOf(intermediate2 - intermediate) / 1000d;
 		System.out
 				.println("properties time: " + intermediateTime2 + " seconds");
-//		System.out.println("Degree distribution: " + dd);
+		// System.out.println("Degree distribution: " + dd);
 		long stopTime = System.currentTimeMillis();
 		double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
 		System.out.println("elapsed time until image creation: " + elapsedTime
 				+ " seconds");
 
-//		try {
-//			a.createImageFile(dd);
-//			long stopTime2 = System.currentTimeMillis();
-//			elapsedTime = Double.valueOf(stopTime2 - startTime) / 1000d;
-//			System.out
-//					.println("full elapsed time: " + elapsedTime + " seconds");
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		// try {
+		// a.createImageFile(dd);
+		// long stopTime2 = System.currentTimeMillis();
+		// elapsedTime = Double.valueOf(stopTime2 - startTime) / 1000d;
+		// System.out
+		// .println("full elapsed time: " + elapsedTime + " seconds");
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
 	}
 
 }

@@ -1,14 +1,31 @@
+/*
+ *  @author Flavio Keller
+ *
+ *  Copyright 2014 University of Zurich
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
 package com.signalcollect.sna.gephiconnectors;
 
 import java.awt.Color;
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
@@ -20,6 +37,7 @@ import com.signalcollect.Graph;
 import com.signalcollect.sna.DegreeDistribution;
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
+import com.signalcollect.sna.constants.SNAClassNames;
 import com.signalcollect.sna.metrics.Closeness;
 import com.signalcollect.sna.parser.ParserImplementor;
 
@@ -29,7 +47,6 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 	private ExecutionResult closenessResult;
 	private GraphProperties graphProps;
 	private Graph closenessGraph;
-	private Graph degreeGraph;
 	private String closenessFileName;
 	private DegreeDistribution degreeDistribution;
 
@@ -64,29 +81,30 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 		if (closenessResult == null) {
 			executeGraph();
 		}
-		graphProps = new GraphProperties(closenessResult.vertexArray(), closenessFileName);
+		graphProps = new GraphProperties(closenessResult.vertexArray(),
+				closenessFileName);
 		graphProps.setPathVertexArray(closenessResult.vertexArray());
 		return graphProps;
 	}
-	
+
 	@Override
-	public Map<Integer,Integer> getDegreeDistrbution(){
+	public Map<Integer, Integer> getDegreeDistrbution() {
 		degreeDistribution = new DegreeDistribution(closenessFileName);
 		return degreeDistribution.gatherDegreeeDistribution();
-		
-	}
 
+	}
 
 	@Override
 	public JFreeChart createImageFile(Map<Integer, Integer> degreeDistribution)
 			throws IOException {
 		XYSeries dSeries = new XYSeries("number of occurences");
-        for (Iterator it = degreeDistribution.entrySet().iterator(); it.hasNext();) {
-            Map.Entry d = (Map.Entry) it.next();
-            Number x = (Number) d.getKey();
-            Number y = (Number) d.getValue();
-            dSeries.add(x, y);
-        }
+		for (Iterator it = degreeDistribution.entrySet().iterator(); it
+				.hasNext();) {
+			Map.Entry d = (Map.Entry) it.next();
+			Number x = (Number) d.getKey();
+			Number y = (Number) d.getValue();
+			dSeries.add(x, y);
+		}
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		dataset.addSeries(dSeries);
 
@@ -111,19 +129,21 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
 		GraphProperties p = a.getGraphProperties();
-		Map<Integer,Integer> dd = a.getDegreeDistrbution();
+		Map<Integer, Integer> dd = a.getDegreeDistrbution();
 		System.out.println("The average closeness is: " + d);
 		System.out.println("The single vertex closeness values are: " + l);
 		System.out.println(p);
 		System.out.println(dd);
 		long stopTime = System.currentTimeMillis();
 		double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
-		System.out.println("elapsed time until image creation: " + elapsedTime + " seconds");
+		System.out.println("elapsed time until image creation: " + elapsedTime
+				+ " seconds");
 		try {
 			a.createImageFile(dd);
 			long stopTime2 = System.currentTimeMillis();
 			elapsedTime = Double.valueOf(stopTime2 - startTime) / 1000d;
-			System.out.println("full elapsed time: " + elapsedTime + " seconds");
+			System.out
+					.println("full elapsed time: " + elapsedTime + " seconds");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
