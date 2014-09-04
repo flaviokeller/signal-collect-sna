@@ -7,7 +7,7 @@ This repository contains an implementation of standard social network analysis m
 
 How to Compile the Project and develop in Eclipse
 --------------------------
-Please refer to the readme of the Signal/Collect repository
+Please refer to the readme of the [Signal/Collect repository](https://github.com/uzh/signal-collect)
 
 Thanks a lot to
 ---------------

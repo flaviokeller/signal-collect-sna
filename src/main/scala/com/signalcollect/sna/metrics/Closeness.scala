@@ -31,33 +31,51 @@ import com.signalcollect.sna.PathCollector
 import com.signalcollect.sna.PathCollectorVertex
 
 object Closeness {
+
+  var vertexIds = Set[Int]()
+
   def run(graph: Graph[Any, Any]): ExecutionResult = {
     var vertexArray = new ArrayBuffer[PathCollectorVertex] with SynchronizedBuffer[PathCollectorVertex]
 
     vertexArray = new ArrayBuffer[PathCollectorVertex] with SynchronizedBuffer[PathCollectorVertex]
     val execRes = PathCollector.run(graph)
     val shortestPathMap = PathCollector.allShortestPathsAsMap
+    val shortestPathList = PathCollector.allShortestPathsAsList
+    vertexIds = PathCollector.allShortestPathsAsMap.keySet
     val closenessMap = getClosenessForAll(shortestPathMap)
-    val compres = new ComputationResults(calcAvg(closenessMap), closenessMap)
+    val daMap = getBetweennessForAll(shortestPathList, shortestPathMap)
+    val compres = new ComputationResults(0.0, daMap)
     new ExecutionResult(compres, execRes)
   }
 
   def getClosenessForVertexId(id: Int, shortestPathList: List[Path]): Double = {
     var closeness = 0.0
     for (s <- shortestPathList) {
-      closeness += s.path.size
+      closeness += (s.path.size-1)
     }
     closeness / shortestPathList.size.toDouble
   }
-  def getClosenessForAll(shortestPathList: Map[Int, List[Path]]): java.util.Map[String, Object] = {
+  def getClosenessForAll(shortestPathMap: Map[Int, List[Path]]): java.util.Map[String, Object] = {
     var closenessMap = new java.util.TreeMap[String, Object]
-    for (s <- shortestPathList) {
+    var shortestPathMapReordered = new java.util.TreeMap[String, Object]
+    for (s <- shortestPathMap) {
       if (!s._2.isEmpty) {
         val closeness = BigDecimal(getClosenessForVertexId(s._1, s._2)).round(new MathContext(3)).toDouble
         closenessMap.put(s._1.toString, closeness.asInstanceOf[Object])
       }
     }
     closenessMap
+  }
+
+  def getBetweennessForAll(shortestPathList: List[Path], shortestPathMap: Map[Int, List[Path]]): java.util.Map[String, Object] = {
+    var betweennessMap = new java.util.TreeMap[String, Object]
+    for (s <- vertexIds) {
+      val pathsThroughVertex = shortestPathList.filter(p => p.sourceVertexId == s)
+      val closeness = getClosenessForVertexId(s, pathsThroughVertex)
+//      val betweenness = BigDecimal(closeness / pathsThroughVertex.size.toDouble).round(new MathContext(3)).toDouble
+      betweennessMap.put(s.toString, closeness.asInstanceOf[Object])
+    }
+    betweennessMap
   }
 
   def calcAvg(closenessMap: java.util.Map[String, Object]): Double = {
