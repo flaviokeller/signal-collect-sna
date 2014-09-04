@@ -12,5 +12,4 @@ Please refer to the readme of the Signal/Collect repository
 Thanks a lot to
 ---------------
 * [University of Zurich](http://www.ifi.uzh.ch/ddis.html) and the [Hasler Foundation](http://www.haslerstiftung.ch/en/home) are generously funding our research on graph processing and the development of Signal/Collect.
-* YourKit allows us to use their great [Java/Scala profiler](http://www.yourkit.com/java/profiler/index.jsp).
 * GitHub helps us by hosting our [code repositories](https://github.com/uzh/signal-collect).
