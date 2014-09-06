@@ -29,68 +29,79 @@ import com.signalcollect.sna.gephiconnectors.DegreeSignalCollectGephiConnectorIm
 import com.signalcollect.sna.gephiconnectors.LocalClusterCoefficientSignalCollectGephiConnectorImpl;
 import com.signalcollect.sna.gephiconnectors.PageRankSignalCollectGephiConnectorImpl;
 import com.signalcollect.sna.gephiconnectors.SignalCollectGephiConnector;
+import com.signalcollect.sna.gephiconnectors.TransitivitySignalCollectGephiConnectorImpl;
 
 public class MetricsTest {
 
 	private SignalCollectGephiConnector scgc;
 
-	private GraphProperties props;
-
 	private String testFile = "/Users/flaviokeller/Desktop/examplegraph_separated.gml";
-
-	public void setUp() {
-
-	}
 
 	@Test
 	public void degreeTest() {
 		scgc = new DegreeSignalCollectGephiConnectorImpl(testFile);
 		scgc.executeGraph();
 		assertEquals(3.23, scgc.getAverage(), 0.01);
-		assertEquals(String.valueOf(6), scgc.getAll().get(String.valueOf(5)));
-		assertEquals(String.valueOf(3), scgc.getAll().get(String.valueOf(3)));
-		assertEquals(String.valueOf(4), scgc.getAll().get(String.valueOf(7)));
-		assertEquals(String.valueOf(2), scgc.getAll().get(String.valueOf(20)));
+		assertEquals(6, scgc.getAll().get(String.valueOf(5)));
+		assertEquals(3, scgc.getAll().get(String.valueOf(3)));
+		assertEquals(4, scgc.getAll().get(String.valueOf(7)));
+		assertEquals(2, scgc.getAll().get(String.valueOf(20)));
 	}
+
 	@Test
 	public void pageRankTest() {
 		scgc = new PageRankSignalCollectGephiConnectorImpl(testFile);
 		scgc.executeGraph();
-		assertEquals(1.06, scgc.getAverage(), 0.01);
-		assertEquals(String.valueOf(0.85), scgc.getAll().get(String.valueOf(5)));
-		assertEquals(String.valueOf(0.658), scgc.getAll().get(String.valueOf(3)));
-		assertEquals(String.valueOf(2.51), scgc.getAll().get(String.valueOf(7)));
-		assertEquals(String.valueOf(0.943), scgc.getAll().get(String.valueOf(20)));
+		assertEquals(0.768, scgc.getAverage(), 0.01);
+		assertEquals(0.15, scgc.getAll().get(String.valueOf(5)));
+		assertEquals(0.481, scgc.getAll().get(String.valueOf(3)));
+		assertEquals(1.68, scgc.getAll().get(String.valueOf(7)));
+		assertEquals(0.946, scgc.getAll().get(String.valueOf(20)));
 	}
+
 	@Test
 	public void closenessTest() {
 		scgc = new ClosenessSignalCollectGephiConnectorImpl(testFile);
 		scgc.executeGraph();
-		assertEquals(3.23, scgc.getAverage(), 0.01);
-		assertEquals(String.valueOf(6), scgc.getAll().get(String.valueOf(5)));
-		assertEquals(String.valueOf(3), scgc.getAll().get(String.valueOf(3)));
-		assertEquals(String.valueOf(4), scgc.getAll().get(String.valueOf(7)));
-		assertEquals(String.valueOf(2), scgc.getAll().get(String.valueOf(20)));
+		assertEquals(1.37, scgc.getAverage(), 0.01);
+		assertEquals(1.44, scgc.getAll().get(String.valueOf(5)));
+		assertEquals(0.0, scgc.getAll().get(String.valueOf(3)));
+		assertEquals(2.0, scgc.getAll().get(String.valueOf(9)));
+		assertEquals(1.5, scgc.getAll().get(String.valueOf(20)));
 	}
+
 	@Test
 	public void betweennessTest() {
 		scgc = new BetweennessSignalCollectGephiConnectorImpl(testFile);
 		scgc.executeGraph();
-		assertEquals(3.23, scgc.getAverage(), 0.01);
-		assertEquals(String.valueOf(6), scgc.getAll().get(String.valueOf(5)));
-		assertEquals(String.valueOf(3), scgc.getAll().get(String.valueOf(3)));
-		assertEquals(String.valueOf(4), scgc.getAll().get(String.valueOf(7)));
-		assertEquals(String.valueOf(2), scgc.getAll().get(String.valueOf(20)));
+		assertEquals(0.0374, scgc.getAverage(), 0.01);
+		assertEquals(0.0, scgc.getAll().get(String.valueOf(5)));
+		assertEquals(0.0, scgc.getAll().get(String.valueOf(3)));
+		assertEquals(0.0541, scgc.getAll().get(String.valueOf(1)));
+		assertEquals(0.027, scgc.getAll().get(String.valueOf(20)));
 	}
+
 	@Test
 	public void localClusterCoefficientTest() {
-		scgc = new LocalClusterCoefficientSignalCollectGephiConnectorImpl(testFile);
+		scgc = new LocalClusterCoefficientSignalCollectGephiConnectorImpl(
+				testFile);
 		scgc.executeGraph();
-		assertEquals(3.23, scgc.getAverage(), 0.01);
-		assertEquals(String.valueOf(6), scgc.getAll().get(String.valueOf(5)));
-		assertEquals(String.valueOf(3), scgc.getAll().get(String.valueOf(3)));
-		assertEquals(String.valueOf(4), scgc.getAll().get(String.valueOf(7)));
-		assertEquals(String.valueOf(2), scgc.getAll().get(String.valueOf(20)));
+		assertEquals(0.376, scgc.getAverage(), 0.01);
+		assertEquals(0.5, scgc.getAll().get(String.valueOf(9)));
+		assertEquals(0.333, scgc.getAll().get(String.valueOf(3)));
+		assertEquals(0.133, scgc.getAll().get(String.valueOf(5)));
+		assertEquals(0.5, scgc.getAll().get(String.valueOf(20)));
+	}
+
+	@Test
+	public void triadCensusTest() {
+		scgc = new TransitivitySignalCollectGephiConnectorImpl(testFile);
+		scgc.executeGraph();
+		assertEquals(256, scgc.getAll().get(String.valueOf(1)));
+		assertEquals(1, scgc.getAll().get(String.valueOf(14)));
+		assertEquals(0, scgc.getAll().get(String.valueOf(16)));
+		assertEquals(10, scgc.getAll().get(String.valueOf(2)));
+		assertEquals(1, scgc.getAll().get(String.valueOf(5)));
 	}
 
 }

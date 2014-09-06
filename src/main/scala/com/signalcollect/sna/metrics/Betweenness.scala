@@ -26,23 +26,23 @@ import com.signalcollect.sna.PathCollector
 import com.signalcollect.Graph
 import scala.collection.JavaConverters._
 import java.math.MathContext
+import scala.collection.mutable.ArrayBuffer
+import com.signalcollect.sna.PathCollectorVertex
 
 object Betweenness {
-  var vertexIds = Set[Int]()
   def run(graph: Graph[Any, Any]): ExecutionResult = {
     val vertexArray = PathCollector.run(graph)
-    val shortestPathList = PathCollector.allShortestPathsAsList
-    vertexIds = PathCollector.allShortestPathsAsMap.keySet
-    val betweennessMap = getBetweennessForAll(shortestPathList)
+    val shortestPathList = PathCollector.allShortestPathsAsList(vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])
+    val betweennessMap = getBetweennessForAll(vertexArray, shortestPathList)
     new ExecutionResult(new ComputationResults(calcAvg(betweennessMap), betweennessMap), vertexArray)
   }
 
-  def getBetweennessForAll(shortestPathList: List[Path]): java.util.Map[String, Object] = {
+  def getBetweennessForAll(vertices: ArrayBuffer[com.signalcollect.Vertex[Any, _]], shortestPathList: List[Path]): java.util.Map[String, Object] = {
     var betweennessMap = new java.util.TreeMap[String, Object]
-    for (s <- vertexIds) {
-      val pathsThroughVertex = shortestPathList.filter(p => p.sourceVertexId != s && p.targetVertexId != s && p.path.contains(s))
+    for (s <- vertices) {
+      val pathsThroughVertex = shortestPathList.filter(p => p.sourceVertexId != s.id && p.targetVertexId != s.id && p.path.contains(s.id))
       val betweenness = BigDecimal(pathsThroughVertex.size.toDouble / shortestPathList.size.toDouble).round(new MathContext(3)).toDouble
-      betweennessMap.put(s.toString, betweenness.asInstanceOf[Object])
+      betweennessMap.put(s.id.toString, betweenness.asInstanceOf[Object])
     }
     betweennessMap
   }

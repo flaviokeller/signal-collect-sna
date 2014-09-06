@@ -61,11 +61,17 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 
 	@Override
 	public double getAverage() {
+		if (degreeResult == null) {
+			degreeResult = Degree.run(degreeGraph);
+		}
 		return degreeResult.compRes().average();
 	}
 
 	@Override
 	public Map<String, Object> getAll() {
+		if (degreeResult == null) {
+			degreeResult = Degree.run(degreeGraph);
+		}
 		TreeMap<String, Object> result = new TreeMap<String, Object>(
 				new NumbersThenWordsComparator());
 		result.putAll(degreeResult.compRes().vertexMap());
@@ -133,37 +139,37 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new DegreeSignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/as-22july06.gml");
+				"/Users/flaviokeller/Desktop/examplegraph_separated.gml");
 		a.executeGraph();
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
 		long intermediate = System.currentTimeMillis();
 		double intermediateTime = Double.valueOf(intermediate - startTime) / 1000d;
 		System.out.println("execution time: " + intermediateTime + " seconds");
-		// GraphProperties p = a.getGraphProperties();
+		GraphProperties p = a.getGraphProperties();
 		Map<Integer, Integer> dd = a.getDegreeDistrbution();
 		System.out.println("The average degree is: " + d);
 		System.out.println("The single vertex degree values are: " + l);
-		// System.out.println(p);
+		System.out.println(p);
 		long intermediate2 = System.currentTimeMillis();
 		double intermediateTime2 = Double.valueOf(intermediate2 - intermediate) / 1000d;
 		System.out
 				.println("properties time: " + intermediateTime2 + " seconds");
-		System.out.println(dd);
+		// System.out.println(dd);
 		long stopTime = System.currentTimeMillis();
 		double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
 		System.out.println("elapsed time until image creation: " + elapsedTime
 				+ " seconds");
 
-		try {
-			a.createImageFile(dd);
-			long stopTime2 = System.currentTimeMillis();
-			elapsedTime = Double.valueOf(stopTime2 - startTime) / 1000d;
-			System.out
-					.println("full elapsed time: " + elapsedTime + " seconds");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// try {
+		// a.createImageFile(dd);
+		// long stopTime2 = System.currentTimeMillis();
+		// elapsedTime = Double.valueOf(stopTime2 - startTime) / 1000d;
+		// System.out
+		// .println("full elapsed time: " + elapsedTime + " seconds");
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
 	}
 
 }

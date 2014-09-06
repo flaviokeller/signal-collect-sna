@@ -123,14 +123,14 @@ public class BetweennessSignalCollectGephiConnectorImpl implements
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new BetweennessSignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/power.gml");
+				"/Users/flaviokeller/Desktop/examplegraph_separated.gml");
 		a.executeGraph();
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
 		GraphProperties p = a.getGraphProperties();
 		Map<Integer, Integer> dd = a.getDegreeDistrbution();
-		System.out.println("The average closeness is: " + d);
-		System.out.println("The single vertex closeness values are: " + l);
+		System.out.println("The average betweenness is: " + d);
+		System.out.println("The single vertex betweenness values are: " + l);
 		System.out.println(p);
 		System.out.println(dd);
 		long stopTime = System.currentTimeMillis();

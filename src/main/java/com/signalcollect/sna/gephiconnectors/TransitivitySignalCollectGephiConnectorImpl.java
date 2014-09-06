@@ -130,23 +130,26 @@ public class TransitivitySignalCollectGephiConnectorImpl implements
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new TransitivitySignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/power.gml");
+				"/Users/flaviokeller/Desktop/examplegraph_separated.gml");
 		a.executeGraph();
 		double d = a.getAverage();
+		/*
+		 * this map doesn't display the vertex values. Instead it represents the
+		 * distribution of the triad types
+		 */
 		Map<String, Object> l = a.getAll();
 		long intermediate = System.currentTimeMillis();
 		double intermediateTime = Double.valueOf(intermediate - startTime) / 1000d;
 		System.out.println("execution time: " + intermediateTime + " seconds");
-		// GraphProperties p = a.getGraphProperties();
-		// Map<Integer, Integer> dd = a.getDegreeDistrbution();
-		System.out.println("The average transitivity is: " + d);
-		System.out.println("The single vertex transitivity values are: " + l);
-		// System.out.println(p);
+		GraphProperties p = a.getGraphProperties();
+		Map<Integer, Integer> dd = a.getDegreeDistrbution();
+		System.out.println("The triad census type values are: " + l);
+		System.out.println(p);
 		long intermediate2 = System.currentTimeMillis();
 		double intermediateTime2 = Double.valueOf(intermediate2 - intermediate) / 1000d;
 		System.out
 				.println("properties time: " + intermediateTime2 + " seconds");
-		// System.out.println("Degree distribution: " + dd);
+		System.out.println("Degree distribution: " + dd);
 		long stopTime = System.currentTimeMillis();
 		double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
 		System.out.println("elapsed time until image creation: " + elapsedTime

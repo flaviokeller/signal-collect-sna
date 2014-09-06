@@ -37,13 +37,14 @@ public class PropertyTest {
 
 	private String testFile = "/Users/flaviokeller/Desktop/examplegraph_separated.gml";
 
-	@Before
-	public void setUp() {
-		scgc = new DegreeSignalCollectGephiConnectorImpl(testFile);
-	}
+//	@Before
+//	public void setUp() {
+//		scgc = new DegreeSignalCollectGephiConnectorImpl(testFile);
+//	}
 
 	@Test
 	public void propertyTest() {
+		scgc = new DegreeSignalCollectGephiConnectorImpl(testFile);
 		props = scgc.getGraphProperties();
 		assertEquals(13, props.calcSize());
 		assertEquals(0.135, props.calcDensity(), 0.01);
@@ -53,6 +54,7 @@ public class PropertyTest {
 
 	@Test
 	public void degreeDistributionTest() {
+		scgc = new DegreeSignalCollectGephiConnectorImpl(testFile);
 		Map<Integer,Integer> dd = scgc.getDegreeDistrbution();
 		assertEquals(Integer.valueOf(4), dd.get(Integer.valueOf(2)));
 		assertEquals(Integer.valueOf(1), dd.get(Integer.valueOf(6)));

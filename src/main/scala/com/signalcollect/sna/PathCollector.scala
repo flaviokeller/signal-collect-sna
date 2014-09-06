@@ -20,21 +20,24 @@
 package com.signalcollect.sna
 
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.HashMap
+import scala.collection.SortedMap
 import scala.collection.mutable.SynchronizedBuffer
-import com.signalcollect.Graph
+import scala.collection.mutable.SynchronizedMap
+
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
+import com.signalcollect.Graph
 import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 
 object PathCollector {
-  var vertexArray = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
 
   def run(pGraph: Graph[Any, Any]): ArrayBuffer[Vertex[Any, _]] = {
 
-    vertexArray = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
+     var vertexArray = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
     var graph: Graph[Any, Any] = null
     if (pGraph == null) {
       graph = GraphBuilder.build
@@ -49,9 +52,10 @@ object PathCollector {
     vertexArray
   }
 
-  def allShortestPathsAsMap(): Map[Int, List[Path]] = {
+  
+  def allShortestPathsAsMap(vertexArray:ArrayBuffer[PathCollectorVertex]): Map[Int, List[Path]] = {
     var shortestPathMap = scala.collection.mutable.Map[Int, List[Path]]()
-    for (targetVertex <- vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]]) {
+    for (targetVertex <- vertexArray) {
       var pathList = scala.collection.mutable.ListBuffer[Path]()
       try {
         pathList ++= targetVertex.shortestPaths.toList
@@ -62,7 +66,10 @@ object PathCollector {
     }
     shortestPathMap.toMap
   }
-  def allShortestPathsAsList(): List[Path] = {
+  
+ 
+
+ def allShortestPathsAsList(vertexArray:ArrayBuffer[PathCollectorVertex]): List[Path] = {
     var shortestPathList = scala.collection.mutable.ListBuffer[Path]()
     for (targetVertex <- vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]]) {
       try {
@@ -73,7 +80,6 @@ object PathCollector {
     }
     shortestPathList.toList
   }
-
 }
 
 class PathCollectorVertex(id: Int) extends DataGraphVertex(id, ArrayBuffer[Path]()) {

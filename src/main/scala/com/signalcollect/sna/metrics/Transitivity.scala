@@ -98,6 +98,11 @@ object Transitivity extends App {
     for (count <- countMap) {
       treeMap.put(count._1.toString, Integer.valueOf(count._2))
     }
+    for(i<-1 to 16){
+      if(treeMap.get(i.toString) == null){
+        treeMap.put(i.toString, Integer.valueOf(0))
+      }
+    }
     new ExecutionResult(new ComputationResults(0.0, treeMap), s)
   }
 

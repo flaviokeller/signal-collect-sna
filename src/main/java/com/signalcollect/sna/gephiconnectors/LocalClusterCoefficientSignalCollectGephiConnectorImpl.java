@@ -134,7 +134,7 @@ public class LocalClusterCoefficientSignalCollectGephiConnectorImpl implements
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new LocalClusterCoefficientSignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/examplegraph.gml");
+				"/Users/flaviokeller/Desktop/examplegraph_separated.gml");
 		a.executeGraph();
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();

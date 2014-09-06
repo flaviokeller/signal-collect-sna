@@ -83,7 +83,7 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 		}
 		graphProps = new GraphProperties(closenessResult.vertexArray(),
 				closenessFileName);
-		graphProps.setPathVertexArray(closenessResult.vertexArray());
+//		graphProps.setPathVertexMap(closenessResult.compRes().vertexMap());
 		return graphProps;
 	}
 

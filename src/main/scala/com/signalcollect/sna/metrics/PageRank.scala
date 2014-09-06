@@ -19,12 +19,9 @@
 
 package com.signalcollect.sna.metrics
 
-import java.math.BigDecimal
 import java.math.MathContext
-
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SynchronizedBuffer
-
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.DefaultEdge
 import com.signalcollect.Edge
@@ -37,6 +34,7 @@ import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.GraphProperties
 import java.math.MathContext
+import scala.math.BigDecimal
 
 object PageRank {
   final def run(graph: Graph[Any, Any]): ExecutionResult = {
@@ -54,15 +52,15 @@ object PageRank {
   }
 
   def filterInteger(l: ArrayBuffer[Vertex[Any, _]]): java.util.Map[String, Object] = {
-    var vertices = new java.util.HashMap[String, Object]
+    var vertices = new java.util.TreeMap[String, Object]
     for (vertex <- l) {
-      vertices.put(vertex.id.toString, vertex.state.toString)
+      vertices.put(vertex.id.toString, vertex.state.asInstanceOf[Object])
     }
     vertices
   }
 }
 
-class PageRankVertex(id: Any, dampingFactor: Double = 0.85) extends DataGraphVertex(id, dampingFactor) {
+class PageRankVertex(id: Any, dampingFactor: Double = 0.85) extends DataGraphVertex(id, 1 - dampingFactor) {
 
   type Signal = Pair[Any, Any]
   type State = Double
@@ -73,13 +71,14 @@ class PageRankVertex(id: Any, dampingFactor: Double = 0.85) extends DataGraphVer
   def collect: State = {
     val pageRankSignals = mostRecentSignalMap.filter(signal => !signal._2._1.getClass.toString().contains("Average")).values.toList
     var sum = 0.0
+    
     if (pageRankSignals.isEmpty) {
-      state
+      BigDecimal.valueOf(state).round(new MathContext(3)).toDouble
     } else {
       for (signal <- pageRankSignals) {
         sum += java.lang.Double.valueOf(signal._2.toString)
       }
-      scala.math.BigDecimal.valueOf(1 - dampingFactor + dampingFactor * sum).round(new MathContext(3)).toDouble
+      BigDecimal.valueOf(1 - dampingFactor + dampingFactor * sum).round(new MathContext(3)).toDouble
     }
   }
 

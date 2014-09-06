@@ -31,6 +31,10 @@ import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.GraphBuilder
+import scala.collection.mutable.SynchronizedMap
+import scala.collection.SortedMap
+import scala.collection.mutable.HashMap
+import scala.collection.JavaConverters._
 
 object Degree {
 
@@ -51,7 +55,10 @@ object Degree {
     val stats = graph.execute(execmode)
     graph.awaitIdle
     var s = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
-    graph.foreachVertex(v => s += v)
+//    var t = new HashMap[Any, Any] with SynchronizedMap[Any, Any]
+        graph.foreachVertex(v => s += v)
+//    graph.foreachVertex(v => t.put(v.id, v.state))
+    
     graph.shutdown
     new ExecutionResult(new ComputationResults(BigDecimal(avgVertex.state).round(new MathContext(3)).toDouble, filterInteger(s)), s)
   }
@@ -59,7 +66,7 @@ object Degree {
   def filterInteger(l: ArrayBuffer[Vertex[Any, _]]): java.util.TreeMap[String, Object] = {
     var vertices = new java.util.TreeMap[String, Object]
     for (vertex <- l) {
-      vertices.put(vertex.id.toString, vertex.state.toString)
+      vertices.put(vertex.id.toString, vertex.state.asInstanceOf[Object])
     }
     vertices
   }

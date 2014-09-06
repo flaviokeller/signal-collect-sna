@@ -51,7 +51,7 @@ object LocalClusterCoefficient extends App {
     for (d <- vertexMap) {
       val lcc = gatherNeighbours(d._2, vertexMap.toMap)
       sumOfLCC += lcc
-      treeMap.put(d._1.toString, BigDecimal(lcc).round(new MathContext(3)))
+      treeMap.put(d._1.toString, BigDecimal(lcc).round(new MathContext(3)).toDouble.asInstanceOf[Object])
     }
     val averageclcoeff = sumOfLCC / vertexMap.toMap.size.toDouble
 
