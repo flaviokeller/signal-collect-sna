@@ -148,4 +148,10 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public Map<Integer, Integer> getClusterDistribution() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

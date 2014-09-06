@@ -37,6 +37,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import com.signalcollect.Graph;
+import com.signalcollect.sna.ClusterDistribution;
 import com.signalcollect.sna.DegreeDistribution;
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
@@ -52,6 +53,7 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 	private String degreeFileName;
 	private Graph degreeGraph;
 	private DegreeDistribution degreeDistribution;
+	private ClusterDistribution clusterDistribution;
 
 	public DegreeSignalCollectGephiConnectorImpl(String fileName) {
 		degreeFileName = fileName;
@@ -95,6 +97,15 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 		return graphProps;
 	}
 
+	@Override
+	public Map<Integer, Integer> getClusterDistribution() {
+		if (degreeResult == null) {
+			executeGraph();
+		}
+		clusterDistribution = new ClusterDistribution(degreeFileName);
+		return clusterDistribution.gatherClusterDistribution();
+		
+	}
 	@Override
 	public Map<Integer, Integer> getDegreeDistrbution() {
 		if (degreeResult == null) {
@@ -148,6 +159,7 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 		System.out.println("execution time: " + intermediateTime + " seconds");
 		GraphProperties p = a.getGraphProperties();
 		Map<Integer, Integer> dd = a.getDegreeDistrbution();
+		Map<Integer, Integer> cd = a.getClusterDistribution();
 		System.out.println("The average degree is: " + d);
 		System.out.println("The single vertex degree values are: " + l);
 		System.out.println(p);
@@ -160,6 +172,7 @@ public class DegreeSignalCollectGephiConnectorImpl implements
 		double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
 		System.out.println("elapsed time until image creation: " + elapsedTime
 				+ " seconds");
+		System.out.println(cd);
 
 		// try {
 		// a.createImageFile(dd);

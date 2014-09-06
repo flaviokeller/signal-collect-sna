@@ -169,4 +169,10 @@ public class LocalClusterCoefficientSignalCollectGephiConnectorImpl implements
 		}
 	}
 
+	@Override
+	public Map<Integer, Integer> getClusterDistribution() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

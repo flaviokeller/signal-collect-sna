@@ -41,4 +41,6 @@ public interface SignalCollectGephiConnector {
 
 	public JFreeChart createImageFile(Map<Integer, Integer> degreeDistribution)
 			throws IOException;
+
+	Map<Integer, Integer> getClusterDistribution();
 }

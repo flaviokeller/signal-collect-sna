@@ -100,7 +100,7 @@ class AverageDegreeVertex(id: String) extends DataGraphVertex(id, 0.0) {
     for (signal <- degreeSignals) {
       sum += Integer.valueOf(signal.state.toString)
     }
-    sum.toDouble / degreeSignals.size.toDouble
+    BigDecimal(sum.toDouble / degreeSignals.size.toDouble).round(new MathContext(3)).toDouble
   }
 }
 
