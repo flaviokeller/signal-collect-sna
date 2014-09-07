@@ -34,6 +34,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import com.signalcollect.Graph;
+import com.signalcollect.sna.ClusterDistribution;
 import com.signalcollect.sna.DegreeDistribution;
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
@@ -49,24 +50,12 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 	private Graph closenessGraph;
 	private String closenessFileName;
 	private DegreeDistribution degreeDistribution;
+	private ClusterDistribution clusterDistribution;
 
 	public ClosenessSignalCollectGephiConnectorImpl(String fileName) {
 		closenessFileName = fileName;
 		closenessGraph = ParserImplementor.getGraph(fileName,
 				SNAClassNames.PATH);
-	}
-
-	@Override
-	public double getAverage() {
-		return closenessResult.compRes().average();
-	}
-
-	@Override
-	public Map<String, Object> getAll() {
-		TreeMap<String, Object> result = new TreeMap<String, Object>(
-				new NumbersThenWordsComparator());
-		result.putAll(closenessResult.compRes().vertexMap());
-		return result;
 	}
 
 	@Override
@@ -77,25 +66,51 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 	}
 
 	@Override
+	public double getAverage() {
+		if (closenessResult == null) {
+			executeGraph();
+		}
+		return closenessResult.compRes().average();
+	}
+
+	@Override
+	public Map<String, Object> getAll() {
+		if (closenessResult == null) {
+			executeGraph();
+		}
+		TreeMap<String, Object> result = new TreeMap<String, Object>(
+				new NumbersThenWordsComparator());
+		result.putAll(closenessResult.compRes().vertexMap());
+		return result;
+	}
+
+	@Override
 	public GraphProperties getGraphProperties() {
 		if (closenessResult == null) {
 			executeGraph();
 		}
 		graphProps = new GraphProperties(closenessResult.vertexArray(),
 				closenessFileName);
-//		graphProps.setPathVertexMap(closenessResult.compRes().vertexMap());
+		// graphProps.setPathVertexMap(closenessResult.compRes().vertexMap());
 		return graphProps;
 	}
 
 	@Override
-	public Map<Integer, Integer> getDegreeDistrbution() {
+	public Map<Integer, Integer> getDegreeDistribution() {
 		degreeDistribution = new DegreeDistribution(closenessFileName);
 		return degreeDistribution.gatherDegreeeDistribution();
 
 	}
 
 	@Override
-	public JFreeChart createImageFile(Map<Integer, Integer> degreeDistribution)
+	public Map<Double, Integer> getClusterDistribution() {
+		clusterDistribution = new ClusterDistribution(closenessFileName);
+		return clusterDistribution.gatherClusterDistribution();
+	}
+
+	@Override
+	public JFreeChart createDegreeDistributionImageFile(
+			Map<Integer, Integer> degreeDistribution, String fileName)
 			throws IOException {
 		XYSeries dSeries = new XYSeries("number of occurences");
 		for (Iterator it = degreeDistribution.entrySet().iterator(); it
@@ -121,37 +136,74 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 		return chart;
 	}
 
+	@Override
+	public JFreeChart createClusterDistributionImageFile(
+			Map<Double, Integer> degreeDistribution, String fileName)
+			throws IOException {
+		XYSeries dSeries = new XYSeries("number of occurences");
+		for (Iterator it = degreeDistribution.entrySet().iterator(); it
+				.hasNext();) {
+			Map.Entry d = (Map.Entry) it.next();
+			Number x = (Number) d.getKey();
+			Number y = (Number) d.getValue();
+			dSeries.add(x, y);
+		}
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		dataset.addSeries(dSeries);
+
+		JFreeChart chart = ChartFactory.createHistogram(
+				"Cluster Coefficient Distribution",
+				"cluster coefficient value", "number of occurences", dataset,
+				PlotOrientation.VERTICAL, true, true, true);
+
+		XYPlot plot = chart.getXYPlot();
+		plot.setDataset(0, dataset);
+		XYLineAndShapeRenderer renderer0 = new XYLineAndShapeRenderer();
+		plot.setRenderer(0, renderer0);
+		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
+				Color.BLUE);
+		return chart;
+	}
+
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new ClosenessSignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/examplegraph_separated.gml");
+				"/Users/flaviokeller/Desktop/power.gml");
 		a.executeGraph();
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
+		long intermediate = System.currentTimeMillis();
+		double intermediateTime = Double.valueOf(intermediate - startTime) / 1000d;
+		System.out.println("execution time: " + intermediateTime + " seconds");
+
 		GraphProperties p = a.getGraphProperties();
-		Map<Integer, Integer> dd = a.getDegreeDistrbution();
-		System.out.println("The average closeness is: " + d);
-		System.out.println("The single vertex closeness values are: " + l);
-		System.out.println(p);
-		System.out.println(dd);
-		long stopTime = System.currentTimeMillis();
-		double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
-		System.out.println("elapsed time until image creation: " + elapsedTime
-				+ " seconds");
+		p.toString();
+		long intermediate2 = System.currentTimeMillis();
+		intermediateTime = Double.valueOf(intermediate2 - intermediate) / 1000d;
+		System.out.println("properties time: " + intermediateTime + " seconds");
+
+		Map<Integer, Integer> dd = a.getDegreeDistribution();
+		Map<Double, Integer> cd = a.getClusterDistribution();
+
+		long intermediate3 = System.currentTimeMillis();
+		intermediateTime = Double.valueOf(intermediate3 - startTime) / 1000d;
+		System.out.println("elapsed time until image creation: "
+				+ intermediateTime + " seconds");
+
 		try {
-			a.createImageFile(dd);
-			long stopTime2 = System.currentTimeMillis();
-			elapsedTime = Double.valueOf(stopTime2 - startTime) / 1000d;
+			a.createDegreeDistributionImageFile(dd, "degreeDistr.png");
+			a.createClusterDistributionImageFile(cd, "clusterdistr.png");
+			long stopTime = System.currentTimeMillis();
+			double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
 			System.out
-					.println("full elapsed time: " + elapsedTime + " seconds");
+					.println("full elapsed time: " + elapsedTime + " seconds\n");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public Map<Integer, Integer> getClusterDistribution() {
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("The average closeness is: " + d);
+		System.out.println("The single vertex closeness values are: " + l);
+		System.out.println(p);
+		System.out.println("The degree distribution is: " + dd);
+		System.out.println("The local cluster coefficient distribution is: " + cd);
 	}
 }

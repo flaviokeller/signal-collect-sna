@@ -37,25 +37,22 @@ class ClusterDistribution(fileName: String) {
 
   var clusterDistribution = new java.util.TreeMap[Integer, Integer]()
 
-  //  def setVertexArray(dva: ArrayBuffer[Vertex[Any, _]]) = clusterVertexMap = dva
+  def setClusterMap(cvm: java.util.Map[String, Object]) = clusterVertexMap = cvm.asScala.toMap
   override def toString(): String = "cluster Distribution: " + clusterDistribution
 
-  def gatherClusterDistribution(): java.util.TreeMap[Integer, Integer] = {
+  def gatherClusterDistribution(): java.util.TreeMap[java.lang.Double, Integer] = {
 
     if (clusterVertexMap == null || clusterVertexMap.isEmpty) {
       val clusteringGraph = ParserImplementor.getGraph(fileName, SNAClassNames.LOCALCLUSTERCOEFFICIENT)
       clusterVertexMap = LocalClusterCoefficient.run(clusteringGraph).compRes.vertexMap.asScala.toMap
     }
-    println(clusterVertexMap)
-    val clusteringMap = new java.util.TreeMap[Integer, Integer]()
+    val clusteringMap = new java.util.TreeMap[java.lang.Double, Integer]()
     for (v <- clusterVertexMap) {
-      //      if (v._1.isInstanceOf[Int]) {
-      if (clusteringMap.keySet().contains(Integer.valueOf(v._1))) {
-        clusteringMap.put(Integer.valueOf(v._1.toString), clusteringMap.get(v._2) + 1)
+      if (clusteringMap.keySet().contains(java.lang.Double.valueOf(v._2.toString()))) {
+        clusteringMap.put(java.lang.Double.valueOf(v._2.toString), clusteringMap.get(v._2) + 1)
       } else {
-        clusteringMap.put(Integer.valueOf(v._1.toString), 1)
+        clusteringMap.put(java.lang.Double.valueOf(v._2.toString), 1)
       }
-      //      }
     }
     clusteringMap
   }

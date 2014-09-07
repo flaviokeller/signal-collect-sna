@@ -33,14 +33,20 @@ public interface SignalCollectGephiConnector {
 
 	public double getAverage();
 
-	public GraphProperties getGraphProperties();
-
-	public Map<Integer, Integer> getDegreeDistrbution();
-
 	public Map<String, Object> getAll();
 
-	public JFreeChart createImageFile(Map<Integer, Integer> degreeDistribution)
+	public GraphProperties getGraphProperties();
+
+	public Map<Integer, Integer> getDegreeDistribution();
+
+	public Map<Double, Integer> getClusterDistribution();
+
+	public JFreeChart createDegreeDistributionImageFile(
+			Map<Integer, Integer> degreeDistribution, String fileName)
 			throws IOException;
 
-	Map<Integer, Integer> getClusterDistribution();
+	public JFreeChart createClusterDistributionImageFile(
+			Map<Double, Integer> degreeDistribution, String fileName)
+			throws IOException;
+
 }

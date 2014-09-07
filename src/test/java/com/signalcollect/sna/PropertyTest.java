@@ -37,14 +37,12 @@ public class PropertyTest {
 
 	private String testFile = "/Users/flaviokeller/Desktop/examplegraph_separated.gml";
 
-//	@Before
-//	public void setUp() {
-//		scgc = new DegreeSignalCollectGephiConnectorImpl(testFile);
-//	}
-
 	@Test
 	public void propertyTest() {
-		scgc = new DegreeSignalCollectGephiConnectorImpl(testFile);
+		if (scgc == null) {
+			scgc = new DegreeSignalCollectGephiConnectorImpl(testFile);
+		}
+		scgc.executeGraph();
 		props = scgc.getGraphProperties();
 		assertEquals(13, props.calcSize());
 		assertEquals(0.135, props.calcDensity(), 0.01);
@@ -54,16 +52,28 @@ public class PropertyTest {
 
 	@Test
 	public void degreeDistributionTest() {
-		scgc = new DegreeSignalCollectGephiConnectorImpl(testFile);
-		Map<Integer,Integer> dd = scgc.getDegreeDistrbution();
+		if (scgc == null) {
+			scgc = new DegreeSignalCollectGephiConnectorImpl(testFile);
+		}
+		scgc.executeGraph();
+		Map<Integer, Integer> dd = scgc.getDegreeDistribution();
 		assertEquals(Integer.valueOf(4), dd.get(Integer.valueOf(2)));
 		assertEquals(Integer.valueOf(1), dd.get(Integer.valueOf(6)));
 		assertNull(dd.get(Integer.valueOf(1)));
 	}
-	
+
 	@Test
-	public void clusterDistributionTest(){
-		
+	public void clusterDistributionTest() {
+		if (scgc == null) {
+			scgc = new DegreeSignalCollectGephiConnectorImpl(testFile);
+		}
+		scgc.executeGraph();
+		Map<Double, Integer> cd = scgc.getClusterDistribution();
+		assertEquals(6, cd.get(0.333).intValue());
+		assertEquals(5, cd.get(0.5).intValue());
+		assertEquals(1, cd.get(0.133).intValue());
+		assertEquals(1, cd.get(0.25).intValue());
+
 	}
 
 }
