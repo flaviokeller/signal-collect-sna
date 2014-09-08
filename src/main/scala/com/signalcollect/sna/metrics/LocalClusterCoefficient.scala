@@ -31,7 +31,7 @@ import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.DefaultEdge
 
-object LocalClusterCoefficient extends App {
+object LocalClusterCoefficient {
 
   def run(graph: Graph[Any, Any]): ExecutionResult = {
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)

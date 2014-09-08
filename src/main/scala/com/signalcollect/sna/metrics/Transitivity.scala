@@ -35,10 +35,10 @@ import com.signalcollect.DefaultEdge
 import scala.collection.JavaConverters._
 import com.signalcollect.sna.ComputationResults
 
-object Transitivity extends App {
+object Transitivity {
 
-  run(ParserImplementor.getGraph("/Users/flaviokeller/Desktop/miniexamplegraph.gml",
-    SNAClassNames.TRANSITIVITY))
+  //  run(ParserImplementor.getGraph("/Users/flaviokeller/Desktop/miniexamplegraph.gml",
+  //    SNAClassNames.TRANSITIVITY))
   def run(graph: Graph[Any, Any]): ExecutionResult = {
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
@@ -60,46 +60,48 @@ object Transitivity extends App {
           d._2.neighbours += Integer.valueOf(o._1.toString)
         }
       }
+      //      countMap ++= getCounts(d._2, vertexMap.toMap)
+      for (neighbour <- d._2.neighbours) {
+        if (Integer.valueOf(d._2.id.toString) < neighbour) {
+          var triadType = -1;
+          val neighbourVertex = vertexMap.get(neighbour).get
 
-      countMap ++= getCounts(d._2, vertexMap.toMap)
-      //      for (neighbour <- d._2.neighbours) {
-      //        if (Integer.valueOf(d._2.id.toString) < neighbour) {
-      //          var triadType = -1;
-      //          val neighbourVertex = vertexMap.get(neighbour).get
-      //
-      //          val neighboursOfBothVertices = d._2.neighbours union neighbourVertex.neighbours //common neighbours?
-      //
-      //          if (d._2.outgoingEdges.contains(neighbourVertex.id) && neighbourVertex.outgoingEdges.contains(d._2.id)) {
-      //            triadType = 3;
-      //          } else {
-      //            triadType = 2;
-      //          }
-      //          var countValue = countMap.get(triadType).getOrElse(0)
-      //          countMap += ((triadType, countValue + (vertexMap.size - d._2.outgoingEdges.size - 2)))
-      //
-      //          for (neighbourOfBoth <- neighboursOfBothVertices) {
-      //            if (neighbour < neighbourOfBoth || (Integer.valueOf(d._2.id.toString) < neighbourOfBoth && neighbourOfBoth < neighbour && !d._2.neighbours.contains(neighbourOfBoth))) {
-      //              val neighbourOfBothVertex = vertexMap.get(neighbourOfBoth).get
-      //
-      //              triadType = SignalCollectSNAConstants.codeToType(triCode(d._2, neighbourVertex, neighbourOfBothVertex))
-      //              countValue = countMap.get(triadType).getOrElse(0)
-      //              countMap += ((triadType, countValue + 1))
-      //            }
-      //
-      //          }
-      //        }
-      //      }
+          val neighboursOfBothVertices = d._2.neighbours union neighbourVertex.neighbours diff Set(d._1,neighbour) //common neighbours?
+
+          if (d._2.outgoingEdges.contains(neighbourVertex.id) && neighbourVertex.outgoingEdges.contains(d._2.id)) {
+            triadType = 3;
+          } else {
+            triadType = 2;
+          }
+          var countValue = countMap.get(triadType).getOrElse(0)
+
+          countMap += ((triadType, countValue + (vertexMap.size - neighboursOfBothVertices.size - 2)))
+          for (neighbourOfBoth <- neighboursOfBothVertices) {
+            if (neighbour < neighbourOfBoth || (Integer.valueOf(d._2.id.toString) < neighbourOfBoth && neighbourOfBoth < neighbour && !d._2.neighbours.contains(neighbourOfBoth))) {
+              val neighbourOfBothVertex = vertexMap.get(neighbourOfBoth).get
+
+              triadType = SignalCollectSNAConstants.codeToType(triCode(d._2, neighbourVertex, neighbourOfBothVertex))
+              println("triadType: "+ triadType+" id: " + d._1 + " neighbour: " + neighbour + " neighbour " + neighbourOfBoth)
+
+              countValue = countMap.get(triadType).getOrElse(0)
+              countMap += ((triadType, countValue + 1))
+            }
+
+          }
+        }
+      }
       var sum = 0
       for (i <- 2 to 16) {
         sum += countMap.get(i).getOrElse(0)
       }
       countMap += ((1, ((vertexMap.size * (vertexMap.size - 1) * (vertexMap.size - 2)) / 6) - sum))
     }
+
     for (count <- countMap) {
       treeMap.put(count._1.toString, Integer.valueOf(count._2))
     }
-    for(i<-1 to 16){
-      if(treeMap.get(i.toString) == null){
+    for (i <- 1 to 16) {
+      if (treeMap.get(i.toString) == null) {
         treeMap.put(i.toString, Integer.valueOf(0))
       }
     }
@@ -185,7 +187,7 @@ object Transitivity extends App {
   }
 
 }
-class TransitivityVertex(id: Any) extends DataGraphVertex(id, 0) {
+class TransitivityVertex(id: Int) extends DataGraphVertex(id, 0) {
   type Signal = Int
   type State = Int
   var neighbours = scala.collection.mutable.Set[Int]()

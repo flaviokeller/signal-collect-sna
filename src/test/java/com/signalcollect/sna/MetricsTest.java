@@ -97,11 +97,12 @@ public class MetricsTest {
 	public void triadCensusTest() {
 		scgc = new TransitivitySignalCollectGephiConnectorImpl(testFile);
 		scgc.executeGraph();
-		assertEquals(256, scgc.getAll().get(String.valueOf(1)));
+		assertEquals(107, scgc.getAll().get(String.valueOf(1)));
 		assertEquals(1, scgc.getAll().get(String.valueOf(14)));
 		assertEquals(0, scgc.getAll().get(String.valueOf(16)));
-		assertEquals(10, scgc.getAll().get(String.valueOf(2)));
-		assertEquals(1, scgc.getAll().get(String.valueOf(5)));
+		assertEquals(146, scgc.getAll().get(String.valueOf(2)));
+		assertEquals(2, scgc.getAll().get(String.valueOf(10)));
+		assertEquals(6, scgc.getAll().get(String.valueOf(9)));
 	}
 
 }
