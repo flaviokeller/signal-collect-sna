@@ -37,8 +37,6 @@ import com.signalcollect.sna.ComputationResults
 
 object Transitivity {
 
-  //  run(ParserImplementor.getGraph("/Users/flaviokeller/Desktop/miniexamplegraph.gml",
-  //    SNAClassNames.TRANSITIVITY))
   def run(graph: Graph[Any, Any]): ExecutionResult = {
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
@@ -66,7 +64,7 @@ object Transitivity {
           var triadType = -1;
           val neighbourVertex = vertexMap.get(neighbour).get
 
-          val neighboursOfBothVertices = d._2.neighbours union neighbourVertex.neighbours diff Set(d._1,neighbour) //common neighbours?
+          val neighboursOfBothVertices = d._2.neighbours union neighbourVertex.neighbours diff Set(d._1, neighbour) //common neighbours?
 
           if (d._2.outgoingEdges.contains(neighbourVertex.id) && neighbourVertex.outgoingEdges.contains(d._2.id)) {
             triadType = 3;
@@ -81,7 +79,6 @@ object Transitivity {
               val neighbourOfBothVertex = vertexMap.get(neighbourOfBoth).get
 
               triadType = SignalCollectSNAConstants.codeToType(triCode(d._2, neighbourVertex, neighbourOfBothVertex))
-              println("triadType: "+ triadType+" id: " + d._1 + " neighbour: " + neighbour + " neighbour " + neighbourOfBoth)
 
               countValue = countMap.get(triadType).getOrElse(0)
               countMap += ((triadType, countValue + 1))
