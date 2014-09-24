@@ -73,7 +73,7 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _,Any,Any]], fileName: String) 
     var numberOfReciprocalPaths = 0
     for (targetVertex <- mapOfShortestPathsForTargetVertices) {
       for (path <- targetVertex._2) {
-        val reciprocalPathExists = !mapOfShortestPathsForTargetVertices.get(path.sourceVertexId).get.filter(p => p.sourceVertexId == path.targetVertexId && p.targetVertexId == path.sourceVertexId).isEmpty
+        val reciprocalPathExists = !mapOfShortestPathsForTargetVertices.get(path.sourceVertexId).getOrElse(List()).filter(p => p.sourceVertexId == path.targetVertexId && p.targetVertexId == path.sourceVertexId).isEmpty
         if (reciprocalPathExists) numberOfReciprocalPaths += 1
       }
     }

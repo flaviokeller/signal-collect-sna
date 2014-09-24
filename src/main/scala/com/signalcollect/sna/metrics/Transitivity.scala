@@ -30,6 +30,7 @@ import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.constants.SignalCollectSNAConstants
 import com.signalcollect.DefaultEdge
+import scala.collection.mutable.SynchronizedBuffer
 
 object Transitivity {
 
@@ -38,7 +39,7 @@ object Transitivity {
     val stats = graph.execute(execmode)
     graph.awaitIdle
 
-    var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]]
+    var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _,Any,Any]]
     graph.foreachVertex(v => vertexArray += v)
     var vertexMap = SortedMap[Int, TransitivityVertex]()
     for (vertex <- vertexArray) {

@@ -33,7 +33,7 @@ object PathCollector {
 
   def run(pGraph: Graph[Any, Any]): ArrayBuffer[Vertex[Any, _, Any, Any]] = {
 
-    var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]]
+    var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
     var graph: Graph[Any, Any] = null
     if (pGraph == null) {
       graph = GraphBuilder.build

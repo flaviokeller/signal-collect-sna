@@ -23,13 +23,14 @@ import java.math.MathContext
 import scala.collection.mutable.ArrayBuffer
 import scala.math.BigDecimal
 import com.signalcollect.DataGraphVertex
+import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
-import com.signalcollect.DefaultEdge
+import scala.collection.mutable.SynchronizedBuffer
 
 object PageRank {
   final def run(graph: Graph[Any, Any]): ExecutionResult = {
@@ -40,16 +41,16 @@ object PageRank {
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
     graph.awaitIdle
-    var s = new ArrayBuffer[Vertex[Any, _, Any, Any]]
-    graph.foreachVertex(v => s += v)
+    var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
+    graph.foreachVertex(v => vertexArray += v)
     graph.shutdown
-    new ExecutionResult(new ComputationResults(avgVertex.state, filterInteger(s)), s)
+    new ExecutionResult(new ComputationResults(avgVertex.state, filterInteger(vertexArray)), vertexArray)
   }
 
   def filterInteger(vertexArray: ArrayBuffer[Vertex[Any, _, Any, Any]]): java.util.Map[String, Object] = {
     var vertices = new java.util.TreeMap[String, Object]
     for (vertex <- vertexArray) {
-      vertices.put(vertex.id.toString, vertex.state.asInstanceOf[Object])
+      vertices.put(vertex.id.toString, vertex.state.asInstanceOf[java.lang.Double])
     }
     vertices
   }

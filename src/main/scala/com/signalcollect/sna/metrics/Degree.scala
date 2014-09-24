@@ -31,6 +31,9 @@ import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.DefaultEdge
+import scala.collection.mutable.SynchronizedSet
+import scala.collection.immutable.HashSet
+import scala.collection.mutable.SynchronizedBuffer
 
 object Degree {
 
@@ -49,11 +52,11 @@ object Degree {
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     graph.execute(execmode)
     graph.awaitIdle
-    var s = new ArrayBuffer[Vertex[Any, _, Any, Any]]
-    graph.foreachVertex(v => s += v)
+    var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
+    graph.foreachVertex(v => vertexArray += v)
 
     graph.shutdown
-    new ExecutionResult(new ComputationResults(BigDecimal(avgVertex.state).round(new MathContext(3)).toDouble, filterInteger(s)), s)
+    new ExecutionResult(new ComputationResults(BigDecimal(avgVertex.state).round(new MathContext(3)).toDouble, filterInteger(vertexArray)), vertexArray)
   }
 
   def filterInteger(vertexArray: ArrayBuffer[Vertex[Any, _, Any, Any]]): java.util.TreeMap[String, Object] = {

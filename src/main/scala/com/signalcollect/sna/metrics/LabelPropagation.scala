@@ -28,6 +28,7 @@ import com.signalcollect.sna.constants.SNAClassNames
 import com.signalcollect.sna.parser.ParserImplementor
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.DefaultEdge
+import scala.collection.mutable.SynchronizedBuffer
 
 object LabelPropagation extends App {
 
@@ -35,7 +36,7 @@ object LabelPropagation extends App {
   val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
   val stats = graph.execute(execmode)
   graph.awaitIdle
-  var s = new ArrayBuffer[Vertex[Any, _,Any,Any]] 
+  var s = new ArrayBuffer[Vertex[Any, _,Any,Any]] with SynchronizedBuffer[Vertex[Any, _,Any,Any]]
   var labelDistribution = scala.collection.mutable.Map[String, Int]()
   graph.foreachVertex(v => s += v)
   for (v <- s) {
