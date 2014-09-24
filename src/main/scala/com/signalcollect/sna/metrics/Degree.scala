@@ -20,21 +20,22 @@
 package com.signalcollect.sna.metrics
 
 import java.math.MathContext
+
+import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SynchronizedBuffer
+import scala.collection.mutable.SynchronizedMap
+
+import com.signalcollect.AbstractVertex
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
+import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
-import com.signalcollect.GraphBuilder
-import scala.collection.mutable.SynchronizedMap
-import scala.collection.SortedMap
-import scala.collection.mutable.HashMap
-import scala.collection.JavaConverters._
 
 object Degree {
 
@@ -49,21 +50,21 @@ object Degree {
       graph = pGraph
     }
     graph.addVertex(avgVertex)
-    graph.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(v.id, new AverageDegreeEdge(avgVertex.id)))
-    graph.foreachVertex((v: Vertex[Any, _]) => graph.addEdge(avgVertex.id, new AverageDegreeEdge(v.id)))
+    graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(v.id, new AverageDegreeEdge(avgVertex.id)))
+    graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(avgVertex.id, new AverageDegreeEdge(v.id)))
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
     graph.awaitIdle
-    var s = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
-//    var t = new HashMap[Any, Any] with SynchronizedMap[Any, Any]
-        graph.foreachVertex(v => s += v)
-//    graph.foreachVertex(v => t.put(v.id, v.state))
-    
+    var s = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
+    //    var t = new HashMap[Any, Any] with SynchronizedMap[Any, Any]
+    graph.foreachVertex(v => s += v)
+    //    graph.foreachVertex(v => t.put(v.id, v.state))
+
     graph.shutdown
     new ExecutionResult(new ComputationResults(BigDecimal(avgVertex.state).round(new MathContext(3)).toDouble, filterInteger(s)), s)
   }
 
-  def filterInteger(l: ArrayBuffer[Vertex[Any, _]]): java.util.TreeMap[String, Object] = {
+  def filterInteger(l: ArrayBuffer[Vertex[Any, _, Any, Any]]): java.util.TreeMap[String, Object] = {
     var vertices = new java.util.TreeMap[String, Object]
     for (vertex <- l) {
       vertices.put(vertex.id.toString, vertex.state.asInstanceOf[Object])

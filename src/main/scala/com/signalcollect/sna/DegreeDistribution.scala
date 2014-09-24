@@ -28,14 +28,15 @@ import scala.collection.mutable.SynchronizedBuffer
 import com.signalcollect.GraphBuilder
 import com.signalcollect.sna.parser.ParserImplementor
 import com.signalcollect.sna.constants.SNAClassNames
+import com.signalcollect.AbstractVertex
 
 class DegreeDistribution(fileName: String) {
 
-  var degreeVertexArray = new ArrayBuffer[Vertex[Any, _]]()
+  var degreeVertexArray = new ArrayBuffer[Vertex[Any, _,Any,Any]]()
 
   var degreeDistribution = new java.util.TreeMap[Integer, Integer]()
 
-  def setVertexArray(dva: ArrayBuffer[Vertex[Any, _]]) = degreeVertexArray = dva
+  def setVertexArray(dva: ArrayBuffer[Vertex[Any, _,Any,Any]]) = degreeVertexArray = dva
   override def toString(): String = "degree Distribution: " + degreeDistribution
 
   def gatherDegreeeDistribution(): java.util.TreeMap[Integer, Integer] = {

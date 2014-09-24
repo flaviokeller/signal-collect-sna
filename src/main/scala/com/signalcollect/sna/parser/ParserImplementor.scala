@@ -23,17 +23,22 @@ import scala.io.Source
 import com.signalcollect.DefaultEdge
 import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
+import com.signalcollect.sna.PathCollectorEdge
 import com.signalcollect.sna.PathCollectorVertex
+import com.signalcollect.sna.constants.SNAClassNames
 import com.signalcollect.sna.metrics.DegreeEdge
 import com.signalcollect.sna.metrics.DegreeVertex
-import com.signalcollect.sna.metrics.PageRankEdge
-import com.signalcollect.sna.metrics.PageRankVertex
-import com.signalcollect.sna.PathCollectorEdge
 import com.signalcollect.sna.metrics.LocalClusterCoefficientEdge
 import com.signalcollect.sna.metrics.LocalClusterCoefficientVertex
-import com.signalcollect.sna.metrics.TransitivityVertex
+import com.signalcollect.sna.metrics.LabelPropagationVertex
+import com.signalcollect.sna.metrics.LabelPropagationEdge
+import com.signalcollect.sna.metrics.PageRankEdge
+import com.signalcollect.sna.metrics.PageRankVertex
 import com.signalcollect.sna.metrics.TransitivityEdge
-import com.signalcollect.sna.constants.SNAClassNames
+import com.signalcollect.sna.metrics.TransitivityVertex
+import edu.uci.ics.jung.graph.DirectedSparseGraph
+import com.signalcollect.sna.metrics.NeighborMajorityLabelPropagationVertex
+import com.signalcollect.sna.metrics.NeighborMajorityLabelPropagationEdge
 
 object ParserImplementor {
 
@@ -44,7 +49,7 @@ object ParserImplementor {
     parsedGraphs foreach {
       case g: UndirectedGraph =>
         g.nodes.foreach({ n: Node =>
-          graph.addVertex(createVertex(n.id, className))
+          graph.addVertex(createVertex(n, className))
         })
         g.edges.foreach({ e: Edge =>
           graph.addEdge(e.source, createEdge(e.target, className))
@@ -57,13 +62,35 @@ object ParserImplementor {
     graph
   }
 
-  def createVertex(id: Int, vertexClass: SNAClassNames): Vertex[Any, _] = {
+  def getPlotGraph(fileName: String): edu.uci.ics.jung.graph.Graph[Integer, String] = {
+    val parser = new GmlParser
+    val parsedGraphs: List[Graph] = parser.parse(Source.fromFile(fileName)("ISO8859_1"))
+    //    val parent = graph.getDefaultParent
+    val diGraph = new DirectedSparseGraph[Integer, String]
+    parsedGraphs foreach {
+      case g: UndirectedGraph =>
+        g.nodes.foreach({ n: Node =>
+          //        diGraph.addVertex(n)
+        })
+        g.edges.foreach({ e: Edge =>
+          diGraph.addEdge(e.toString(), e.source, e.target)
+          g match {
+            case ug: UndirectedGraph => //add edges (Gegenrichtung, falls undirected graph)
+          }
+        })
+    }
+    diGraph
+  }
+  def createVertex(node: Node, vertexClass: SNAClassNames): Vertex[Any, _,Any,Any] = {
     vertexClass match {
-      case SNAClassNames.DEGREE => new DegreeVertex(id)
-      case SNAClassNames.PAGERANK => new PageRankVertex(id)
-      case SNAClassNames.PATH => new PathCollectorVertex(id)
-      case SNAClassNames.LOCALCLUSTERCOEFFICIENT => new LocalClusterCoefficientVertex(id)
-      case SNAClassNames.TRANSITIVITY => new TransitivityVertex(id)
+      case SNAClassNames.DEGREE => new DegreeVertex(node.id)
+      case SNAClassNames.PAGERANK => new PageRankVertex(node.id)
+      case SNAClassNames.PATH => new PathCollectorVertex(node.id)
+      case SNAClassNames.LOCALCLUSTERCOEFFICIENT => new LocalClusterCoefficientVertex(node.id)
+      case SNAClassNames.TRANSITIVITY => new TransitivityVertex(node.id)
+      case SNAClassNames.LABELPROPAGATION => new LabelPropagationVertex(node.id, node.label)
+      case SNAClassNames.NEIGHBORMAJORITYLABELPROPAGATION => new NeighborMajorityLabelPropagationVertex(node.id, node.label)
+
     }
   }
   def createEdge(targetId: Int, edgeClass: SNAClassNames): DefaultEdge[_] = {
@@ -73,6 +100,8 @@ object ParserImplementor {
       case SNAClassNames.PATH => new PathCollectorEdge(targetId)
       case SNAClassNames.LOCALCLUSTERCOEFFICIENT => new LocalClusterCoefficientEdge(targetId)
       case SNAClassNames.TRANSITIVITY => new TransitivityEdge(targetId)
+      case SNAClassNames.LABELPROPAGATION => new LabelPropagationEdge(targetId)
+      case SNAClassNames.NEIGHBORMAJORITYLABELPROPAGATION => new NeighborMajorityLabelPropagationEdge(targetId)
     }
   }
 

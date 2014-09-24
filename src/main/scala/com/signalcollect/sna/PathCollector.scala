@@ -20,11 +20,10 @@
 package com.signalcollect.sna
 
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.HashMap
-import scala.collection.SortedMap
 import scala.collection.mutable.SynchronizedBuffer
 import scala.collection.mutable.SynchronizedMap
 
+import com.signalcollect.AbstractVertex
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
@@ -35,9 +34,9 @@ import com.signalcollect.configuration.ExecutionMode
 
 object PathCollector {
 
-  def run(pGraph: Graph[Any, Any]): ArrayBuffer[Vertex[Any, _]] = {
+  def run(pGraph: Graph[Any, Any]): ArrayBuffer[Vertex[Any, _,Any,Any]] = {
 
-     var vertexArray = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
+    var vertexArray = new ArrayBuffer[Vertex[Any, _,Any,Any]] with SynchronizedBuffer[Vertex[Any, _,Any,Any]]
     var graph: Graph[Any, Any] = null
     if (pGraph == null) {
       graph = GraphBuilder.build
@@ -52,8 +51,7 @@ object PathCollector {
     vertexArray
   }
 
-  
-  def allShortestPathsAsMap(vertexArray:ArrayBuffer[PathCollectorVertex]): Map[Int, List[Path]] = {
+  def allShortestPathsAsMap(vertexArray: ArrayBuffer[PathCollectorVertex]): Map[Int, List[Path]] = {
     var shortestPathMap = scala.collection.mutable.Map[Int, List[Path]]()
     for (targetVertex <- vertexArray) {
       var pathList = scala.collection.mutable.ListBuffer[Path]()
@@ -66,10 +64,8 @@ object PathCollector {
     }
     shortestPathMap.toMap
   }
-  
- 
 
- def allShortestPathsAsList(vertexArray:ArrayBuffer[PathCollectorVertex]): List[Path] = {
+  def allShortestPathsAsList(vertexArray: ArrayBuffer[PathCollectorVertex]): List[Path] = {
     var shortestPathList = scala.collection.mutable.ListBuffer[Path]()
     for (targetVertex <- vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]]) {
       try {

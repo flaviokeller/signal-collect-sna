@@ -20,17 +20,16 @@
 package com.signalcollect.sna.metrics
 
 import java.math.MathContext
-
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SynchronizedBuffer
-
 import com.signalcollect.Graph
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.Path
 import com.signalcollect.sna.PathCollector
 import com.signalcollect.sna.PathCollectorVertex
+import com.signalcollect.Vertex
 
 object Closeness {
 
@@ -53,7 +52,7 @@ object Closeness {
     BigDecimal(closeness / shortestPathList.size.toDouble).round(new MathContext(3)).toDouble
   }
 
-  def getClosenessForAll(vertices: ArrayBuffer[com.signalcollect.Vertex[Any, _]], shortestPathList: List[Path]): java.util.Map[String, Object] = {
+  def getClosenessForAll(vertices: ArrayBuffer[Vertex[Any, _,Any,Any]], shortestPathList: List[Path]): java.util.Map[String, Object] = {
     var closenessMap = new java.util.TreeMap[String, Object]
     for (s <- vertices) {
       val pathsThroughVertex = shortestPathList.filter(p => p.sourceVertexId == s.id)

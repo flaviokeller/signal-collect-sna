@@ -28,6 +28,8 @@ import scala.collection.JavaConverters._
 import java.math.MathContext
 import scala.collection.mutable.ArrayBuffer
 import com.signalcollect.sna.PathCollectorVertex
+import com.signalcollect.AbstractVertex
+import com.signalcollect.Vertex
 
 object Betweenness {
   def run(graph: Graph[Any, Any]): ExecutionResult = {
@@ -37,7 +39,7 @@ object Betweenness {
     new ExecutionResult(new ComputationResults(calcAvg(betweennessMap), betweennessMap), vertexArray)
   }
 
-  def getBetweennessForAll(vertices: ArrayBuffer[com.signalcollect.Vertex[Any, _]], shortestPathList: List[Path]): java.util.Map[String, Object] = {
+  def getBetweennessForAll(vertices: ArrayBuffer[Vertex[Any, _,Any,Any]], shortestPathList: List[Path]): java.util.Map[String, Object] = {
     var betweennessMap = new java.util.TreeMap[String, Object]
     for (s <- vertices) {
       val pathsThroughVertex = shortestPathList.filter(p => p.sourceVertexId != s.id && p.targetVertexId != s.id && p.path.contains(s.id))

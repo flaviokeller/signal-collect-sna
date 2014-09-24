@@ -187,7 +187,7 @@ public class PageRankSignalCollectGephiConnectorImpl implements
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new PageRankSignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/examplegraph_separated.gml");
+				"/Users/flaviokeller/Desktop/examplegraph.gml");
 		a.executeGraph();
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();

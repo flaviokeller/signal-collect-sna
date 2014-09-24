@@ -11,17 +11,18 @@ import com.sun.java.util.jar.pack.Histogram
 import com.sun.java.util.jar.pack.Histogram
 import com.signalcollect.sna.parser.ParserImplementor
 import com.signalcollect.sna.constants.SNAClassNames
+import com.signalcollect.AbstractVertex
 
-class GraphProperties(l: ArrayBuffer[Vertex[Any, _]], fileName: String) {
+class GraphProperties(l: ArrayBuffer[Vertex[Any, _,Any,Any]], fileName: String) {
 
   var size: Integer = null
   var density: Double = null
   var diameter: Double = null
   var reciprocity: Double = null
 
-  var pathVertexArray = ArrayBuffer[Vertex[Any, _]]()
+  var pathVertexArray = ArrayBuffer[Vertex[Any, _,Any,Any]]()
 
-  def setPathVertexArray(pva: ArrayBuffer[Vertex[Any, _]]) = pathVertexArray = pva
+  def setPathVertexArray(pva: ArrayBuffer[Vertex[Any, _,Any,Any]]) = pathVertexArray = pva
 
   override def toString(): String = {
     if(size == null){

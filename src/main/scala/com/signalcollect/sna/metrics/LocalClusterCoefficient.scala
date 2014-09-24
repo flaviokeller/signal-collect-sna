@@ -38,7 +38,7 @@ object LocalClusterCoefficient {
     val stats = graph.execute(execmode)
     graph.awaitIdle
 
-    var s = new ArrayBuffer[Vertex[Any, _]] with SynchronizedBuffer[Vertex[Any, _]]
+    var s = new ArrayBuffer[Vertex[Any, _,Any,Any]] with SynchronizedBuffer[Vertex[Any, _,Any,Any]]
     graph.foreachVertex(v => s += v)
     var vertexMap = scala.collection.mutable.Map[Int, LocalClusterCoefficientVertex]()
     for (v <- s) {
