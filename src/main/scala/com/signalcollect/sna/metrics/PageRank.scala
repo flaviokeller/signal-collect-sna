@@ -21,21 +21,15 @@ package com.signalcollect.sna.metrics
 
 import java.math.MathContext
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.SynchronizedBuffer
+import scala.math.BigDecimal
 import com.signalcollect.DataGraphVertex
-import com.signalcollect.DefaultEdge
-import com.signalcollect.Edge
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
-import com.signalcollect.GraphEditor
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
-import com.signalcollect.sna.GraphProperties
-import java.math.MathContext
-import scala.math.BigDecimal
-import com.signalcollect.AbstractVertex
+import com.signalcollect.DefaultEdge
 
 object PageRank {
   final def run(graph: Graph[Any, Any]): ExecutionResult = {
@@ -46,15 +40,15 @@ object PageRank {
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
     graph.awaitIdle
-    var s = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
+    var s = new ArrayBuffer[Vertex[Any, _, Any, Any]]
     graph.foreachVertex(v => s += v)
     graph.shutdown
     new ExecutionResult(new ComputationResults(avgVertex.state, filterInteger(s)), s)
   }
 
-  def filterInteger(l: ArrayBuffer[Vertex[Any, _, Any, Any]]): java.util.Map[String, Object] = {
+  def filterInteger(vertexArray: ArrayBuffer[Vertex[Any, _, Any, Any]]): java.util.Map[String, Object] = {
     var vertices = new java.util.TreeMap[String, Object]
-    for (vertex <- l) {
+    for (vertex <- vertexArray) {
       vertices.put(vertex.id.toString, vertex.state.asInstanceOf[Object])
     }
     vertices
@@ -70,27 +64,19 @@ class PageRankVertex(id: Any, dampingFactor: Double = 0.85) extends DataGraphVer
    *  received from neighbors and the damping factor.
    */
   def collect: State = {
-    val pageRankSignals = mostRecentSignalMap.filter(signal => !signal._1 .equals("Average")).values.toList //getClass.toString().contains("Average")).values.toList
+    val pageRankSignals = mostRecentSignalMap.filter(signal => !signal._1.equals("Average")).values.toList //getClass.toString().contains("Average")).values.toList
     var sum = 0.0
     if (pageRankSignals.isEmpty) {
       BigDecimal.valueOf(state).round(new MathContext(3)).toDouble
     } else {
       for (signal <- pageRankSignals) {
-        sum += java.lang.Double.valueOf(signal._2.toString)
+        sum += signal._2.asInstanceOf[Double]
       }
       val st = BigDecimal.valueOf(1 - dampingFactor + dampingFactor * sum).round(new MathContext(3)).toDouble
       if (id == 5) println(st)
       st
     }
   }
-
-  //  override def addEdge(e: Edge[_], graphEditor: GraphEditor[Any, Any]): Boolean = {
-  //    val added = super.addEdge(e, graphEditor)
-  //    if (added & e.weight < sumOfOutWeights & e.isInstanceOf[AveragePageRankEdge]) {
-  //      sumOfOutWeights -= e.weight
-  //    }
-  //    added
-  //  }
   override def scoreSignal: Double = {
     lastSignalState match {
       case None => 1
@@ -121,22 +107,11 @@ class AveragePageRankVertex(id: String) extends DataGraphVertex(id, 0.0) {
   type Signal = Tuple2[Any, Any]
   type State = Double
 
-  //  override def addEdge(e: Edge[_], graphEditor: GraphEditor[Any, Any]): Boolean = {
-  //    var added = super.addEdge(e, graphEditor)
-  //    if (added & e.weight < sumOfOutWeights & e.isInstanceOf[AveragePageRankEdge]) {
-  //      sumOfOutWeights -= e.weight
-  //      if (e.sourceId == e.targetId) {
-  //        added = false
-  //      }
-  //    }
-  //    added
-  //  }
-
   def collect: State = {
     val pageRankSignals = mostRecentSignalMap.filter(signal => !signal._1.equals("Average")).values.toList //getClass.toString().contains("Average")).values.toList
     var sum = 0.0
     for (signal <- pageRankSignals) {
-      sum += java.lang.Double.valueOf(signal._2.toString)
+      sum += signal._2.asInstanceOf[Double]
     }
     scala.math.BigDecimal.valueOf(sum / pageRankSignals.size.toDouble).round(new MathContext(3)).toDouble
   }

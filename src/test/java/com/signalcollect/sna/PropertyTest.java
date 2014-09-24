@@ -19,11 +19,11 @@
 
 package com.signalcollect.sna;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.signalcollect.sna.gephiconnectors.DegreeSignalCollectGephiConnectorImpl;

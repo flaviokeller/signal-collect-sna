@@ -20,8 +20,8 @@
 package com.signalcollect.sna
 
 import scala.collection.mutable.ArrayBuffer
+
 import com.signalcollect.Vertex
-import com.signalcollect.AbstractVertex
 
 class ExecutionResult(val compRes: ComputationResults, val vertexArray: ArrayBuffer[Vertex[Any, _,Any,Any]]) {
 

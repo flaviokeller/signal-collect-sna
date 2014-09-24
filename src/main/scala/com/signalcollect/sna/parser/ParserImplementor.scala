@@ -19,7 +19,9 @@
 
 package com.signalcollect.sna.parser
 
+import scala.io.Codec.string2codec
 import scala.io.Source
+
 import com.signalcollect.DefaultEdge
 import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
@@ -28,17 +30,18 @@ import com.signalcollect.sna.PathCollectorVertex
 import com.signalcollect.sna.constants.SNAClassNames
 import com.signalcollect.sna.metrics.DegreeEdge
 import com.signalcollect.sna.metrics.DegreeVertex
+import com.signalcollect.sna.metrics.LabelPropagationEdge
+import com.signalcollect.sna.metrics.LabelPropagationVertex
 import com.signalcollect.sna.metrics.LocalClusterCoefficientEdge
 import com.signalcollect.sna.metrics.LocalClusterCoefficientVertex
-import com.signalcollect.sna.metrics.LabelPropagationVertex
-import com.signalcollect.sna.metrics.LabelPropagationEdge
+import com.signalcollect.sna.metrics.NeighborMajorityLabelPropagationEdge
+import com.signalcollect.sna.metrics.NeighborMajorityLabelPropagationVertex
 import com.signalcollect.sna.metrics.PageRankEdge
 import com.signalcollect.sna.metrics.PageRankVertex
 import com.signalcollect.sna.metrics.TransitivityEdge
 import com.signalcollect.sna.metrics.TransitivityVertex
+
 import edu.uci.ics.jung.graph.DirectedSparseGraph
-import com.signalcollect.sna.metrics.NeighborMajorityLabelPropagationVertex
-import com.signalcollect.sna.metrics.NeighborMajorityLabelPropagationEdge
 
 object ParserImplementor {
 

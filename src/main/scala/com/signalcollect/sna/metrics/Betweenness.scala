@@ -19,17 +19,19 @@
 
 package com.signalcollect.sna.metrics
 
+import java.math.MathContext
+
+import scala.BigDecimal
+import scala.collection.JavaConverters.mapAsScalaMapConverter
+import scala.collection.mutable.ArrayBuffer
+
+import com.signalcollect.Graph
+import com.signalcollect.Vertex
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.Path
 import com.signalcollect.sna.PathCollector
-import com.signalcollect.Graph
-import scala.collection.JavaConverters._
-import java.math.MathContext
-import scala.collection.mutable.ArrayBuffer
 import com.signalcollect.sna.PathCollectorVertex
-import com.signalcollect.AbstractVertex
-import com.signalcollect.Vertex
 
 object Betweenness {
   def run(graph: Graph[Any, Any]): ExecutionResult = {
@@ -41,10 +43,10 @@ object Betweenness {
 
   def getBetweennessForAll(vertices: ArrayBuffer[Vertex[Any, _,Any,Any]], shortestPathList: List[Path]): java.util.Map[String, Object] = {
     var betweennessMap = new java.util.TreeMap[String, Object]
-    for (s <- vertices) {
-      val pathsThroughVertex = shortestPathList.filter(p => p.sourceVertexId != s.id && p.targetVertexId != s.id && p.path.contains(s.id))
+    for (betweennessVertex <- vertices) {
+      val pathsThroughVertex = shortestPathList.filter(path => path.sourceVertexId != betweennessVertex.id && path.targetVertexId != betweennessVertex.id && path.path.contains(betweennessVertex.id))
       val betweenness = BigDecimal(pathsThroughVertex.size.toDouble / shortestPathList.size.toDouble).round(new MathContext(3)).toDouble
-      betweennessMap.put(s.id.toString, betweenness.asInstanceOf[Object])
+      betweennessMap.put(betweennessVertex.id.toString, betweenness.asInstanceOf[Object])
     }
     betweennessMap
   }

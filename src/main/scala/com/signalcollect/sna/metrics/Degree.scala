@@ -20,15 +20,9 @@
 package com.signalcollect.sna.metrics
 
 import java.math.MathContext
-
-import scala.collection.JavaConverters._
+import scala.BigDecimal
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.SynchronizedBuffer
-import scala.collection.mutable.SynchronizedMap
-
-import com.signalcollect.AbstractVertex
 import com.signalcollect.DataGraphVertex
-import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
 import com.signalcollect.GraphBuilder
@@ -36,6 +30,7 @@ import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
+import com.signalcollect.DefaultEdge
 
 object Degree {
 
@@ -45,7 +40,6 @@ object Degree {
     var graph: Graph[Any, Any] = null
     if (pGraph == null) {
       graph = GraphBuilder.build
-      println("built new graph for degrees")
     } else {
       graph = pGraph
     }
@@ -53,20 +47,18 @@ object Degree {
     graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(v.id, new AverageDegreeEdge(avgVertex.id)))
     graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(avgVertex.id, new AverageDegreeEdge(v.id)))
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
-    val stats = graph.execute(execmode)
+    graph.execute(execmode)
     graph.awaitIdle
-    var s = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
-    //    var t = new HashMap[Any, Any] with SynchronizedMap[Any, Any]
+    var s = new ArrayBuffer[Vertex[Any, _, Any, Any]]
     graph.foreachVertex(v => s += v)
-    //    graph.foreachVertex(v => t.put(v.id, v.state))
 
     graph.shutdown
     new ExecutionResult(new ComputationResults(BigDecimal(avgVertex.state).round(new MathContext(3)).toDouble, filterInteger(s)), s)
   }
 
-  def filterInteger(l: ArrayBuffer[Vertex[Any, _, Any, Any]]): java.util.TreeMap[String, Object] = {
+  def filterInteger(vertexArray: ArrayBuffer[Vertex[Any, _, Any, Any]]): java.util.TreeMap[String, Object] = {
     var vertices = new java.util.TreeMap[String, Object]
-    for (vertex <- l) {
+    for (vertex <- vertexArray) {
       vertices.put(vertex.id.toString, vertex.state.asInstanceOf[Object])
     }
     vertices
@@ -99,7 +91,7 @@ class AverageDegreeVertex(id: String) extends DataGraphVertex(id, 0.0) {
     val degreeSignals = mostRecentSignalMap.filter(signal => !signal._2.getClass().toString().contains("Average")).values.toList
     var sum = 0
     for (signal <- degreeSignals) {
-      sum += Integer.valueOf(signal.state.toString)
+      sum += signal.state.asInstanceOf[Int]
     }
     BigDecimal(sum.toDouble / degreeSignals.size.toDouble).round(new MathContext(3)).toDouble
   }

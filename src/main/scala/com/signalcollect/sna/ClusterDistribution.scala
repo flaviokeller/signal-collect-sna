@@ -19,18 +19,11 @@
 
 package com.signalcollect.sna
 
-import com.signalcollect.Graph
-import scala.collection.mutable.ArrayBuffer
-import com.signalcollect.Vertex
-import com.signalcollect.sna.metrics.Degree
-import scala.collection.mutable.ArrayBuilder
-import scala.collection.mutable.SynchronizedBuffer
-import com.signalcollect.GraphBuilder
-import com.signalcollect.sna.parser.ParserImplementor
+import scala.collection.JavaConverters.mapAsScalaMapConverter
+
 import com.signalcollect.sna.constants.SNAClassNames
 import com.signalcollect.sna.metrics.LocalClusterCoefficient
-import com.signalcollect.sna.metrics.LocalClusterCoefficientVertex
-import scala.collection.JavaConverters._
+import com.signalcollect.sna.parser.ParserImplementor
 class ClusterDistribution(fileName: String) {
 
   var clusterVertexMap = Map[String, Object]()
@@ -47,11 +40,11 @@ class ClusterDistribution(fileName: String) {
       clusterVertexMap = LocalClusterCoefficient.run(clusteringGraph).compRes.vertexMap.asScala.toMap
     }
     val clusteringMap = new java.util.TreeMap[java.lang.Double, Integer]()
-    for (v <- clusterVertexMap) {
-      if (clusteringMap.keySet().contains(java.lang.Double.valueOf(v._2.toString()))) {
-        clusteringMap.put(java.lang.Double.valueOf(v._2.toString), clusteringMap.get(v._2) + 1)
+    for (clusterVertex <- clusterVertexMap) {
+      if (clusteringMap.keySet().contains(java.lang.Double.valueOf(clusterVertex._2.toString()))) {
+        clusteringMap.put(clusterVertex._2.asInstanceOf[Double], clusteringMap.get(clusterVertex._2) + 1)
       } else {
-        clusteringMap.put(java.lang.Double.valueOf(v._2.toString), 1)
+        clusteringMap.put(clusterVertex._2.asInstanceOf[Double], 1)
       }
     }
     clusteringMap

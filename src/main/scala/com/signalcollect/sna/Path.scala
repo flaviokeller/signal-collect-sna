@@ -19,11 +19,10 @@
 
 package com.signalcollect.sna
 
-import com.signalcollect.Vertex
-import scala.collection.mutable.LinkedList
+import scala.collection.mutable.ArrayBuffer
 
 class Path(val sourceVertexId: Int, val targetVertexId: Int) {
-  var path = scala.collection.mutable.ArrayBuffer(sourceVertexId, targetVertexId)
+  var path = ArrayBuffer(sourceVertexId, targetVertexId)
   override def toString(): String = {
     "Path(Source Vertex: " + sourceVertexId + " Target Vertex: " + targetVertexId + "\tVertices on Path: " + path + /*"\tNumber of Nodes on Path: " + length +*/ ")"
   }

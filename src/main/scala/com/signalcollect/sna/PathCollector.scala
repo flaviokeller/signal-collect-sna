@@ -21,22 +21,19 @@ package com.signalcollect.sna
 
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SynchronizedBuffer
-import scala.collection.mutable.SynchronizedMap
-
-import com.signalcollect.AbstractVertex
-import com.signalcollect.DataGraphVertex
-import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
 import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
+import com.signalcollect.DataGraphVertex
+import com.signalcollect.DefaultEdge
 
 object PathCollector {
 
-  def run(pGraph: Graph[Any, Any]): ArrayBuffer[Vertex[Any, _,Any,Any]] = {
+  def run(pGraph: Graph[Any, Any]): ArrayBuffer[Vertex[Any, _, Any, Any]] = {
 
-    var vertexArray = new ArrayBuffer[Vertex[Any, _,Any,Any]] with SynchronizedBuffer[Vertex[Any, _,Any,Any]]
+    var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]]
     var graph: Graph[Any, Any] = null
     if (pGraph == null) {
       graph = GraphBuilder.build
@@ -85,16 +82,16 @@ class PathCollectorVertex(id: Int) extends DataGraphVertex(id, ArrayBuffer[Path]
   var shortestPaths = ArrayBuffer[Path]()
   def collect: State = {
     var mostRecentPaths = new ArrayBuffer[Path]()
-    for (x <- mostRecentSignalMap.values) {
-      for (y <- x) {
-        val isNonExistentPath = allIncomingPaths.filter(p => p.path.sameElements(y.path) /* && p.sourceVertexId == y.sourceVertexId && p.targetVertexId == y.targetVertexId*/ ).isEmpty
+    for (pathArray <- mostRecentSignalMap.values) {
+      for (path <- pathArray) {
+        val isNonExistentPath = allIncomingPaths.filter(p => p.path.sameElements(path.path)).isEmpty
         if (isNonExistentPath) {
-          val existingShortestPath = shortestPaths.filter(p => p.sourceVertexId == y.sourceVertexId && p.targetVertexId == y.targetVertexId)
-          val incomingPath = new Path(y.sourceVertexId, y.targetVertexId)
-          incomingPath.path = y.path
+          val existingShortestPath = shortestPaths.filter(p => p.sourceVertexId == path.sourceVertexId && p.targetVertexId == path.targetVertexId)
+          val incomingPath = new Path(path.sourceVertexId, path.targetVertexId)
+          incomingPath.path = path.path
           determineShortest(existingShortestPath, incomingPath)
           allIncomingPaths += incomingPath
-          mostRecentPaths += y
+          mostRecentPaths += path
         }
       }
     }

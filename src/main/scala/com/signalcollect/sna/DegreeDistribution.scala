@@ -19,16 +19,12 @@
 
 package com.signalcollect.sna
 
-import com.signalcollect.Graph
 import scala.collection.mutable.ArrayBuffer
+
 import com.signalcollect.Vertex
-import com.signalcollect.sna.metrics.Degree
-import scala.collection.mutable.ArrayBuilder
-import scala.collection.mutable.SynchronizedBuffer
-import com.signalcollect.GraphBuilder
-import com.signalcollect.sna.parser.ParserImplementor
 import com.signalcollect.sna.constants.SNAClassNames
-import com.signalcollect.AbstractVertex
+import com.signalcollect.sna.metrics.Degree
+import com.signalcollect.sna.parser.ParserImplementor
 
 class DegreeDistribution(fileName: String) {
 
@@ -46,12 +42,12 @@ class DegreeDistribution(fileName: String) {
       degreeVertexArray = Degree.run(degreeGraph).vertexArray
     }
     val degreeDistrMap = new java.util.TreeMap[Integer, Integer]()
-    for (v <- degreeVertexArray) {
-      if (v.state.isInstanceOf[Int]) {
-        if (degreeDistrMap.keySet().contains(v.state)) {
-          degreeDistrMap.put(Integer.valueOf(v.state.toString), degreeDistrMap.get(v.state) + 1)
+    for (degreeVertex <- degreeVertexArray) {
+      if (degreeVertex.state.isInstanceOf[Int]) {
+        if (degreeDistrMap.keySet().contains(degreeVertex.state)) {
+          degreeDistrMap.put(degreeVertex.state.asInstanceOf[Int], degreeDistrMap.get(degreeVertex.state) + 1)
         } else {
-          degreeDistrMap.put(Integer.valueOf(v.state.toString), 1)
+          degreeDistrMap.put(degreeVertex.state.asInstanceOf[Int], 1)
         }
       }
     }

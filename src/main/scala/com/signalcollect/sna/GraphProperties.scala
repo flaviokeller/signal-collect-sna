@@ -1,17 +1,13 @@
 package com.signalcollect.sna
 
-import java.lang.Double
-import java.math.MathContext
 import scala.collection.mutable.ArrayBuffer
-import com.signalcollect.DataGraphVertex
-import com.signalcollect.Graph
-import com.signalcollect.Vertex
-import com.signalcollect.sna.metrics.Degree
-import com.sun.java.util.jar.pack.Histogram
-import com.sun.java.util.jar.pack.Histogram
-import com.signalcollect.sna.parser.ParserImplementor
 import com.signalcollect.sna.constants.SNAClassNames
-import com.signalcollect.AbstractVertex
+import com.signalcollect.sna.parser.ParserImplementor
+import com.signalcollect.Vertex
+import java.math.MathContext
+import com.signalcollect.DataGraphVertex
+import java.lang.Double
+
 
 class GraphProperties(l: ArrayBuffer[Vertex[Any, _,Any,Any]], fileName: String) {
 

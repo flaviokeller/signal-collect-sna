@@ -20,8 +20,8 @@
 package com.signalcollect.sna.metrics
 
 import java.math.MathContext
+import scala.BigDecimal
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.SynchronizedBuffer
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
@@ -38,11 +38,11 @@ object LocalClusterCoefficient {
     val stats = graph.execute(execmode)
     graph.awaitIdle
 
-    var s = new ArrayBuffer[Vertex[Any, _,Any,Any]] with SynchronizedBuffer[Vertex[Any, _,Any,Any]]
-    graph.foreachVertex(v => s += v)
+    var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]]
+    graph.foreachVertex(v => vertexArray += v)
     var vertexMap = scala.collection.mutable.Map[Int, LocalClusterCoefficientVertex]()
-    for (v <- s) {
-      vertexMap.put(Integer.valueOf(v.id.toString), v.asInstanceOf[LocalClusterCoefficientVertex])
+    for (vertex <- vertexArray) {
+      vertexMap.put(vertex.id.asInstanceOf[Int], vertex.asInstanceOf[LocalClusterCoefficientVertex])
     }
     graph.shutdown
 
@@ -55,7 +55,7 @@ object LocalClusterCoefficient {
     }
     val averageclcoeff = sumOfLCC / vertexMap.toMap.size.toDouble
 
-    new ExecutionResult(new ComputationResults(BigDecimal(averageclcoeff).round(new MathContext(3)).toDouble, treeMap), s)
+    new ExecutionResult(new ComputationResults(BigDecimal(averageclcoeff).round(new MathContext(3)).toDouble, treeMap), vertexArray)
   }
 
   def gatherNeighbours(vertex: LocalClusterCoefficientVertex, vertexMap: Map[Int, LocalClusterCoefficientVertex]): Double = {
@@ -64,12 +64,12 @@ object LocalClusterCoefficient {
     val neighbourSet = vertex.state.keySet.union(vertex.outgoingEdges.keySet.asInstanceOf[Set[Int]])
     val nrOfPossibleConnections = if (neighbourSet.size == 1) 1 else (neighbourSet.size * (neighbourSet.size - 1)).toDouble
     for (outgoingNeighbour <- vertex.outgoingEdges) {
-      val neighbourVertex = vertexMap.get(Integer.valueOf(outgoingNeighbour._2.targetId.toString)).get
-      if (!passedNeighbours.contains(Integer.valueOf(outgoingNeighbour._1.toString))) {
+      val neighbourVertex = vertexMap.get(outgoingNeighbour._2.targetId.asInstanceOf[Int]).get
+      if (!passedNeighbours.contains(outgoingNeighbour._1.asInstanceOf[Int])) {
         val outgoingneighboursOfneighbour = neighbourVertex.state.filter(p => neighbourSet.contains(p._1))
         connectedNeighbours += outgoingneighboursOfneighbour.size
       }
-      passedNeighbours.add(Integer.valueOf(outgoingNeighbour._1.toString))
+      passedNeighbours.add(outgoingNeighbour._1.asInstanceOf[Int])
     }
 
     for (incomingNeighbour <- vertex.state) {
@@ -79,7 +79,7 @@ object LocalClusterCoefficient {
         val outgoingneighboursOfneighbour = neighbourVertex.state.filter(p => neighbourSet.contains(p._1))
         connectedNeighbours += outgoingneighboursOfneighbour.size
       }
-      passedNeighbours.add(Integer.valueOf(incomingNeighbour._1.toString))
+      passedNeighbours.add(incomingNeighbour._1.asInstanceOf[Int])
     }
     val localClusterCoefficient = connectedNeighbours / nrOfPossibleConnections
     localClusterCoefficient
@@ -91,7 +91,7 @@ class LocalClusterCoefficientVertex(id: Any) extends DataGraphVertex(id, Map[Int
   def collect: State = {
     var neighbours = scala.collection.mutable.Map[Int, Set[Int]]()
     for (neighbour <- mostRecentSignalMap) {
-      neighbours.put(Integer.valueOf(neighbour._1.toString), neighbour._2)
+      neighbours.put(neighbour._1.asInstanceOf[Int], neighbour._2)
     }
     neighbours.toMap
   }

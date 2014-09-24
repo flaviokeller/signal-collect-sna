@@ -20,52 +20,48 @@
 package com.signalcollect.sna.metrics
 
 import java.math.MathContext
-import scala.collection.JavaConverters._
+
+import scala.BigDecimal
+import scala.collection.JavaConverters.mapAsScalaMapConverter
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.SynchronizedBuffer
+
 import com.signalcollect.Graph
+import com.signalcollect.Vertex
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.Path
 import com.signalcollect.sna.PathCollector
 import com.signalcollect.sna.PathCollectorVertex
-import com.signalcollect.Vertex
 
 object Closeness {
 
   def run(graph: Graph[Any, Any]): ExecutionResult = {
-    var vertexArray = new ArrayBuffer[PathCollectorVertex] with SynchronizedBuffer[PathCollectorVertex]
-
-    vertexArray = new ArrayBuffer[PathCollectorVertex] with SynchronizedBuffer[PathCollectorVertex]
-    val execRes = PathCollector.run(graph)
-    val shortestPathList = PathCollector.allShortestPathsAsList(execRes.asInstanceOf[ArrayBuffer[PathCollectorVertex]])
-    val closenessMap = getClosenessForAll(execRes, shortestPathList)
-    val compres = new ComputationResults(calcAvg(closenessMap), closenessMap)
-    new ExecutionResult(compres, execRes)
+    val vertexArray = PathCollector.run(graph)
+    val shortestPathList = PathCollector.allShortestPathsAsList(vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])
+    val closenessMap = getClosenessForAll(vertexArray, shortestPathList)
+    new ExecutionResult(new ComputationResults(calcAvg(closenessMap), closenessMap), vertexArray)
   }
 
   def getClosenessForVertexId(shortestPathList: List[Path]): Double = {
     var closeness = 0.0
-    for (s <- shortestPathList) {
-      closeness += (s.path.size - 1)
+    for (path <- shortestPathList) {
+      closeness += (path.path.size - 1)
     }
     BigDecimal(closeness / shortestPathList.size.toDouble).round(new MathContext(3)).toDouble
   }
 
-  def getClosenessForAll(vertices: ArrayBuffer[Vertex[Any, _,Any,Any]], shortestPathList: List[Path]): java.util.Map[String, Object] = {
+  def getClosenessForAll(vertices: ArrayBuffer[Vertex[Any, _, Any, Any]], shortestPathList: List[Path]): java.util.Map[String, Object] = {
     var closenessMap = new java.util.TreeMap[String, Object]
-    for (s <- vertices) {
-      val pathsThroughVertex = shortestPathList.filter(p => p.sourceVertexId == s.id)
+    for (closenessVertex <- vertices) {
+      val pathsThroughVertex = shortestPathList.filter(p => p.sourceVertexId == closenessVertex.id)
       val closeness = if (pathsThroughVertex.isEmpty) 0.0 else getClosenessForVertexId(pathsThroughVertex)
-      closenessMap.put(s.id.toString, closeness.asInstanceOf[Object])
+      closenessMap.put(closenessVertex.id.toString, closeness.asInstanceOf[Object])
     }
     closenessMap
   }
 
   def calcAvg(closenessMap: java.util.Map[String, Object]): Double = {
     val closenessValues = closenessMap.asScala.asInstanceOf[scala.collection.mutable.Map[String, Double]].values.toList
-    BigDecimal(closenessValues.foldLeft(0.0)(_ + _) /
-      closenessValues.foldLeft(0.0)((r, c) => r + 1)).
-      round(new MathContext(3)).toDouble
+    BigDecimal(closenessValues.foldLeft(0.0)(_ + _) / closenessValues.foldLeft(0.0)((r, c) => r + 1)).round(new MathContext(3)).toDouble
   }
 }

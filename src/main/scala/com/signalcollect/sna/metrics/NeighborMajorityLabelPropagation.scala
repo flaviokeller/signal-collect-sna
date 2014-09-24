@@ -19,17 +19,14 @@
 
 package com.signalcollect.sna.metrics
 
-import scala.collection.immutable.Set
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.SynchronizedBuffer
+import com.signalcollect.ExecutionConfiguration
+import com.signalcollect.Vertex
+import com.signalcollect.configuration.ExecutionMode
+import com.signalcollect.sna.constants.SNAClassNames
+import com.signalcollect.sna.parser.ParserImplementor
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.DefaultEdge
-import com.signalcollect.ExecutionConfiguration
-import com.signalcollect.configuration.ExecutionMode
-import com.signalcollect.sna.parser.ParserImplementor
-import com.signalcollect.sna.constants.SNAClassNames
-import com.signalcollect.Vertex
-import sun.awt.MostRecentKeyValue
 
 object NeighborMajorityLabelPropagation extends App {
 
@@ -37,7 +34,7 @@ object NeighborMajorityLabelPropagation extends App {
   val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
   val stats = graph.execute(execmode)
   graph.awaitIdle
-  var s = new ArrayBuffer[Vertex[Any, _,Any,Any]] with SynchronizedBuffer[Vertex[Any, _,Any,Any]]
+  var s = new ArrayBuffer[Vertex[Any, _,Any,Any]] 
   var labelDistribution = scala.collection.mutable.Map[String, Int]()
   graph.foreachVertex(v => s += v)
   graph.foreachVertex(println(_))

@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.jfree.chart.JFreeChart;
 
-import com.signalcollect.sna.DegreeDistribution;
 import com.signalcollect.sna.GraphProperties;
 
 public interface SignalCollectGephiConnector {
