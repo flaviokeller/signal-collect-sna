@@ -25,5 +25,5 @@ jarName in assembly := "signal-collect-sna-0.1-SNAPSHOT.jar"
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-library" % "2.11.2" % "compile",
   "junit" % "junit" % "4.10" % "test",
-  "org.jfree" % "jfreechart" % "1.0.14" % "compile",
+  "org.jfree" % "jfreechart" % "1.0.14" % "compile"
   )
