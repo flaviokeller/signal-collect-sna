@@ -32,7 +32,7 @@ import scala.collection.mutable.SynchronizedBuffer
 
 object LabelPropagation extends App {
 
-  var graph = ParserImplementor.getGraph("/Users/flaviokeller/Desktop/examplegraph_separated.gml", SNAClassNames.LABELPROPAGATION)
+  var graph = ParserImplementor.getGraph("/Users/flaviokeller/Desktop/examplegraph_separated.gml", SNAClassNames.LABELPROPAGATION, None)
   val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
   val stats = graph.execute(execmode)
   graph.awaitIdle

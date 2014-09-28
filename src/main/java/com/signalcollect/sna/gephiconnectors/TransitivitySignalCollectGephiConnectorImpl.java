@@ -19,53 +19,28 @@
 
 package com.signalcollect.sna.gephiconnectors;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.labels.StandardXYItemLabelGenerator;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
-import com.signalcollect.Graph;
-import com.signalcollect.sna.ClusterDistribution;
-import com.signalcollect.sna.DegreeDistribution;
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
 import com.signalcollect.sna.constants.SNAClassNames;
 import com.signalcollect.sna.metrics.Transitivity;
-import com.signalcollect.sna.parser.ParserImplementor;
 
-public class TransitivitySignalCollectGephiConnectorImpl implements
+public class TransitivitySignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {
 
 	private ExecutionResult transitivityResult;
 	private GraphProperties graphProps;
-	private String transitivityFileName;
-	private Graph transitivityGraph;
-	private DegreeDistribution degreeDistribution;
-	private ClusterDistribution clusterDistribution;
 
 	public TransitivitySignalCollectGephiConnectorImpl(String fileName) {
-		transitivityFileName = fileName;
-		transitivityGraph = ParserImplementor.getGraph(fileName,
-				SNAClassNames.TRANSITIVITY);
+		super(fileName, SNAClassNames.TRANSITIVITY);
 	}
 
 	@Override
 	public void executeGraph() {
 		if (transitivityResult == null) {
-			transitivityResult = Transitivity.run(transitivityGraph);
+			transitivityResult = Transitivity.run(getGraph());
 		}
 	}
 
@@ -94,92 +69,8 @@ public class TransitivitySignalCollectGephiConnectorImpl implements
 			executeGraph();
 		}
 		graphProps = new GraphProperties(transitivityResult.vertexArray(),
-				transitivityFileName);
+				getFileName());
 		return graphProps;
-	}
-
-	@Override
-	public Map<Integer, Integer> getDegreeDistribution() {
-		degreeDistribution = new DegreeDistribution(transitivityFileName);
-		return degreeDistribution.gatherDegreeeDistribution();
-	}
-
-	@Override
-	public Map<Double, Integer> getClusterDistribution() {
-		clusterDistribution = new ClusterDistribution(transitivityFileName);
-		return clusterDistribution.gatherClusterDistribution();
-	}
-
-	@Override
-	public JFreeChart createDegreeDistributionImageFile(
-			Map<Integer, Integer> degreeDistribution, String fileName)
-			throws IOException {
-		XYSeries dSeries = new XYSeries("number of occurences");
-		for (Iterator it = degreeDistribution.entrySet().iterator(); it
-				.hasNext();) {
-			Map.Entry d = (Map.Entry) it.next();
-			Number x = (Number) d.getKey();
-			Number y = (Number) d.getValue();
-			dSeries.add(x, y);
-		}
-		XYSeriesCollection dataset = new XYSeriesCollection();
-		dataset.addSeries(dSeries);
-		dataset.setAutoWidth(true);
-
-		JFreeChart chart = ChartFactory.createHistogram("Degree Distribution",
-				"degree value", "number of occurences", dataset,
-				PlotOrientation.VERTICAL, true, true, true);
-
-		XYPlot plot = chart.getXYPlot();
-		XYBarRenderer renderer0 = new XYBarRenderer();
-		Font font = new Font("Font", 0, 14);
-		renderer0.setMargin(0.2);
-		renderer0.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-		renderer0.setBaseItemLabelsVisible(true);
-		renderer0.setBaseItemLabelFont(font);
-		plot.setDataset(0, dataset);
-		plot.setRenderer(0, renderer0);
-		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
-				Color.BLUE);
-		ChartUtilities.saveChartAsPNG(new File(fileName), chart, 750, 450);
-		return chart;
-	}
-
-	@Override
-	public JFreeChart createClusterDistributionImageFile(
-			Map<Double, Integer> degreeDistribution, String fileName)
-			throws IOException {
-		XYSeries dSeries = new XYSeries("number of occurences");
-		for (Iterator it = degreeDistribution.entrySet().iterator(); it
-				.hasNext();) {
-			Map.Entry d = (Map.Entry) it.next();
-			Number x = (Number) d.getKey();
-			Number y = (Number) d.getValue();
-			dSeries.add(x, y);
-		}
-		XYSeriesCollection dataset = new XYSeriesCollection();
-		dataset.addSeries(dSeries);
-		dataset.setAutoWidth(true);
-
-		JFreeChart chart = ChartFactory.createHistogram(
-				"Cluster Coefficient Distribution",
-				"cluster coefficient value", "number of occurences", dataset,
-				PlotOrientation.VERTICAL, true, true, true);
-
-		XYPlot plot = chart.getXYPlot();
-		XYBarRenderer renderer0 = new XYBarRenderer();
-		Font font = new Font("Font", 0, 14);
-		renderer0.setMargin(0.2);
-		renderer0.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-		renderer0.setBaseItemLabelsVisible(true);
-		renderer0.setBaseItemLabelFont(font);
-		plot.setDataset(0, dataset);
-		plot.setRenderer(0, renderer0);
-
-		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
-				Color.BLUE);
-		ChartUtilities.saveChartAsPNG(new File(fileName), chart, 750, 450);
-		return chart;
 	}
 
 	public static void main(String[] args) {
@@ -216,8 +107,8 @@ public class TransitivitySignalCollectGephiConnectorImpl implements
 			a.createClusterDistributionImageFile(cd, "clusterdistr.png");
 			long stopTime = System.currentTimeMillis();
 			double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
-			System.out
-					.println("full elapsed time: " + elapsedTime + " seconds\n");
+			System.out.println("full elapsed time: " + elapsedTime
+					+ " seconds\n");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

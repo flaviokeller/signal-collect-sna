@@ -77,7 +77,7 @@ public class MetricsTest {
 		assertEquals(0.0374, scgc.getAverage(), 0.01);
 		assertEquals(0.0, scgc.getAll().get(String.valueOf(5)));
 		assertEquals(0.0, scgc.getAll().get(String.valueOf(3)));
-		assertEquals(0.0541, scgc.getAll().get(String.valueOf(1)));
+		assertEquals(0.0811, scgc.getAll().get(String.valueOf(10)));
 		assertEquals(0.027, scgc.getAll().get(String.valueOf(20)));
 	}
 

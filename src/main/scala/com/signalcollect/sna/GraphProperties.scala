@@ -56,7 +56,7 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _,Any,Any]], fileName: String) 
 
   def calcDiameter(): Double = {
     if (pathVertexArray == null || pathVertexArray.isEmpty) {
-      val pathGraph = ParserImplementor.getGraph(fileName, SNAClassNames.PATH)
+      val pathGraph = ParserImplementor.getGraph(fileName, SNAClassNames.PATH,None)
       pathVertexArray = PathCollector.run(pathGraph)
     }
     val listOfShortestPaths = PathCollector.allShortestPathsAsList(pathVertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])
@@ -66,7 +66,7 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _,Any,Any]], fileName: String) 
 
   def calcReciprocity(): Double = {
     if (pathVertexArray == null || pathVertexArray.isEmpty) {
-      val pathGraph = ParserImplementor.getGraph(fileName, SNAClassNames.PATH)
+      val pathGraph = ParserImplementor.getGraph(fileName, SNAClassNames.PATH,None)
       pathVertexArray = PathCollector.run(pathGraph)
     }
     val mapOfShortestPathsForTargetVertices = PathCollector.allShortestPathsAsMap(pathVertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])

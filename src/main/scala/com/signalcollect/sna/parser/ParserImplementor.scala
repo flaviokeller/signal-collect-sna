@@ -21,7 +21,6 @@ package com.signalcollect.sna.parser
 
 import scala.io.Codec.string2codec
 import scala.io.Source
-
 import com.signalcollect.DefaultEdge
 import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
@@ -40,19 +39,23 @@ import com.signalcollect.sna.metrics.PageRankEdge
 import com.signalcollect.sna.metrics.PageRankVertex
 import com.signalcollect.sna.metrics.TransitivityEdge
 import com.signalcollect.sna.metrics.TransitivityVertex
-
 import edu.uci.ics.jung.graph.DirectedSparseGraph
+import com.signalcollect.sna.metrics.StepLabelPropagationVertex
+import com.signalcollect.sna.metrics.StepLabelPropagationEdge
 
 object ParserImplementor {
 
-  def getGraph(fileName: String, className: SNAClassNames): com.signalcollect.Graph[Any, Any] = {
+  def getGraph(fileName: String, className: SNAClassNames, signalSteps:Option[Integer]): com.signalcollect.Graph[Any, Any] = {
     val parser = new GmlParser
     val parsedGraphs: List[Graph] = parser.parse(Source.fromFile(fileName)("ISO8859_1")) //Kann auch ein File-Objekt sein
     val graph = GraphBuilder.build
     parsedGraphs foreach {
       case g: UndirectedGraph =>
         g.nodes.foreach({ n: Node =>
-          graph.addVertex(createVertex(n, className))
+          className match {
+            case SNAClassNames.STEPLABELPROPAGATION => graph.addVertex(new StepLabelPropagationVertex(n.id, n.id.toString, signalSteps.getOrElse(0).asInstanceOf[Int]))
+            case _ => graph.addVertex(createVertex(n, className))
+          }
         })
         g.edges.foreach({ e: Edge =>
           graph.addEdge(e.source, createEdge(e.target, className))
@@ -84,7 +87,7 @@ object ParserImplementor {
     }
     diGraph
   }
-  def createVertex(node: Node, vertexClass: SNAClassNames): Vertex[Any, _,Any,Any] = {
+  def createVertex(node: Node, vertexClass: SNAClassNames): Vertex[Any, _, Any, Any] = {
     vertexClass match {
       case SNAClassNames.DEGREE => new DegreeVertex(node.id)
       case SNAClassNames.PAGERANK => new PageRankVertex(node.id)
@@ -93,6 +96,7 @@ object ParserImplementor {
       case SNAClassNames.TRANSITIVITY => new TransitivityVertex(node.id)
       case SNAClassNames.LABELPROPAGATION => new LabelPropagationVertex(node.id, node.label)
       case SNAClassNames.NEIGHBORMAJORITYLABELPROPAGATION => new NeighborMajorityLabelPropagationVertex(node.id, node.label)
+//      case SNAClassNames.STEPLABELPROPAGATION => new StepLabelPropagationVertex(node.id, node.label)
 
     }
   }
@@ -105,6 +109,7 @@ object ParserImplementor {
       case SNAClassNames.TRANSITIVITY => new TransitivityEdge(targetId)
       case SNAClassNames.LABELPROPAGATION => new LabelPropagationEdge(targetId)
       case SNAClassNames.NEIGHBORMAJORITYLABELPROPAGATION => new NeighborMajorityLabelPropagationEdge(targetId)
+      case SNAClassNames.STEPLABELPROPAGATION => new StepLabelPropagationEdge(targetId)
     }
   }
 

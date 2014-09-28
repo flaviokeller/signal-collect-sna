@@ -19,51 +19,32 @@
 
 package com.signalcollect.sna.gephiconnectors;
 
-import java.awt.Color;
-import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
-import com.signalcollect.Graph;
 import com.signalcollect.sna.ClusterDistribution;
-import com.signalcollect.sna.DegreeDistribution;
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
 import com.signalcollect.sna.constants.SNAClassNames;
 import com.signalcollect.sna.metrics.LocalClusterCoefficient;
-import com.signalcollect.sna.parser.ParserImplementor;
 
-public class LocalClusterCoefficientSignalCollectGephiConnectorImpl implements
+public class LocalClusterCoefficientSignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {
 
 	private ExecutionResult localClusterCoefficientResult;
 	private GraphProperties graphProps;
-	private String localClusterCoefficientFileName;
-	private Graph localClusterCoefficientGraph;
-	private DegreeDistribution degreeDistribution;
 	private ClusterDistribution clusterDistribution;
 
 	public LocalClusterCoefficientSignalCollectGephiConnectorImpl(
 			String fileName) {
-		localClusterCoefficientFileName = fileName;
-		localClusterCoefficientGraph = ParserImplementor.getGraph(fileName,
-				SNAClassNames.LOCALCLUSTERCOEFFICIENT);
+		super(fileName, SNAClassNames.LOCALCLUSTERCOEFFICIENT);
 	}
 
 	@Override
 	public void executeGraph() {
 		if (localClusterCoefficientResult == null) {
 			localClusterCoefficientResult = LocalClusterCoefficient
-					.run(localClusterCoefficientGraph);
+					.run(getGraph());
 		}
 	}
 
@@ -92,16 +73,8 @@ public class LocalClusterCoefficientSignalCollectGephiConnectorImpl implements
 			executeGraph();
 		}
 		graphProps = new GraphProperties(
-				localClusterCoefficientResult.vertexArray(),
-				localClusterCoefficientFileName);
+				localClusterCoefficientResult.vertexArray(), getFileName());
 		return graphProps;
-	}
-
-	@Override
-	public Map<Integer, Integer> getDegreeDistribution() {
-		degreeDistribution = new DegreeDistribution(
-				localClusterCoefficientFileName);
-		return degreeDistribution.gatherDegreeeDistribution();
 	}
 
 	@Override
@@ -109,69 +82,11 @@ public class LocalClusterCoefficientSignalCollectGephiConnectorImpl implements
 		if (localClusterCoefficientResult == null) {
 			executeGraph();
 		}
-		clusterDistribution = new ClusterDistribution(
-				localClusterCoefficientFileName);
+		clusterDistribution = new ClusterDistribution(getFileName());
 		clusterDistribution.setClusterMap(localClusterCoefficientResult
 				.compRes().vertexMap());
 
 		return clusterDistribution.gatherClusterDistribution();
-	}
-
-	@Override
-	public JFreeChart createDegreeDistributionImageFile(
-			Map<Integer, Integer> degreeDistribution, String fileName)
-			throws IOException {
-		XYSeries dSeries = new XYSeries("number of occurences");
-		for (Iterator it = degreeDistribution.entrySet().iterator(); it
-				.hasNext();) {
-			Map.Entry d = (Map.Entry) it.next();
-			Number x = (Number) d.getKey();
-			Number y = (Number) d.getValue();
-			dSeries.add(x, y);
-		}
-		XYSeriesCollection dataset = new XYSeriesCollection();
-		dataset.addSeries(dSeries);
-
-		JFreeChart chart = ChartFactory.createHistogram("Degree Distribution",
-				"degree value", "number of occurences", dataset,
-				PlotOrientation.VERTICAL, true, true, true);
-
-		XYPlot plot = chart.getXYPlot();
-		plot.setDataset(0, dataset);
-		XYLineAndShapeRenderer renderer0 = new XYLineAndShapeRenderer();
-		plot.setRenderer(0, renderer0);
-		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
-				Color.BLUE);
-		return chart;
-	}
-
-	@Override
-	public JFreeChart createClusterDistributionImageFile(
-			Map<Double, Integer> degreeDistribution, String fileName)
-			throws IOException {
-		XYSeries dSeries = new XYSeries("number of occurences");
-		for (Iterator it = degreeDistribution.entrySet().iterator(); it
-				.hasNext();) {
-			Map.Entry d = (Map.Entry) it.next();
-			Number x = (Number) d.getKey();
-			Number y = (Number) d.getValue();
-			dSeries.add(x, y);
-		}
-		XYSeriesCollection dataset = new XYSeriesCollection();
-		dataset.addSeries(dSeries);
-
-		JFreeChart chart = ChartFactory.createHistogram(
-				"Cluster Coefficient Distribution",
-				"cluster coefficient value", "number of occurences", dataset,
-				PlotOrientation.VERTICAL, true, true, true);
-
-		XYPlot plot = chart.getXYPlot();
-		plot.setDataset(0, dataset);
-		XYLineAndShapeRenderer renderer0 = new XYLineAndShapeRenderer();
-		plot.setRenderer(0, renderer0);
-		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
-				Color.BLUE);
-		return chart;
 	}
 
 	public static void main(String[] args) {

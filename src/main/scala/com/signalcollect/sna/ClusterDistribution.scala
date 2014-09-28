@@ -36,7 +36,7 @@ class ClusterDistribution(fileName: String) {
   def gatherClusterDistribution(): java.util.TreeMap[java.lang.Double, Integer] = {
 
     if (clusterVertexMap == null || clusterVertexMap.isEmpty) {
-      val clusteringGraph = ParserImplementor.getGraph(fileName, SNAClassNames.LOCALCLUSTERCOEFFICIENT)
+      val clusteringGraph = ParserImplementor.getGraph(fileName, SNAClassNames.LOCALCLUSTERCOEFFICIENT,None)
       clusterVertexMap = LocalClusterCoefficient.run(clusteringGraph).compRes.vertexMap.asScala.toMap
     }
     val clusteringMap = new java.util.TreeMap[java.lang.Double, Integer]()

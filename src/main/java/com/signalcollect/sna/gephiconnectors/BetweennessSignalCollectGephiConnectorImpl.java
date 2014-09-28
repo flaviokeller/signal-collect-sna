@@ -19,53 +19,28 @@
 
 package com.signalcollect.sna.gephiconnectors;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.labels.StandardXYItemLabelGenerator;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
-import com.signalcollect.Graph;
-import com.signalcollect.sna.ClusterDistribution;
-import com.signalcollect.sna.DegreeDistribution;
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
 import com.signalcollect.sna.constants.SNAClassNames;
 import com.signalcollect.sna.metrics.Betweenness;
-import com.signalcollect.sna.parser.ParserImplementor;
 
-public class BetweennessSignalCollectGephiConnectorImpl implements
+public class BetweennessSignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {
 
 	private ExecutionResult betweennessResult;
 	private GraphProperties graphProps;
-	private String betweennessFileName;
-	private Graph betweennessGraph;
-	private DegreeDistribution degreeDistribution;
-	private ClusterDistribution clusterDistribution;
 
 	public BetweennessSignalCollectGephiConnectorImpl(String fileName) {
-		betweennessFileName = fileName;
-		betweennessGraph = ParserImplementor.getGraph(fileName,
-				SNAClassNames.PATH);
+		super(fileName, SNAClassNames.PATH);
 	}
 
 	@Override
 	public void executeGraph() {
 		if (betweennessResult == null) {
-			betweennessResult = Betweenness.run(betweennessGraph);
+			betweennessResult = Betweenness.run(getGraph());
 		}
 	}
 
@@ -94,93 +69,9 @@ public class BetweennessSignalCollectGephiConnectorImpl implements
 			executeGraph();
 		}
 		graphProps = new GraphProperties(betweennessResult.vertexArray(),
-				betweennessFileName);
+				getFileName());
 		graphProps.setPathVertexArray(betweennessResult.vertexArray());
 		return graphProps;
-	}
-
-	@Override
-	public Map<Integer, Integer> getDegreeDistribution() {
-		degreeDistribution = new DegreeDistribution(betweennessFileName);
-		return degreeDistribution.gatherDegreeeDistribution();
-	}
-
-	@Override
-	public Map<Double, Integer> getClusterDistribution() {
-		clusterDistribution = new ClusterDistribution(betweennessFileName);
-		return clusterDistribution.gatherClusterDistribution();
-	}
-
-	@Override
-	public JFreeChart createDegreeDistributionImageFile(
-			Map<Integer, Integer> degreeDistribution, String fileName)
-			throws IOException {
-		XYSeries dSeries = new XYSeries("number of occurences");
-		for (Iterator it = degreeDistribution.entrySet().iterator(); it
-				.hasNext();) {
-			Map.Entry d = (Map.Entry) it.next();
-			Number x = (Number) d.getKey();
-			Number y = (Number) d.getValue();
-			dSeries.add(x, y);
-		}
-		XYSeriesCollection dataset = new XYSeriesCollection();
-		dataset.addSeries(dSeries);
-		dataset.setAutoWidth(true);
-
-		JFreeChart chart = ChartFactory.createHistogram("Degree Distribution",
-				"degree value", "number of occurences", dataset,
-				PlotOrientation.VERTICAL, true, true, true);
-
-		XYPlot plot = chart.getXYPlot();
-		XYBarRenderer renderer0 = new XYBarRenderer();
-		Font font = new Font("Font", 0, 14);
-		renderer0.setMargin(0.2);
-		renderer0.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-		renderer0.setBaseItemLabelsVisible(true);
-		renderer0.setBaseItemLabelFont(font);
-		plot.setDataset(0, dataset);
-		plot.setRenderer(0, renderer0);
-		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
-				Color.BLUE);
-		ChartUtilities.saveChartAsPNG(new File(fileName), chart, 750, 450);
-		return chart;
-	}
-
-	@Override
-	public JFreeChart createClusterDistributionImageFile(
-			Map<Double, Integer> degreeDistribution, String fileName)
-			throws IOException {
-		XYSeries dSeries = new XYSeries("number of occurences");
-		for (Iterator it = degreeDistribution.entrySet().iterator(); it
-				.hasNext();) {
-			Map.Entry d = (Map.Entry) it.next();
-			Number x = (Number) d.getKey();
-			Number y = (Number) d.getValue();
-			dSeries.add(x, y);
-		}
-		XYSeriesCollection dataset = new XYSeriesCollection();
-		dataset.addSeries(dSeries);
-		dataset.setAutoWidth(true);
-
-		JFreeChart chart = ChartFactory.createHistogram(
-				"Cluster Coefficient Distribution",
-				"cluster coefficient value", "number of occurences", dataset,
-				PlotOrientation.VERTICAL, true, true, true);
-
-		XYPlot plot = chart.getXYPlot();
-		XYBarRenderer renderer0 = new XYBarRenderer();
-		Font font = new Font("Font", 0, 14);
-		renderer0.setMargin(0.2);
-		renderer0.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-		renderer0.setBaseItemLabelsVisible(true);
-		renderer0.setBaseItemLabelFont(font);
-		plot.setDataset(0, dataset);
-		plot.setRenderer(0, renderer0);
-
-		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
-				Color.BLUE);
-		ChartUtilities.saveChartAsPNG(new File(fileName), chart, 750, 450);
-		return chart;
 	}
 
 	public static void main(String[] args) {
@@ -213,8 +104,8 @@ public class BetweennessSignalCollectGephiConnectorImpl implements
 			a.createClusterDistributionImageFile(cd, "clusterdistr.png");
 			long stopTime = System.currentTimeMillis();
 			double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
-			System.out
-					.println("full elapsed time: " + elapsedTime + " seconds\n");
+			System.out.println("full elapsed time: " + elapsedTime
+					+ " seconds\n");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -222,7 +113,8 @@ public class BetweennessSignalCollectGephiConnectorImpl implements
 		System.out.println("The single vertex betweennessvalues are: " + l);
 		System.out.println(p);
 		System.out.println("The degree distribution is: " + dd);
-		System.out.println("The local cluster coefficient distribution is: " + cd);
+		System.out.println("The local cluster coefficient distribution is: "
+				+ cd);
 
 	}
 }

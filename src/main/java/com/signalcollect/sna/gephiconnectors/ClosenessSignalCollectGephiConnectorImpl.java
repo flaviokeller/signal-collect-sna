@@ -19,49 +19,28 @@
 
 package com.signalcollect.sna.gephiconnectors;
 
-import java.awt.Color;
-import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
-import com.signalcollect.Graph;
-import com.signalcollect.sna.ClusterDistribution;
-import com.signalcollect.sna.DegreeDistribution;
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
 import com.signalcollect.sna.constants.SNAClassNames;
 import com.signalcollect.sna.metrics.Closeness;
-import com.signalcollect.sna.parser.ParserImplementor;
 
-public class ClosenessSignalCollectGephiConnectorImpl implements
+public class ClosenessSignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {
 
 	private ExecutionResult closenessResult;
 	private GraphProperties graphProps;
-	private Graph closenessGraph;
-	private String closenessFileName;
-	private DegreeDistribution degreeDistribution;
-	private ClusterDistribution clusterDistribution;
 
 	public ClosenessSignalCollectGephiConnectorImpl(String fileName) {
-		closenessFileName = fileName;
-		closenessGraph = ParserImplementor.getGraph(fileName,
-				SNAClassNames.PATH);
+		super(fileName, SNAClassNames.PATH);
 	}
 
 	@Override
 	public void executeGraph() {
 		if (closenessResult == null) {
-			closenessResult = Closeness.run(closenessGraph);
+			closenessResult = Closeness.run(getGraph());
 		}
 	}
 
@@ -90,80 +69,12 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 			executeGraph();
 		}
 		graphProps = new GraphProperties(closenessResult.vertexArray(),
-				closenessFileName);
-		// graphProps.setPathVertexMap(closenessResult.compRes().vertexMap());
+				getFileName());
+		graphProps.setPathVertexArray(closenessResult.vertexArray());
 		return graphProps;
 	}
 
-	@Override
-	public Map<Integer, Integer> getDegreeDistribution() {
-		degreeDistribution = new DegreeDistribution(closenessFileName);
-		return degreeDistribution.gatherDegreeeDistribution();
 
-	}
-
-	@Override
-	public Map<Double, Integer> getClusterDistribution() {
-		clusterDistribution = new ClusterDistribution(closenessFileName);
-		return clusterDistribution.gatherClusterDistribution();
-	}
-
-	@Override
-	public JFreeChart createDegreeDistributionImageFile(
-			Map<Integer, Integer> degreeDistribution, String fileName)
-			throws IOException {
-		XYSeries dSeries = new XYSeries("number of occurences");
-		for (Iterator it = degreeDistribution.entrySet().iterator(); it
-				.hasNext();) {
-			Map.Entry d = (Map.Entry) it.next();
-			Number x = (Number) d.getKey();
-			Number y = (Number) d.getValue();
-			dSeries.add(x, y);
-		}
-		XYSeriesCollection dataset = new XYSeriesCollection();
-		dataset.addSeries(dSeries);
-
-		JFreeChart chart = ChartFactory.createHistogram("Degree Distribution",
-				"degree value", "number of occurences", dataset,
-				PlotOrientation.VERTICAL, true, true, true);
-
-		XYPlot plot = chart.getXYPlot();
-		plot.setDataset(0, dataset);
-		XYLineAndShapeRenderer renderer0 = new XYLineAndShapeRenderer();
-		plot.setRenderer(0, renderer0);
-		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
-				Color.BLUE);
-		return chart;
-	}
-
-	@Override
-	public JFreeChart createClusterDistributionImageFile(
-			Map<Double, Integer> degreeDistribution, String fileName)
-			throws IOException {
-		XYSeries dSeries = new XYSeries("number of occurences");
-		for (Iterator it = degreeDistribution.entrySet().iterator(); it
-				.hasNext();) {
-			Map.Entry d = (Map.Entry) it.next();
-			Number x = (Number) d.getKey();
-			Number y = (Number) d.getValue();
-			dSeries.add(x, y);
-		}
-		XYSeriesCollection dataset = new XYSeriesCollection();
-		dataset.addSeries(dSeries);
-
-		JFreeChart chart = ChartFactory.createHistogram(
-				"Cluster Coefficient Distribution",
-				"cluster coefficient value", "number of occurences", dataset,
-				PlotOrientation.VERTICAL, true, true, true);
-
-		XYPlot plot = chart.getXYPlot();
-		plot.setDataset(0, dataset);
-		XYLineAndShapeRenderer renderer0 = new XYLineAndShapeRenderer();
-		plot.setRenderer(0, renderer0);
-		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
-				Color.BLUE);
-		return chart;
-	}
 
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
@@ -195,8 +106,8 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 			a.createClusterDistributionImageFile(cd, "clusterdistr.png");
 			long stopTime = System.currentTimeMillis();
 			double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
-			System.out
-					.println("full elapsed time: " + elapsedTime + " seconds\n");
+			System.out.println("full elapsed time: " + elapsedTime
+					+ " seconds\n");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -204,6 +115,7 @@ public class ClosenessSignalCollectGephiConnectorImpl implements
 		System.out.println("The single vertex closeness values are: " + l);
 		System.out.println(p);
 		System.out.println("The degree distribution is: " + dd);
-		System.out.println("The local cluster coefficient distribution is: " + cd);
+		System.out.println("The local cluster coefficient distribution is: "
+				+ cd);
 	}
 }

@@ -38,7 +38,7 @@ class DegreeDistribution(fileName: String) {
   def gatherDegreeeDistribution(): java.util.TreeMap[Integer, Integer] = {
 
     if (degreeVertexArray == null || degreeVertexArray.isEmpty) {
-      val degreeGraph = ParserImplementor.getGraph(fileName, SNAClassNames.DEGREE)
+      val degreeGraph = ParserImplementor.getGraph(fileName, SNAClassNames.DEGREE,None)
       degreeVertexArray = Degree.run(degreeGraph).vertexArray
     }
     val degreeDistrMap = new java.util.TreeMap[Integer, Integer]()

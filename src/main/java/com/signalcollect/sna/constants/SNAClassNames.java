@@ -24,7 +24,8 @@ public enum SNAClassNames {
 	DEGREE("Degree"), PAGERANK("PageRank"), PATH("Path"), LOCALCLUSTERCOEFFICIENT(
 			"LocalClusterCoefficient"), TRANSITIVITY("Transitivty"), LABELPROPAGATION(
 			"Label Propagation"), NEIGHBORMAJORITYLABELPROPAGATION(
-			"Neighbor Majority Label Propagation");
+			"Neighbor Majority Label Propagation"),STEPLABELPROPAGATION(
+					"Step Label Propagation");
 
 	private final String className;
 
