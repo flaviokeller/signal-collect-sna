@@ -21,13 +21,12 @@ package com.signalcollect.sna.parser
 
 import java.io.File
 import java.io.FileReader
-import scala.io.{BufferedSource, Source}
+import scala.io.{ BufferedSource, Source }
 import scala.util.parsing.combinator.PackratParsers
 import scala.util.parsing.combinator.lexical.StdLexical
 import scala.util.parsing.combinator.syntactical.StdTokenParsers
 import scala.util.parsing.input.Reader
 import scala.util.parsing.input.StreamReader
-
 
 abstract class Graph(nodes: List[Node], edges: List[Edge])
 case class DirectedGraph(nodes: List[Node], edges: List[Edge]) extends Graph(nodes, edges)
@@ -39,27 +38,26 @@ case class Edge(source: Int, target: Int)
  * @author Philip Stutz
  */
 class GmlParser extends StdTokenParsers
-                   with PackratParsers
-{
+  with PackratParsers {
   type Tokens = StdLexical
   val lexical = new StdLexical
 
-  lexical.delimiters ++= List("=", "[", "]","{", "}", ",", "//", "(", ")", "\n", "\r")
+  lexical.delimiters ++= List("=", "[", "]", "{", "}", ",", "//", "(", ")", "\n", "\r")
   lexical.reserved ++= List("graph", "node", "edge", "id", "source", "target", "label", "value", "directed", "Creator")
-  
+
   lazy val gmlFile: Parser[List[Graph]] = {
-    opt("Creator"~stringLit)~>rep(graph)
+    opt("Creator" ~ stringLit) ~> rep(graph)
   }
-  
+
   lazy val graph: Parser[Graph] = {
-    "graph"~"["~>opt("directed"~>bool)~rep(node)~rep(edge)<~"]" ^^ {
-      case optDirected~nodes~edges => {
-          val directed = optDirected.getOrElse(false)
-          if (directed)
-            DirectedGraph(nodes, edges)
-          else
-            UndirectedGraph(nodes, edges)
-        }
+    "graph" ~ "[" ~> opt("directed" ~> bool) ~ rep(node) ~ rep(edge) <~ "]" ^^ {
+      case optDirected ~ nodes ~ edges => {
+        val directed = optDirected.getOrElse(false)
+        if (directed)
+          DirectedGraph(nodes, edges)
+        else
+          UndirectedGraph(nodes, edges)
+      }
     }
   }
   lazy val bool: Parser[Boolean] = {
@@ -69,27 +67,34 @@ class GmlParser extends StdTokenParsers
     }
   }
   lazy val node: Parser[Node] = {
-    "node"~"["~>id~opt(label)~opt(value)<~"]" ^^ {
-      case id~labelOpt~valueOpt => {
-          val label = labelOpt.getOrElse(id.toString)
-          val value = valueOpt.getOrElse("0")
-          Node(id, label, value)
-        }
+    "node" ~ "[" ~> id ~ opt(label) ~ opt(value) <~ "]" ^^ {
+      case id ~ labelOpt ~ valueOpt => {
+        val label = labelOpt.getOrElse(id.toString)
+        val value = valueOpt.getOrElse("0")
+        Node(id, label, value)
+      }
     }
   }
   lazy val id: Parser[Int] = {
-    ("id"|"source"|"target")~> numericLit ^^ { _.toInt }
+    "id" ~> numericLit ^^ { _.toInt }
   }
   lazy val label: Parser[String] = {
-    "label"~>(ident|stringLit)
+    "label" ~> (ident | stringLit)
   }
   lazy val value: Parser[String] = {
-    "value"~>(ident|stringLit|numericLit)
+    "value" ~> (ident | stringLit | numericLit)
+  }
+  lazy val edgePart: Parser[Int] = {
+    ("source" | "target") ~> numericLit ^^ { _.toInt }
   }
 
   lazy val edge: Parser[Edge] = {
-    "edge"~"["~>id~id<~"]" ^^ {
-      case source~target => Edge(source, target)
+    "edge" ~ "[" ~> opt(id) ~ edgePart ~ edgePart ~ opt(label) <~ "]" ^^ {
+      case idOpt ~ source ~ target ~ labelOpt => {
+        val id = idOpt.getOrElse(0)
+        val label = labelOpt.getOrElse("0")
+        Edge(source, target)
+      }
     }
   }
 
@@ -122,7 +127,7 @@ class GmlParser extends StdTokenParsers
       case NoSuccess(msg, next) => throw new ParseException(msg + "\nNext position: (line: " + next.pos.line + ", column: " + next.pos.column + ")" + "\nNext token: " + next.rest.first)
     }
   }
-  
+
 }
 
 class ParseException(msg: String) extends Exception(msg)

@@ -77,7 +77,7 @@ public class BetweennessSignalCollectGephiConnectorImpl extends
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new BetweennessSignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/examplegraph_separated.gml");
+				"/Users/flaviokeller/Documents/Uni/Bachelorarbeit/Datasets/airlines.gml");
 		a.executeGraph();
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
@@ -110,7 +110,7 @@ public class BetweennessSignalCollectGephiConnectorImpl extends
 			e.printStackTrace();
 		}
 		System.out.println("The average betweenness is: " + d);
-		System.out.println("The single vertex betweennessvalues are: " + l);
+		System.out.println("The single vertex betweenness values are: " + l);
 		System.out.println(p);
 		System.out.println("The degree distribution is: " + dd);
 		System.out.println("The local cluster coefficient distribution is: "

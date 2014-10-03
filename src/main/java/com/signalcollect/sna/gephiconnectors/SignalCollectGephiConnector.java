@@ -121,6 +121,7 @@ public abstract class SignalCollectGephiConnector {
 		plot.setRenderer(0, renderer0);
 		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
 				Color.BLUE);
+		ChartUtilities.saveChartAsPNG(new File(fileName), chart, 800, 600);
 		return chart;
 	}
 
@@ -156,6 +157,8 @@ public abstract class SignalCollectGephiConnector {
 
 		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
 				Color.BLUE);
+		ChartUtilities.saveChartAsPNG(new File(fileName), chart, 800, 600);
+
 		return chart;
 	}
 

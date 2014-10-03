@@ -53,7 +53,7 @@ object PathCollector {
     for (targetVertex <- vertexArray) {
       var pathList = scala.collection.mutable.ListBuffer[Path]()
       try {
-        pathList ++= targetVertex.shortestPaths.toList
+        pathList ++= targetVertex.shortestPaths.values.toList
       } catch {
         case noPath: NoSuchElementException => //do nothing
       }
@@ -66,7 +66,7 @@ object PathCollector {
     var shortestPathList = scala.collection.mutable.ListBuffer[Path]()
     for (targetVertex <- vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]]) {
       try {
-        shortestPathList ++= targetVertex.shortestPaths.toList
+        shortestPathList ++= targetVertex.shortestPaths.values.toList
       } catch {
         case noPath: NoSuchElementException => //do nothing
       }
@@ -75,36 +75,24 @@ object PathCollector {
   }
 }
 
-class PathCollectorVertex(id: Int) extends DataGraphVertex(id, ArrayBuffer[Path]()) {
+class PathCollectorVertex(id: Int) extends DataGraphVertex(id, Map[Int, Path]()) {
   type Signal = ArrayBuffer[Path]
-  type State = ArrayBuffer[Path]
-  var allIncomingPaths = ArrayBuffer[Path]()
-  var shortestPaths = ArrayBuffer[Path]()
+  type State = Map[Int, Path]
+  var shortestPaths = scala.collection.mutable.Map[Int, Path]()
   def collect: State = {
     var mostRecentPaths = new ArrayBuffer[Path]()
     for (pathArray <- mostRecentSignalMap.values) {
       for (path <- pathArray) {
-        val isNonExistentPath = allIncomingPaths.filter(p => p.path.sameElements(path.path)).isEmpty
-        if (isNonExistentPath) {
-          val existingShortestPath = shortestPaths.filter(p => p.sourceVertexId == path.sourceVertexId && p.targetVertexId == path.targetVertexId)
-          val incomingPath = new Path(path.sourceVertexId, path.targetVertexId)
-          incomingPath.path = path.path
-          determineShortest(existingShortestPath, incomingPath)
-          allIncomingPaths += incomingPath
-          mostRecentPaths += path
+        if (shortestPaths.contains(path.sourceVertexId)) {
+          if (shortestPaths.get(path.sourceVertexId).get.path.size > path.path.size) {
+            shortestPaths.put(path.sourceVertexId, path)
+          }
+        } else {
+          shortestPaths.put(path.sourceVertexId, path)
         }
       }
     }
-    mostRecentPaths
-  }
-  def determineShortest(p1: ArrayBuffer[Path], p2: Path) {
-    if (p1.isEmpty) shortestPaths += p2
-    else if (p1(0).path.size > p2.path.size) {
-      shortestPaths -= p1(0)
-      if (shortestPaths.filter(p => p.path.sameElements(p2.path)).isEmpty) {
-        shortestPaths += p2
-      }
-    }
+    shortestPaths.toMap
   }
 }
 
@@ -113,8 +101,7 @@ class PathCollectorEdge(t: Int) extends DefaultEdge(t) {
   type Source = PathCollectorVertex
   def signal = {
     var currentPathArray = ArrayBuffer[Path]()
-
-    for (path <- source.state) {
+    for (path <- source.state.values) {
       if (!path.path.contains(t)) {
         val pathToAdd = new Path(path.sourceVertexId, t)
         pathToAdd.path = path.path.clone

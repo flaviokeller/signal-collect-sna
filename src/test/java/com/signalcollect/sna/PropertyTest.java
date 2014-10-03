@@ -35,7 +35,7 @@ public class PropertyTest {
 
 	private GraphProperties props;
 
-	private String testFile = "/Users/flaviokeller/Desktop/examplegraph_separated.gml";
+	private String testFile = "/Users/flaviokeller/Documents/Uni/Bachelorarbeit/Datasets/examplegraph_separated.gml";
 
 	@Test
 	public void propertyTest() {

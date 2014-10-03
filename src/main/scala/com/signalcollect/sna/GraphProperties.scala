@@ -8,30 +8,29 @@ import java.math.MathContext
 import com.signalcollect.DataGraphVertex
 import java.lang.Double
 
-
-class GraphProperties(l: ArrayBuffer[Vertex[Any, _,Any,Any]], fileName: String) {
+class GraphProperties(l: ArrayBuffer[Vertex[Any, _, Any, Any]], fileName: String) {
 
   var size: Integer = null
   var density: Double = null
   var diameter: Double = null
   var reciprocity: Double = null
 
-  var pathVertexArray = ArrayBuffer[Vertex[Any, _,Any,Any]]()
+  var pathVertexArray = ArrayBuffer[Vertex[Any, _, Any, Any]]()
 
-  def setPathVertexArray(pva: ArrayBuffer[Vertex[Any, _,Any,Any]]) = pathVertexArray = pva
+  def setPathVertexArray(pva: ArrayBuffer[Vertex[Any, _, Any, Any]]) = pathVertexArray = pva
 
   override def toString(): String = {
-    if(size == null){
+    if (size == null) {
       size = calcSize
     }
-    if(density == null){
-    	density = calcDensity
+    if (density == null) {
+      density = calcDensity
     }
-    if(diameter == null){
-    	diameter = calcDiameter
+    if (diameter == null) {
+      diameter = calcDiameter
     }
-    if(reciprocity == null){
-    	reciprocity = calcReciprocity
+    if (reciprocity == null) {
+      reciprocity = calcReciprocity
     }
     "\nThe Properties of the graph are:\n\nSize:\t\t" + size + "\nDensity:\t" + density + "\nDiameter:\t" + diameter + "\nReciprocity:\t" + reciprocity + "\n"
   }
@@ -56,29 +55,32 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _,Any,Any]], fileName: String) 
 
   def calcDiameter(): Double = {
     if (pathVertexArray == null || pathVertexArray.isEmpty) {
-      val pathGraph = ParserImplementor.getGraph(fileName, SNAClassNames.PATH,None)
+      val pathGraph = ParserImplementor.getGraph(fileName, SNAClassNames.PATH, None)
       pathVertexArray = PathCollector.run(pathGraph)
     }
     val listOfShortestPaths = PathCollector.allShortestPathsAsList(pathVertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])
     def getdiameter(p1: Path, p2: Path): Path = if (p1.path.size > p2.path.size) p1 else p2
-    listOfShortestPaths.reduceLeft(getdiameter).path.size-1.0
+    val diameter = listOfShortestPaths.reduceLeft(getdiameter).path.size - 1.0
+    diameter
   }
 
   def calcReciprocity(): Double = {
     if (pathVertexArray == null || pathVertexArray.isEmpty) {
-      val pathGraph = ParserImplementor.getGraph(fileName, SNAClassNames.PATH,None)
+      val pathGraph = ParserImplementor.getGraph(fileName, SNAClassNames.PATH, None)
       pathVertexArray = PathCollector.run(pathGraph)
     }
     val mapOfShortestPathsForTargetVertices = PathCollector.allShortestPathsAsMap(pathVertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])
     var numberOfReciprocalPaths = 0
-    for (targetVertex <- mapOfShortestPathsForTargetVertices) {
-      for (path <- targetVertex._2) {
+    var size = 0
+    for (targetVertex <- mapOfShortestPathsForTargetVertices.values) {
+      size += targetVertex.size
+      for (path <- targetVertex) {
         val reciprocalPathExists = !mapOfShortestPathsForTargetVertices.get(path.sourceVertexId).getOrElse(List()).filter(p => p.sourceVertexId == path.targetVertexId && p.targetVertexId == path.sourceVertexId).isEmpty
         if (reciprocalPathExists) numberOfReciprocalPaths += 1
       }
     }
-    numberOfReciprocalPaths.toDouble / mapOfShortestPathsForTargetVertices.size.toDouble
-
+    val reciprocity = numberOfReciprocalPaths.toDouble / size
+    reciprocity
   }
 
 }

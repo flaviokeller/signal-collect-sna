@@ -63,27 +63,31 @@ object LocalClusterCoefficient {
     var connectedNeighbours = 0.0
     var passedNeighbours = scala.collection.mutable.Set[Int]()
     val neighbourSet = vertex.state.keySet.union(vertex.outgoingEdges.keySet.asInstanceOf[Set[Int]])
-    val nrOfPossibleConnections = if (neighbourSet.size == 1) 1 else (neighbourSet.size * (neighbourSet.size - 1)).toDouble
-    for (outgoingNeighbour <- vertex.outgoingEdges) {
-      val neighbourVertex = vertexMap.get(outgoingNeighbour._2.targetId.asInstanceOf[Int]).get
-      if (!passedNeighbours.contains(outgoingNeighbour._1.asInstanceOf[Int])) {
-        val outgoingneighboursOfneighbour = neighbourVertex.state.filter(p => neighbourSet.contains(p._1))
-        connectedNeighbours += outgoingneighboursOfneighbour.size
+    if (neighbourSet.isEmpty) {
+      0.0
+    } else {
+      val nrOfPossibleConnections = if (neighbourSet.size == 1) 1 else (neighbourSet.size * (neighbourSet.size - 1)).toDouble
+      for (outgoingNeighbour <- vertex.outgoingEdges) {
+        val neighbourVertex = vertexMap.get(outgoingNeighbour._2.targetId.asInstanceOf[Int]).get
+        if (!passedNeighbours.contains(outgoingNeighbour._1.asInstanceOf[Int])) {
+          val outgoingneighboursOfneighbour = neighbourVertex.state.filter(p => neighbourSet.contains(p._1))
+          connectedNeighbours += outgoingneighboursOfneighbour.size
+        }
+        passedNeighbours.add(outgoingNeighbour._1.asInstanceOf[Int])
       }
-      passedNeighbours.add(outgoingNeighbour._1.asInstanceOf[Int])
-    }
 
-    for (incomingNeighbour <- vertex.state) {
-      val neighbourVertex = vertexMap.get(incomingNeighbour._1).get
-      val neighbourSet = vertex.state.keySet.union(vertex.outgoingEdges.keySet.asInstanceOf[Set[Int]])
-      if (!passedNeighbours.contains(incomingNeighbour._1)) {
-        val outgoingneighboursOfneighbour = neighbourVertex.state.filter(p => neighbourSet.contains(p._1))
-        connectedNeighbours += outgoingneighboursOfneighbour.size
+      for (incomingNeighbour <- vertex.state) {
+        val neighbourVertex = vertexMap.get(incomingNeighbour._1).get
+        val neighbourSet = vertex.state.keySet.union(vertex.outgoingEdges.keySet.asInstanceOf[Set[Int]])
+        if (!passedNeighbours.contains(incomingNeighbour._1)) {
+          val outgoingneighboursOfneighbour = neighbourVertex.state.filter(p => neighbourSet.contains(p._1))
+          connectedNeighbours += outgoingneighboursOfneighbour.size
+        }
+        passedNeighbours.add(incomingNeighbour._1.asInstanceOf[Int])
       }
-      passedNeighbours.add(incomingNeighbour._1.asInstanceOf[Int])
+      val localClusterCoefficient = connectedNeighbours / nrOfPossibleConnections
+      localClusterCoefficient
     }
-    val localClusterCoefficient = connectedNeighbours / nrOfPossibleConnections
-    localClusterCoefficient
   }
 }
 class LocalClusterCoefficientVertex(id: Any) extends DataGraphVertex(id, Map[Int, Set[Int]]()) {

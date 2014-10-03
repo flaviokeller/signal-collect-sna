@@ -89,7 +89,7 @@ public class DegreeSignalCollectGephiConnectorImpl extends
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new DegreeSignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/examplegraph.gml");
+				"/Users/flaviokeller/Documents/Uni/Bachelorarbeit/Datasets/yeast.gml");
 		a.executeGraph();
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
