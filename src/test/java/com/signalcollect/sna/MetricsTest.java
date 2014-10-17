@@ -35,7 +35,7 @@ public class MetricsTest {
 
 	private SignalCollectGephiConnector scgc;
 
-	private String testFile = "/Users/flaviokeller/Documents/Uni/Bachelorarbeit/Datasets/examplegraph_separated.gml";
+	private String testFile = "/Users/flaviokeller/Documents/Uni/Bachelorarbeit/Datasets/gml/examplegraph_separated.gml";
 
 	@Test
 	public void degreeTest() {

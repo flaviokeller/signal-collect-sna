@@ -44,7 +44,7 @@ object PageRank {
     var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
     graph.foreachVertex(v => vertexArray += v)
     graph.shutdown
-    new ExecutionResult(new ComputationResults(avgVertex.state, filterInteger(vertexArray)), vertexArray)
+    new ExecutionResult(new ComputationResults(avgVertex.state, filterInteger(vertexArray)), vertexArray, stats)
   }
 
   def filterInteger(vertexArray: ArrayBuffer[Vertex[Any, _, Any, Any]]): java.util.Map[String, Object] = {
@@ -73,9 +73,7 @@ class PageRankVertex(id: Any, dampingFactor: Double = 0.85) extends DataGraphVer
       for (signal <- pageRankSignals) {
         sum += signal._2.asInstanceOf[Double]
       }
-      val st = BigDecimal.valueOf(1 - dampingFactor + dampingFactor * sum).round(new MathContext(3)).toDouble
-      if (id == 5) println(st)
-      st
+      BigDecimal.valueOf(1 - dampingFactor + dampingFactor * sum).round(new MathContext(3)).toDouble
     }
   }
   override def scoreSignal: Double = {

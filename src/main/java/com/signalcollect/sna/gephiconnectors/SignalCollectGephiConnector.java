@@ -81,6 +81,10 @@ public abstract class SignalCollectGephiConnector {
 
 	public abstract GraphProperties getGraphProperties();
 
+	public String getFileName(){
+		return signalCollectFileName;
+	}
+	
 	public Map<Integer, Integer> getDegreeDistribution() {
 		degreeDistribution = new DegreeDistribution(signalCollectFileName);
 		return degreeDistribution.gatherDegreeeDistribution();
@@ -126,10 +130,10 @@ public abstract class SignalCollectGephiConnector {
 	}
 
 	public JFreeChart createClusterDistributionImageFile(
-			Map<Double, Integer> degreeDistribution, String fileName)
+			Map<Double, Integer> clusterDistribution, String fileName)
 			throws IOException {
 		XYSeries dSeries = new XYSeries("number of occurences");
-		for (Iterator it = degreeDistribution.entrySet().iterator(); it
+		for (Iterator it = clusterDistribution.entrySet().iterator(); it
 				.hasNext();) {
 			Map.Entry d = (Map.Entry) it.next();
 			Number x = (Number) d.getKey();
@@ -207,25 +211,21 @@ public abstract class SignalCollectGephiConnector {
 		rangeAxis.setNumberFormatOverride(NumberFormat.getPercentInstance());
 
 		final ChartPanel chartPanel = new ChartPanel(chart);
-		chartPanel.setPreferredSize(new java.awt.Dimension(1000, 600));
+		chartPanel.setPreferredSize(new java.awt.Dimension(1200, 600));
 		ApplicationFrame f = new ApplicationFrame("Label Propagation");
 		f.setContentPane(chartPanel);
 		f.pack();
 		f.setVisible(true);
 	}
 
-	protected Graph getGraph() {
+	public Graph getGraph() {
 		return graph;
-	}
-
-	protected String getFileName() {
-		return signalCollectFileName;
 	}
 
 	public static void main(String[] args) {
 		SignalCollectGephiConnector a = new LabelPropagationSignalCollectGephiConnectorImpl(
 				"/Users/flaviokeller/Desktop/examplegraph.gml",
-				scala.Option.apply(new Integer(100)));
+				scala.Option.apply(100));
 		try {
 			a.getLabelPropagation();
 		} catch (Exception e) {

@@ -36,10 +36,10 @@ import com.signalcollect.sna.PathCollectorVertex
 object Closeness {
 
   def run(graph: Graph[Any, Any]): ExecutionResult = {
-    val vertexArray = PathCollector.run(graph)
-    val shortestPathList = PathCollector.allShortestPathsAsList(vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])
-    val closenessMap = getClosenessForAll(vertexArray, shortestPathList)
-    new ExecutionResult(new ComputationResults(calcAvg(closenessMap), closenessMap), vertexArray)
+    val pathCollectorExecRes = PathCollector.run(graph)
+    val shortestPathList = PathCollector.allShortestPathsAsList(pathCollectorExecRes.vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])
+    val closenessMap = getClosenessForAll(pathCollectorExecRes.vertexArray, shortestPathList)
+    new ExecutionResult(new ComputationResults(calcAvg(closenessMap), closenessMap), pathCollectorExecRes.vertexArray, pathCollectorExecRes.stats)
   }
 
   def getClosenessForVertexId(shortestPathList: List[Path]): Double = {

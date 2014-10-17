@@ -35,13 +35,13 @@ import com.signalcollect.sna.PathCollectorVertex
 
 object Betweenness {
   def run(graph: Graph[Any, Any]): ExecutionResult = {
-    val vertexArray = PathCollector.run(graph)
-    val shortestPathList = PathCollector.allShortestPathsAsList(vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])
-    val betweennessMap = getBetweennessForAll(vertexArray, shortestPathList)
-    new ExecutionResult(new ComputationResults(calcAvg(betweennessMap), betweennessMap), vertexArray)
+    val pathCollectorExecRes = PathCollector.run(graph)
+    val shortestPathList = PathCollector.allShortestPathsAsList(pathCollectorExecRes.vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])
+    val betweennessMap = getBetweennessForAll(pathCollectorExecRes.vertexArray, shortestPathList)
+    new ExecutionResult(new ComputationResults(calcAvg(betweennessMap), betweennessMap), pathCollectorExecRes.vertexArray, pathCollectorExecRes.stats)
   }
 
-  def getBetweennessForAll(vertices: ArrayBuffer[Vertex[Any, _,Any,Any]], shortestPathList: List[Path]): java.util.Map[String, Object] = {
+  def getBetweennessForAll(vertices: ArrayBuffer[Vertex[Any, _, Any, Any]], shortestPathList: List[Path]): java.util.Map[String, Object] = {
     var betweennessMap = new java.util.TreeMap[String, Object]
     for (betweennessVertex <- vertices) {
       val pathsThroughVertex = shortestPathList.filter(path => path.sourceVertexId != betweennessVertex.id && path.targetVertexId != betweennessVertex.id && path.path.contains(betweennessVertex.id))

@@ -21,17 +21,18 @@ package com.signalcollect.sna
 
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SynchronizedBuffer
+
+import com.signalcollect.DataGraphVertex
+import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
 import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
-import com.signalcollect.DataGraphVertex
-import com.signalcollect.DefaultEdge
 
 object PathCollector {
 
-  def run(pGraph: Graph[Any, Any]): ArrayBuffer[Vertex[Any, _, Any, Any]] = {
+  def run(pGraph: Graph[Any, Any]): ExecutionResult = {
 
     var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
     var graph: Graph[Any, Any] = null
@@ -45,7 +46,7 @@ object PathCollector {
     graph.awaitIdle
     graph.foreachVertex(v => vertexArray += v.asInstanceOf[PathCollectorVertex])
     graph.shutdown
-    vertexArray
+    new ExecutionResult(null, vertexArray, stats)
   }
 
   def allShortestPathsAsMap(vertexArray: ArrayBuffer[PathCollectorVertex]): Map[Int, List[Path]] = {
@@ -80,7 +81,6 @@ class PathCollectorVertex(id: Int) extends DataGraphVertex(id, Map[Int, Path]())
   type State = Map[Int, Path]
   var shortestPaths = scala.collection.mutable.Map[Int, Path]()
   def collect: State = {
-    var mostRecentPaths = new ArrayBuffer[Path]()
     for (pathArray <- mostRecentSignalMap.values) {
       for (path <- pathArray) {
         if (shortestPaths.contains(path.sourceVertexId)) {

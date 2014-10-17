@@ -39,7 +39,7 @@ object Transitivity {
     val stats = graph.execute(execmode)
     graph.awaitIdle
 
-    var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _,Any,Any]]
+    var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
     graph.foreachVertex(v => vertexArray += v)
     var vertexMap = SortedMap[Int, TransitivityVertex]()
     for (vertex <- vertexArray) {
@@ -47,7 +47,7 @@ object Transitivity {
     }
     graph.shutdown
     var treeMap = new java.util.TreeMap[String, Object]()
-    var countMap = SortedMap[Int, Int]()
+    var countMap = SortedMap[Int, Long]()
 
     for (vertex <- vertexMap.toMap) {
       if (vertex._2.neighbours.isEmpty) {
@@ -67,9 +67,9 @@ object Transitivity {
           } else {
             triadType = 2;
           }
-          var countValue = countMap.get(triadType).getOrElse(0)
+          var countValue = countMap.get(triadType).getOrElse(0.toLong)
 
-          countMap += ((triadType, countValue + (vertexMap.size - neighboursOfBothVertices.size - 2)))
+          countMap += ((triadType, countValue + (vertexMap.size - neighboursOfBothVertices.size - 2).toLong))
           for (neighbourOfBoth <- neighboursOfBothVertices) {
             if (neighbour < neighbourOfBoth || (vertex._2.id.asInstanceOf[Int] < neighbourOfBoth && neighbourOfBoth < neighbour && !vertex._2.neighbours.contains(neighbourOfBoth))) {
               val neighbourOfBothVertex = vertexMap.get(neighbourOfBoth).get
@@ -77,17 +77,18 @@ object Transitivity {
               triadType = SignalCollectSNAConstants.codeToType(triCode(vertex._2, neighbourVertex, neighbourOfBothVertex))
 
               countValue = countMap.get(triadType).getOrElse(0)
-              countMap += ((triadType, countValue + 1))
+              countMap += ((triadType, countValue + 1.toLong))
             }
 
           }
         }
       }
-      var sum = 0
+      var sum = 0.toLong
       for (i <- 2 to 16) {
-        sum += countMap.get(i).getOrElse(0)
+        sum += countMap.get(i).getOrElse(0.toLong)
       }
-      countMap += ((1, ((vertexMap.size * (vertexMap.size - 1) * (vertexMap.size - 2)) / 6) - sum))
+      countMap += ((1, ((vertexMap.size.toLong * (vertexMap.size - 1).toLong * (vertexMap.size - 2).toLong) / 6).toLong - sum))
+      //TODO: find out which .toLong are necessary
     }
 
     for (count <- countMap) {
@@ -98,7 +99,7 @@ object Transitivity {
         treeMap.put(i.toString, Integer.valueOf(0))
       }
     }
-    new ExecutionResult(new ComputationResults(0.0, treeMap), vertexArray)
+    new ExecutionResult(new ComputationResults(0.0, treeMap), vertexArray, stats)
   }
 
   /*

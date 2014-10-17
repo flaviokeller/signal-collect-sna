@@ -37,26 +37,26 @@ import scala.collection.mutable.SynchronizedBuffer
 
 object Degree {
 
-  def run(pGraph: Graph[Any, Any]): ExecutionResult = {
+  def run(graph: Graph[Any, Any]): ExecutionResult = {
 
     val avgVertex = new AverageDegreeVertex("Average")
-    var graph: Graph[Any, Any] = null
-    if (pGraph == null) {
-      graph = GraphBuilder.build
-    } else {
-      graph = pGraph
-    }
+    
     graph.addVertex(avgVertex)
     graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(v.id, new AverageDegreeEdge(avgVertex.id)))
     graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(avgVertex.id, new AverageDegreeEdge(v.id)))
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
-    graph.execute(execmode)
+    val stats = graph.execute(execmode)
     graph.awaitIdle
     var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
     graph.foreachVertex(v => vertexArray += v)
-
+    
+    println("sleeping for 5s")
+    Thread.sleep(5000)
+    
     graph.shutdown
-    new ExecutionResult(new ComputationResults(BigDecimal(avgVertex.state).round(new MathContext(3)).toDouble, filterInteger(vertexArray)), vertexArray)
+    
+    println("graph shut down successfully")
+    new ExecutionResult(new ComputationResults(BigDecimal(avgVertex.state).round(new MathContext(3)).toDouble, filterInteger(vertexArray)), vertexArray, stats)
   }
 
   def filterInteger(vertexArray: ArrayBuffer[Vertex[Any, _, Any, Any]]): java.util.TreeMap[String, Object] = {

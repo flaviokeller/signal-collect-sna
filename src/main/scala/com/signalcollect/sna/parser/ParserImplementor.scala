@@ -47,25 +47,30 @@ object ParserImplementor {
 
   def getGraph(fileName: String, className: SNAClassNames, signalSteps: Option[Integer]): com.signalcollect.Graph[Any, Any] = {
     val parser = new GmlParser
-    val parsedGraphs: List[Graph] = parser.parse(Source.fromFile(fileName)("ISO8859_1")) //Kann auch ein File-Objekt sein
-    val graph = GraphBuilder.build
-    parsedGraphs foreach {
-      case g: UndirectedGraph =>
-        g.nodes.foreach({ n: Node =>
-          className match {
-            case SNAClassNames.STEPLABELPROPAGATION => graph.addVertex(new StepLabelPropagationVertex(n.id, n.id.toString, signalSteps.getOrElse(0).asInstanceOf[Int]))
-            case _ => graph.addVertex(createVertex(n, className))
-          }
-        })
-        g.edges.foreach({ e: Edge =>
-          graph.addEdge(e.source, createEdge(e.target, className))
-          g match {
-            case ug: UndirectedGraph => //add edges (Gegenrichtung, falls undirected graph)
-          }
-        })
+    try {
+      val parsedGraphs: List[Graph] = parser.parse(Source.fromFile(fileName)("ISO8859_1")) //Kann auch ein File-Objekt sein
+      val graph = GraphBuilder.build
+      parsedGraphs foreach {
+        case g: UndirectedGraph =>
+          g.nodes.foreach({ n: Node =>
+            className match {
+              case SNAClassNames.STEPLABELPROPAGATION => graph.addVertex(new StepLabelPropagationVertex(n.id, n.id.toString, signalSteps.getOrElse(0).asInstanceOf[Int]))
+              case _ => graph.addVertex(createVertex(n, className))
+            }
+          })
+          g.edges.foreach({ e: Edge =>
+            graph.addEdge(e.source, createEdge(e.target, className))
+            g match {
+              case ug: UndirectedGraph => //add edges (Gegenrichtung, falls undirected graph)
+            }
+          })
+      }
+      graph
+    } catch {
+//      graph.sh
+      case p: ParseException => throw new IllegalArgumentException("Error when reading graph file " + fileName +": "+ p.getMessage())
     }
     //    graph.shutdown
-    graph
   }
 
   def createVertex(node: Node, vertexClass: SNAClassNames): Vertex[Any, _, Any, Any] = {

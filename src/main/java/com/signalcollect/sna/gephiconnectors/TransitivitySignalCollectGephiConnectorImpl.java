@@ -76,7 +76,7 @@ public class TransitivitySignalCollectGephiConnectorImpl extends
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new TransitivitySignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/examplegraph_separated.gml");
+				"/Users/flaviokeller/Documents/Uni/Bachelorarbeit/Datasets/gml/polblogs.gml");
 		a.executeGraph();
 		double d = a.getAverage();
 		/*
@@ -88,35 +88,35 @@ public class TransitivitySignalCollectGephiConnectorImpl extends
 		double intermediateTime = Double.valueOf(intermediate - startTime) / 1000d;
 		System.out.println("execution time: " + intermediateTime + " seconds");
 
-		GraphProperties p = a.getGraphProperties();
-		p.toString();
-		long intermediate2 = System.currentTimeMillis();
-		intermediateTime = Double.valueOf(intermediate2 - intermediate) / 1000d;
-		System.out.println("properties time: " + intermediateTime + " seconds");
+//		GraphProperties p = a.getGraphProperties();
+//		p.toString();
+//		long intermediate2 = System.currentTimeMillis();
+//		intermediateTime = Double.valueOf(intermediate2 - intermediate) / 1000d;
+//		System.out.println("properties time: " + intermediateTime + " seconds");
+//
+//		Map<Integer, Integer> dd = a.getDegreeDistribution();
+//		Map<Double, Integer> cd = a.getClusterDistribution();
+//
+//		long intermediate3 = System.currentTimeMillis();
+//		intermediateTime = Double.valueOf(intermediate3 - startTime) / 1000d;
+//		System.out.println("elapsed time until image creation: "
+//				+ intermediateTime + " seconds");
 
-		Map<Integer, Integer> dd = a.getDegreeDistribution();
-		Map<Double, Integer> cd = a.getClusterDistribution();
-
-		long intermediate3 = System.currentTimeMillis();
-		intermediateTime = Double.valueOf(intermediate3 - startTime) / 1000d;
-		System.out.println("elapsed time until image creation: "
-				+ intermediateTime + " seconds");
-
-		try {
-			a.createDegreeDistributionImageFile(dd, "degreeDistr.png");
-			a.createClusterDistributionImageFile(cd, "clusterdistr.png");
-			long stopTime = System.currentTimeMillis();
-			double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
-			System.out.println("full elapsed time: " + elapsedTime
-					+ " seconds\n");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			a.createDegreeDistributionImageFile(dd, "degreeDistr.png");
+//			a.createClusterDistributionImageFile(cd, "clusterdistr.png");
+//			long stopTime = System.currentTimeMillis();
+//			double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
+//			System.out.println("full elapsed time: " + elapsedTime
+//					+ " seconds\n");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		System.out.println("The triad census values are: " + l);
-		System.out.println(p);
-		System.out.println("The degree distribution is: " + dd);
-		System.out.println("The local cluster coefficient distribution is: "
-				+ cd);
+//		System.out.println(p);
+//		System.out.println("The degree distribution is: " + dd);
+//		System.out.println("The local cluster coefficient distribution is: "
+//				+ cd);
 	}
 
 }

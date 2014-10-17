@@ -31,7 +31,7 @@ import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.constants.SNAClassNames
 import com.signalcollect.sna.parser.ParserImplementor
 
-object StepLabelPropagation extends App {
+object StepLabelPropagation{
 //  var graph = ParserImplementor.getGraph("/Users/flaviokeller/Desktop/football.gml", SNAClassNames.STEPLABELPROPAGATION, Some(10))
   //  println(run(graph, 10))
 

@@ -56,7 +56,7 @@ object LocalClusterCoefficient {
     }
     val averageclcoeff = sumOfLCC / vertexMap.toMap.size.toDouble
 
-    new ExecutionResult(new ComputationResults(BigDecimal(averageclcoeff).round(new MathContext(3)).toDouble, treeMap), vertexArray)
+    new ExecutionResult(new ComputationResults(BigDecimal(averageclcoeff).round(new MathContext(3)).toDouble, treeMap), vertexArray,stats)
   }
 
   def gatherNeighbours(vertex: LocalClusterCoefficientVertex, vertexMap: Map[Int, LocalClusterCoefficientVertex]): Double = {
