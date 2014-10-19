@@ -78,10 +78,11 @@ object ParserImplementor {
       case SNAClassNames.DEGREE => new DegreeVertex(node.id)
       case SNAClassNames.PAGERANK => new PageRankVertex(node.id)
       case SNAClassNames.PATH => new PathCollectorVertex(node.id)
+      case SNAClassNames.BETWEENNESS => new PathCollectorVertex(node.id)
+      case SNAClassNames.CLOSENESS => new PathCollectorVertex(node.id)
       case SNAClassNames.LOCALCLUSTERCOEFFICIENT => new LocalClusterCoefficientVertex(node.id)
       case SNAClassNames.TRANSITIVITY => new TransitivityVertex(node.id)
       case SNAClassNames.LABELPROPAGATION => new LabelPropagationVertex(node.id, node.label)
-      case SNAClassNames.NEIGHBORMAJORITYLABELPROPAGATION => new NeighborMajorityLabelPropagationVertex(node.id, node.label)
     }
   }
   def createEdge(targetId: Int, edgeClass: SNAClassNames): DefaultEdge[_] = {
@@ -89,10 +90,11 @@ object ParserImplementor {
       case SNAClassNames.DEGREE => new DegreeEdge(targetId)
       case SNAClassNames.PAGERANK => new PageRankEdge(targetId)
       case SNAClassNames.PATH => new PathCollectorEdge(targetId)
+      case SNAClassNames.BETWEENNESS => new PathCollectorEdge(targetId)
+      case SNAClassNames.CLOSENESS => new PathCollectorEdge(targetId)
       case SNAClassNames.LOCALCLUSTERCOEFFICIENT => new LocalClusterCoefficientEdge(targetId)
       case SNAClassNames.TRANSITIVITY => new TransitivityEdge(targetId)
       case SNAClassNames.LABELPROPAGATION => new LabelPropagationEdge(targetId)
-      case SNAClassNames.NEIGHBORMAJORITYLABELPROPAGATION => new NeighborMajorityLabelPropagationEdge(targetId)
       case SNAClassNames.STEPLABELPROPAGATION => new StepLabelPropagationEdge(targetId)
     }
   }

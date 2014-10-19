@@ -24,8 +24,8 @@ import java.util.TreeMap;
 
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
+import com.signalcollect.sna.PathCollector;
 import com.signalcollect.sna.constants.SNAClassNames;
-import com.signalcollect.sna.metrics.Betweenness;
 
 public class BetweennessSignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {
@@ -34,13 +34,13 @@ public class BetweennessSignalCollectGephiConnectorImpl extends
 	private GraphProperties graphProps;
 
 	public BetweennessSignalCollectGephiConnectorImpl(String fileName) {
-		super(fileName, SNAClassNames.PATH);
+		super(fileName, SNAClassNames.BETWEENNESS);
 	}
 
 	@Override
 	public void executeGraph() {
 		if (betweennessResult == null) {
-			betweennessResult = Betweenness.run(getGraph());
+			betweennessResult = PathCollector.run(getGraph(),SNAClassNames.BETWEENNESS);
 		}
 	}
 
@@ -77,7 +77,7 @@ public class BetweennessSignalCollectGephiConnectorImpl extends
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		SignalCollectGephiConnector a = new BetweennessSignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Documents/Uni/Bachelorarbeit/Datasets/airlines.gml");
+				"/Users/flaviokeller/Documents/Uni/Bachelorarbeit/Datasets/gml/examplegraph_separated.gml");
 		a.executeGraph();
 		double d = a.getAverage();
 		Map<String, Object> l = a.getAll();
@@ -85,36 +85,38 @@ public class BetweennessSignalCollectGephiConnectorImpl extends
 		double intermediateTime = Double.valueOf(intermediate - startTime) / 1000d;
 		System.out.println("execution time: " + intermediateTime + " seconds");
 
-		GraphProperties p = a.getGraphProperties();
-		p.toString();
-		long intermediate2 = System.currentTimeMillis();
-		intermediateTime = Double.valueOf(intermediate2 - intermediate) / 1000d;
-		System.out.println("properties time: " + intermediateTime + " seconds");
-
-		Map<Integer, Integer> dd = a.getDegreeDistribution();
-		Map<Double, Integer> cd = a.getClusterDistribution();
-
-		long intermediate3 = System.currentTimeMillis();
-		intermediateTime = Double.valueOf(intermediate3 - startTime) / 1000d;
-		System.out.println("elapsed time until image creation: "
-				+ intermediateTime + " seconds");
-
-		try {
-			a.createDegreeDistributionImageFile(dd, "degreeDistr.png");
-			a.createClusterDistributionImageFile(cd, "clusterdistr.png");
-			long stopTime = System.currentTimeMillis();
-			double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
-			System.out.println("full elapsed time: " + elapsedTime
-					+ " seconds\n");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// GraphProperties p = a.getGraphProperties();
+		// p.toString();
+		// long intermediate2 = System.currentTimeMillis();
+		// intermediateTime = Double.valueOf(intermediate2 - intermediate) /
+		// 1000d;
+		// System.out.println("properties time: " + intermediateTime +
+		// " seconds");
+		//
+		// Map<Integer, Integer> dd = a.getDegreeDistribution();
+		// Map<Double, Integer> cd = a.getClusterDistribution();
+		//
+		// long intermediate3 = System.currentTimeMillis();
+		// intermediateTime = Double.valueOf(intermediate3 - startTime) / 1000d;
+		// System.out.println("elapsed time until image creation: "
+		// + intermediateTime + " seconds");
+		//
+		// try {
+		// a.createDegreeDistributionImageFile(dd, "degreeDistr.png");
+		// a.createClusterDistributionImageFile(cd, "clusterdistr.png");
+		// long stopTime = System.currentTimeMillis();
+		// double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
+		// System.out.println("full elapsed time: " + elapsedTime
+		// + " seconds\n");
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
 		System.out.println("The average betweenness is: " + d);
 		System.out.println("The single vertex betweenness values are: " + l);
-		System.out.println(p);
-		System.out.println("The degree distribution is: " + dd);
-		System.out.println("The local cluster coefficient distribution is: "
-				+ cd);
+		// System.out.println(p);
+		// System.out.println("The degree distribution is: " + dd);
+		// System.out.println("The local cluster coefficient distribution is: "
+		// + cd);
 
 	}
 }

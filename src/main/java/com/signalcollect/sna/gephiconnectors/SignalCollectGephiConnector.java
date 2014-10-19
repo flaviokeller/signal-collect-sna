@@ -95,8 +95,8 @@ public abstract class SignalCollectGephiConnector {
 		return clusterDistribution.gatherClusterDistribution();
 	}
 
-	public JFreeChart createDegreeDistributionImageFile(
-			Map<Integer, Integer> degreeDistribution, String fileName)
+	public JFreeChart createDegreeDistributionChart(
+			Map<Integer, Integer> degreeDistribution)
 			throws IOException {
 		XYSeries dSeries = new XYSeries("number of occurences");
 		for (Iterator it = degreeDistribution.entrySet().iterator(); it
@@ -125,12 +125,11 @@ public abstract class SignalCollectGephiConnector {
 		plot.setRenderer(0, renderer0);
 		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
 				Color.BLUE);
-		ChartUtilities.saveChartAsPNG(new File(fileName), chart, 800, 600);
 		return chart;
 	}
 
-	public JFreeChart createClusterDistributionImageFile(
-			Map<Double, Integer> clusterDistribution, String fileName)
+	public JFreeChart createClusterDistributionChart(
+			Map<Double, Integer> clusterDistribution)
 			throws IOException {
 		XYSeries dSeries = new XYSeries("number of occurences");
 		for (Iterator it = clusterDistribution.entrySet().iterator(); it
@@ -161,7 +160,6 @@ public abstract class SignalCollectGephiConnector {
 
 		plot.getRendererForDataset(plot.getDataset(0)).setSeriesPaint(0,
 				Color.BLUE);
-		ChartUtilities.saveChartAsPNG(new File(fileName), chart, 800, 600);
 
 		return chart;
 	}

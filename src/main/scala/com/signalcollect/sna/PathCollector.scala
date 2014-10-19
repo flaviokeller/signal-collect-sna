@@ -21,7 +21,6 @@ package com.signalcollect.sna
 
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SynchronizedBuffer
-
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
@@ -29,10 +28,13 @@ import com.signalcollect.Graph
 import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
+import com.signalcollect.sna.constants.SNAClassNames
+import scala.collection.JavaConverters._
+import java.math.MathContext
 
 object PathCollector {
 
-  def run(pGraph: Graph[Any, Any]): ExecutionResult = {
+  def run(pGraph: Graph[Any, Any], className: SNAClassNames): ExecutionResult = {
 
     var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
     var graph: Graph[Any, Any] = null
@@ -42,11 +44,32 @@ object PathCollector {
       graph = pGraph
     }
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
+    println("pathcollector exec")
     val stats = graph.execute(execmode)
     graph.awaitIdle
     graph.foreachVertex(v => vertexArray += v.asInstanceOf[PathCollectorVertex])
+    if (className.equals(SNAClassNames.CLOSENESS)) {
+      graph.foreachVertex(v => v.asInstanceOf[PathCollectorVertex].calcCloseness(allShortestPathsAsList(vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])))
+    } else if (className.equals(SNAClassNames.BETWEENNESS)) {
+      graph.foreachVertex(v => v.asInstanceOf[PathCollectorVertex].calcBetweenness(allShortestPathsAsList(vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])))
+    }
     graph.shutdown
-    new ExecutionResult(null, vertexArray, stats)
+
+    var valueMap = new java.util.TreeMap[String, Object]
+    var avg = 0.0
+    println("pathcollector done")
+    if (className.equals(SNAClassNames.CLOSENESS)) {
+      for (closenessVertex <- vertexArray) {
+        valueMap.put(closenessVertex.id.toString, closenessVertex.asInstanceOf[PathCollectorVertex].closeness.asInstanceOf[Object])
+      }
+      avg = calcAvg(valueMap)
+    } else if (className.equals(SNAClassNames.BETWEENNESS)) {
+      for (closenessVertex <- vertexArray) {
+        valueMap.put(closenessVertex.id.toString, closenessVertex.asInstanceOf[PathCollectorVertex].betweenness.asInstanceOf[Object])
+      }
+      avg = calcAvg(valueMap)
+    }
+    new ExecutionResult(new ComputationResults(avg, valueMap), vertexArray, stats)
   }
 
   def allShortestPathsAsMap(vertexArray: ArrayBuffer[PathCollectorVertex]): Map[Int, List[Path]] = {
@@ -74,12 +97,20 @@ object PathCollector {
     }
     shortestPathList.toList
   }
+
+  def calcAvg(valueMap: java.util.Map[String, Object]): Double = {
+    val values = valueMap.asScala.asInstanceOf[scala.collection.mutable.Map[String, Double]].values.toList
+
+    BigDecimal(values.foldLeft(0.0)(_ + _) / values.foldLeft(0.0)((r, c) => r + 1)).round(new MathContext(3)).toDouble
+  }
 }
 
 class PathCollectorVertex(id: Int) extends DataGraphVertex(id, Map[Int, Path]()) {
   type Signal = ArrayBuffer[Path]
   type State = Map[Int, Path]
   var shortestPaths = scala.collection.mutable.Map[Int, Path]()
+  var closeness = 0.0
+  var betweenness = 0.0
   def collect: State = {
     for (pathArray <- mostRecentSignalMap.values) {
       for (path <- pathArray) {
@@ -93,6 +124,23 @@ class PathCollectorVertex(id: Int) extends DataGraphVertex(id, Map[Int, Path]())
       }
     }
     shortestPaths.toMap
+  }
+
+  def calcCloseness(shortestPathList: List[Path]) {
+    val pathsThroughVertex = shortestPathList.filter(p => p.sourceVertexId == id)
+    if (!pathsThroughVertex.isEmpty) {
+      for (path <- pathsThroughVertex) {
+        closeness += (path.path.size - 1)
+      }
+      closeness = BigDecimal(closeness / pathsThroughVertex.size.toDouble).round(new MathContext(3)).toDouble
+    }
+
+  }
+  def calcBetweenness(shortestPathList: List[Path]) {
+    val pathsThroughVertex = shortestPathList.filter(path => path.sourceVertexId != id && path.targetVertexId != id && path.path.contains(id))
+    if (!pathsThroughVertex.isEmpty) {
+      betweenness = BigDecimal(pathsThroughVertex.size.toDouble / shortestPathList.size.toDouble).round(new MathContext(3)).toDouble
+    }
   }
 }
 

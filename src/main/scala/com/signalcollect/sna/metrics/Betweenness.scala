@@ -20,11 +20,9 @@
 package com.signalcollect.sna.metrics
 
 import java.math.MathContext
-
 import scala.BigDecimal
 import scala.collection.JavaConverters.mapAsScalaMapConverter
 import scala.collection.mutable.ArrayBuffer
-
 import com.signalcollect.Graph
 import com.signalcollect.Vertex
 import com.signalcollect.sna.ComputationResults
@@ -32,10 +30,11 @@ import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.Path
 import com.signalcollect.sna.PathCollector
 import com.signalcollect.sna.PathCollectorVertex
+import com.signalcollect.sna.constants.SNAClassNames
 
 object Betweenness {
   def run(graph: Graph[Any, Any]): ExecutionResult = {
-    val pathCollectorExecRes = PathCollector.run(graph)
+    val pathCollectorExecRes = PathCollector.run(graph,SNAClassNames.BETWEENNESS)
     val shortestPathList = PathCollector.allShortestPathsAsList(pathCollectorExecRes.vertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])
     val betweennessMap = getBetweennessForAll(pathCollectorExecRes.vertexArray, shortestPathList)
     new ExecutionResult(new ComputationResults(calcAvg(betweennessMap), betweennessMap), pathCollectorExecRes.vertexArray, pathCollectorExecRes.stats)

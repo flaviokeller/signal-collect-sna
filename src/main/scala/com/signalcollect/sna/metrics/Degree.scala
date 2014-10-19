@@ -49,13 +49,7 @@ object Degree {
     graph.awaitIdle
     var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
     graph.foreachVertex(v => vertexArray += v)
-    
-    println("sleeping for 5s")
-    Thread.sleep(5000)
-    
     graph.shutdown
-    
-    println("graph shut down successfully")
     new ExecutionResult(new ComputationResults(BigDecimal(avgVertex.state).round(new MathContext(3)).toDouble, filterInteger(vertexArray)), vertexArray, stats)
   }
 

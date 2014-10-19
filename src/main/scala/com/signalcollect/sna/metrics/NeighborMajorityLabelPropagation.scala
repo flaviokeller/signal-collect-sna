@@ -31,7 +31,7 @@ import scala.collection.mutable.SynchronizedBuffer
 
 object NeighborMajorityLabelPropagation extends App {
 
-  var graph = ParserImplementor.getGraph("/Users/flaviokeller/Desktop/football.gml", SNAClassNames.NEIGHBORMAJORITYLABELPROPAGATION,None)
+  var graph = ParserImplementor.getGraph("/Users/flaviokeller/Desktop/football.gml", SNAClassNames.DEGREE,None)
   val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
   val stats = graph.execute(execmode)
   graph.awaitIdle

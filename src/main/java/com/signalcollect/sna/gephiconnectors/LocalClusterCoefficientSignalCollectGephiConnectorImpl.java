@@ -114,8 +114,8 @@ public class LocalClusterCoefficientSignalCollectGephiConnectorImpl extends
 				+ intermediateTime + " seconds");
 
 		try {
-			a.createDegreeDistributionImageFile(dd, "degreeDistr.png");
-			a.createClusterDistributionImageFile(cd, "clusterdistr.png");
+			a.createDegreeDistributionChart(dd);
+			a.createClusterDistributionChart(cd);
 			long stopTime = System.currentTimeMillis();
 			double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
 			System.out.println("full elapsed time: " + elapsedTime

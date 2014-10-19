@@ -12,7 +12,7 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _, Any, Any]], fileName: String
 
   var size: Integer = null
   var density: Double = null
-  var diameter: Double = null
+  var diameter: Integer = null
   var reciprocity: Double = null
 
   var pathVertexArray = ArrayBuffer[Vertex[Any, _, Any, Any]]()
@@ -53,21 +53,20 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _, Any, Any]], fileName: String
     BigDecimal(edges / (nonAverageVertices.size * (nonAverageVertices.size - 1))).round(new MathContext(3)).toDouble
   }
 
-  def calcDiameter(): Double = {
+  def calcDiameter(): Int = {
     if (pathVertexArray == null || pathVertexArray.isEmpty) {
       val pathGraph = ParserImplementor.getGraph(fileName, SNAClassNames.PATH, None)
-      pathVertexArray = PathCollector.run(pathGraph).vertexArray
+      pathVertexArray = PathCollector.run(pathGraph, SNAClassNames.PATH).vertexArray
     }
     val listOfShortestPaths = PathCollector.allShortestPathsAsList(pathVertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])
     def getdiameter(p1: Path, p2: Path): Path = if (p1.path.size > p2.path.size) p1 else p2
-    val diameter = listOfShortestPaths.reduceLeft(getdiameter).path.size - 1.0
-    diameter
+    listOfShortestPaths.reduceLeft(getdiameter).path.size - 1
   }
 
   def calcReciprocity(): Double = {
     if (pathVertexArray == null || pathVertexArray.isEmpty) {
       val pathGraph = ParserImplementor.getGraph(fileName, SNAClassNames.PATH, None)
-      pathVertexArray = PathCollector.run(pathGraph).vertexArray
+      pathVertexArray = PathCollector.run(pathGraph, SNAClassNames.PATH).vertexArray
     }
     val mapOfShortestPathsForTargetVertices = PathCollector.allShortestPathsAsMap(pathVertexArray.asInstanceOf[ArrayBuffer[PathCollectorVertex]])
     var numberOfReciprocalPaths = 0
@@ -79,8 +78,7 @@ class GraphProperties(l: ArrayBuffer[Vertex[Any, _, Any, Any]], fileName: String
         if (reciprocalPathExists) numberOfReciprocalPaths += 1
       }
     }
-    val reciprocity = numberOfReciprocalPaths.toDouble / size
-    reciprocity
+    BigDecimal(numberOfReciprocalPaths.toDouble / size).round(new MathContext(3)).toDouble
   }
 
 }
