@@ -44,7 +44,6 @@ object PathCollector {
       graph = pGraph
     }
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
-    println("pathcollector exec")
     val stats = graph.execute(execmode)
     graph.awaitIdle
     graph.foreachVertex(v => vertexArray += v.asInstanceOf[PathCollectorVertex])
@@ -57,7 +56,6 @@ object PathCollector {
 
     var valueMap = new java.util.TreeMap[String, Object]
     var avg = 0.0
-    println("pathcollector done")
     if (className.equals(SNAClassNames.CLOSENESS)) {
       for (closenessVertex <- vertexArray) {
         valueMap.put(closenessVertex.id.toString, closenessVertex.asInstanceOf[PathCollectorVertex].closeness.asInstanceOf[Object])
