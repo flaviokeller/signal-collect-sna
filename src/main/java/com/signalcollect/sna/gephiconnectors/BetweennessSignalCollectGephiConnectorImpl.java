@@ -24,8 +24,8 @@ import java.util.TreeMap;
 
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
-import com.signalcollect.sna.PathCollector;
 import com.signalcollect.sna.constants.SNAClassNames;
+import com.signalcollect.sna.metrics.PathCollector;
 
 public class BetweennessSignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {

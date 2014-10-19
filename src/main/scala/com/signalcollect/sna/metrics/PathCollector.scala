@@ -17,12 +17,10 @@
  *
  */
 
-package com.signalcollect.sna
+package com.signalcollect.sna.metrics
 
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SynchronizedBuffer
-import com.signalcollect.DataGraphVertex
-import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
 import com.signalcollect.GraphBuilder
@@ -31,6 +29,12 @@ import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.constants.SNAClassNames
 import scala.collection.JavaConverters._
 import java.math.MathContext
+import com.signalcollect.sna.ComputationResults
+import com.signalcollect.sna.ExecutionResult
+import com.signalcollect.sna.Path
+import scala.BigDecimal
+import com.signalcollect.DataGraphVertex
+import com.signalcollect.DefaultEdge
 
 object PathCollector {
 

@@ -7,6 +7,8 @@ import com.signalcollect.Vertex
 import java.math.MathContext
 import com.signalcollect.DataGraphVertex
 import java.lang.Double
+import com.signalcollect.sna.metrics.PathCollectorVertex
+import com.signalcollect.sna.metrics.PathCollector
 
 class GraphProperties(l: ArrayBuffer[Vertex[Any, _, Any, Any]], fileName: String) {
 
