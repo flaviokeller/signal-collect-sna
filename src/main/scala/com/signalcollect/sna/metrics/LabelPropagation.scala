@@ -19,87 +19,94 @@
 
 package com.signalcollect.sna.metrics
 
-import scala.collection.immutable.Set
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.JavaConverters.mapAsJavaMapConverter
+import scala.util.Random
+import com.signalcollect.DataGraphVertex
 import com.signalcollect.ExecutionConfiguration
+import com.signalcollect.Graph
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
-import com.signalcollect.sna.constants.SNAClassNames
-import com.signalcollect.sna.parser.ParserImplementor
-import com.signalcollect.DataGraphVertex
 import com.signalcollect.DefaultEdge
-import scala.collection.mutable.SynchronizedBuffer
 
-object LabelPropagation extends App {
-
-  var graph = ParserImplementor.getGraph("/Users/flaviokeller/Desktop/examplegraph_separated.gml", SNAClassNames.LABELPROPAGATION, None)
-  val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
-  val stats = graph.execute(execmode)
-  graph.awaitIdle
-  var s = new ArrayBuffer[Vertex[Any, _,Any,Any]] with SynchronizedBuffer[Vertex[Any, _,Any,Any]]
-  var labelDistribution = scala.collection.mutable.Map[String, Int]()
-  graph.foreachVertex(v => s += v)
-  for (v <- s) {
-    for (x <- v.asInstanceOf[LabelPropagationVertex].highestProportionLabels) {
-      labelDistribution.put(x._1, labelDistribution.get(x._1).getOrElse(0) + 1)
-    }
-
+object LabelPropagation {
+ 
+  def run(graph: Graph[Any, Any], signalSteps: Int): java.util.Map[Integer, java.util.Map[String, Integer]] = {
+    type ResultType = Int
+    val stepCountVertex = new CountLabelPropagationVertex("StepCounter", "StepCounter", signalSteps)
+    graph.addVertex(stepCountVertex)
+    graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(v.id, new CountLabelPropagationEdge(stepCountVertex.id)))
+    graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(stepCountVertex.id, new CountLabelPropagationEdge(v.id)))
+    val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
+    val stats = graph.execute(execmode)
+    graph.awaitIdle
+    val evolvingMap = graph.forVertexWithId(stepCountVertex.id, { v: CountLabelPropagationVertex => v.evolvingMap.toMap })
+   
+    graph.shutdown
+    evolvingMap.asJava.asInstanceOf[java.util.Map[Integer, java.util.Map[String, Integer]]]
   }
-  println(labelDistribution)
-  graph.shutdown
 
 }
 
-class LabelPropagationVertex(id: Int, val label: String) extends DataGraphVertex(id, 0) {
+class LabelPropagationVertex(id: Int, var label: String, val signalSteps: Int) extends DataGraphVertex(id, 0) {
 
-  type Signal = Map[String, Set[Int]]
+  type Signal = String
   type State = Int
-  var relevantLabels = Map((label, 1))
-  var highestProportionLabels = Map((label, 1))
-  var labelMap = scala.collection.mutable.Map((label, 1))
-  var incomingpropagationLabels = scala.collection.mutable.Map[String, Set[Int]]()
+  var labelMap = scala.collection.mutable.Map[String, Int]()
   def collect: State = {
-    for (signal <- mostRecentSignalMap) {
-      for (signalLabelMap <- signal._2) {
-        if (!signalLabelMap._1.equals("no label")) {
-          var idSet = incomingpropagationLabels.get(signalLabelMap._1).getOrElse(signalLabelMap._2) ++ signalLabelMap._2
-          incomingpropagationLabels += ((signalLabelMap._1, idSet))
-          //          if (id == 7) println("END:\tid: " + id + " label " + x._1 + " labelset " + idSet)
-        }
-      }
+    labelMap.clear
+    val relevantSignals = mostRecentSignalMap.filter(s => !s._1.equals("StepCounter")).values.toList
+    for (x <- relevantSignals) {
+      labelMap.put(x, labelMap.get(x).getOrElse(0) + 1)
     }
-    for (propagationLabel <- incomingpropagationLabels) {
-      labelMap.put(propagationLabel._1, propagationLabel._2.size)
-      //      if (id == 7) println("resmap: " + resMap)
+    if (!labelMap.isEmpty) {
+      val groupedLabels = labelMap.groupBy(_._2)
+      val highestCountLabels = groupedLabels.maxBy(_._1)._2
+      label = highestCountLabels.keySet.toList(Random.nextInt(highestCountLabels.size))
     }
-    //    if (label.equals("no label")) {
-    relevantLabels = (labelMap - ("no label")).toMap
-//    println(relevantLabels)
-    //    }
-    if (!relevantLabels.isEmpty) {
-      for (relevantlabel <- relevantLabels) {
-        if (relevantlabel._2 >= highestProportionLabels.head._2) {
-          highestProportionLabels += relevantlabel
-        }
-        if (relevantlabel._2 > highestProportionLabels.head._2) {
-          highestProportionLabels = Map(relevantlabel)
-        }
-      }
-      highestProportionLabels -= ("no label")
+    state += 1
+    if (state < signalSteps) {
+      state
+    } else {
+      signalSteps
     }
-    labelMap.size
-
   }
 }
 class LabelPropagationEdge(t: Any) extends DefaultEdge(t) {
-  var sendMap = scala.collection.mutable.Map[String, Set[Int]]()
-
   type Source = LabelPropagationVertex
   def signal = {
-    for (label <- source.labelMap) {
-      sendMap.put(label._1, Set(source.id))
-    }
-    sendMap.toMap
+    source.label
   }
 }
 
+class CountLabelPropagationVertex(id: String, var label: String, val signalSteps: Int) extends DataGraphVertex(id, 0) {
+
+  type Signal = String
+  type State = Int
+  var evolvingMap = scala.collection.SortedMap[Int, java.util.Map[String, Int]]()
+
+  def collect: State = {
+    var labelMap = new java.util.HashMap[String, Int]()
+    val relevantSignals = mostRecentSignalMap.filter(s => !s._1.equals("StepCounter")).values.toList
+    for (x <- relevantSignals) {
+      labelMap.put(x, labelMap.get(x) + 1)
+    }
+    state += 1
+    evolvingMap += ((state, labelMap.asInstanceOf[java.util.Map[String, Int]]))
+    if (state < signalSteps) {
+      state
+    } else {
+      signalSteps
+    }
+  }
+}
+class CountLabelPropagationEdge(t: Any) extends DefaultEdge(t) {
+
+  type Source = DataGraphVertex[Any, Any]
+  def signal = {
+    if (source.id.equals("StepCounter")) {
+      None
+    } else {
+      source.asInstanceOf[LabelPropagationVertex].label
+    }
+  }
+}

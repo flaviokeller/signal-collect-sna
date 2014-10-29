@@ -41,14 +41,17 @@ object Transitivity {
 
     var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
     graph.foreachVertex(v => vertexArray += v)
-    var vertexMap = SortedMap[Int, TransitivityVertex]()
+    var vertexMap = SortedMap[Int, TriadCensusVertex]()
     for (vertex <- vertexArray) {
-      vertexMap += ((vertex.id.asInstanceOf[Int], vertex.asInstanceOf[TransitivityVertex]))
+      vertexMap += ((vertex.id.asInstanceOf[Int], vertex.asInstanceOf[TriadCensusVertex]))
     }
     graph.shutdown
     var treeMap = new java.util.TreeMap[String, Object]()
     var countMap = SortedMap[Int, Long]()
-
+    /*
+   * this code part is an adaption of the triad census algorithm for signal/collect and scala. 
+   * Originally implemented by Batagelj and Mrvar at the University of Ljubljana, Slovenia
+   */
     for (vertex <- vertexMap.toMap) {
       if (vertex._2.neighbours.isEmpty) {
         for (outgoingneighbour <- vertex._2.outgoingEdges) {
@@ -60,7 +63,7 @@ object Transitivity {
           var triadType = -1;
           val neighbourVertex = vertexMap.get(neighbour).get
 
-          val neighboursOfBothVertices = vertex._2.neighbours union neighbourVertex.neighbours diff Set(vertex._1, neighbour) //common neighbours?
+          val neighboursOfBothVertices = vertex._2.neighbours union neighbourVertex.neighbours diff Set(vertex._1, neighbour) //all neighbours of the two vertices
 
           if (vertex._2.outgoingEdges.contains(neighbourVertex.id) && neighbourVertex.outgoingEdges.contains(vertex._2.id)) {
             triadType = 3;
@@ -102,47 +105,7 @@ object Transitivity {
     new ExecutionResult(new ComputationResults(0.0, treeMap), vertexArray, stats)
   }
 
-  /*
-   * this function is an adaption of the triad census algorithm for signal/collect and scala
-   */
-  def getCounts(vertex: TransitivityVertex, vertexMap: Map[Int, TransitivityVertex]): Map[Int, Int] = {
-    var countMap = SortedMap[Int, Int]()
-    for (neighbour <- vertex.neighbours) {
-      if (vertex.id.asInstanceOf[Int] < neighbour) {
-        var triadType = -1;
-        val neighbourVertex = vertexMap.get(neighbour).get
-
-        val neighboursOfBothVertices = vertex.neighbours union neighbourVertex.neighbours //common neighbours?
-
-        if (vertex.outgoingEdges.contains(neighbourVertex.id) && neighbourVertex.outgoingEdges.contains(vertex.id)) {
-          triadType = 3;
-        } else {
-          triadType = 2;
-        }
-        var countValue = countMap.get(triadType).getOrElse(0)
-        countMap += ((triadType, countValue + (vertexMap.size - vertex.outgoingEdges.size - 2)))
-
-        for (neighbourOfBoth <- neighboursOfBothVertices) {
-          if (neighbour < neighbourOfBoth || (vertex.id.asInstanceOf[Int] < neighbourOfBoth && neighbourOfBoth < neighbour && !vertex.neighbours.contains(neighbourOfBoth))) {
-            val neighbourOfBothVertex = vertexMap.get(neighbourOfBoth).get
-
-            triadType = SignalCollectSNAConstants.codeToType(triCode(vertex, neighbourVertex, neighbourOfBothVertex))
-            countValue = countMap.get(triadType).getOrElse(0)
-            countMap += ((triadType, countValue + 1))
-          }
-
-        }
-      }
-    }
-    var sum = 0
-    for (i <- 2 to 16) {
-      sum += countMap.get(i).getOrElse(0)
-    }
-    countMap += ((1, ((vertexMap.size * (vertexMap.size - 1) * (vertexMap.size - 2)) / 6) - sum))
-    countMap.toMap
-  }
-
-  def triCode(u: TransitivityVertex, v: TransitivityVertex, w: TransitivityVertex): Int = {
+  def triCode(u: TriadCensusVertex, v: TriadCensusVertex, w: TriadCensusVertex): Int = {
     var i = 0
     if (link(v, u)) i += 1
     if (link(u, v)) i += 2
@@ -153,12 +116,12 @@ object Transitivity {
     i
   }
 
-  def link(u: TransitivityVertex, v: TransitivityVertex): Boolean = {
+  def link(u: TriadCensusVertex, v: TriadCensusVertex): Boolean = {
     u.outgoingEdges.contains(v.id)
   }
 
 }
-class TransitivityVertex(id: Int) extends DataGraphVertex(id, 0) {
+class TriadCensusVertex(id: Int) extends DataGraphVertex(id, 0) {
   type Signal = Int
   type State = Int
   var neighbours = scala.collection.mutable.Set[Int]()
@@ -173,7 +136,7 @@ class TransitivityVertex(id: Int) extends DataGraphVertex(id, 0) {
   }
 
 }
-class TransitivityEdge(t: Int) extends DefaultEdge(t) {
+class TriadCensusEdge(t: Int) extends DefaultEdge(t) {
   type Source = DataGraphVertex[Any, Any]
   def signal = source.id
 }

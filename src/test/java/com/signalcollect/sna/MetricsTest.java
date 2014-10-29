@@ -29,7 +29,7 @@ import com.signalcollect.sna.gephiconnectors.DegreeSignalCollectGephiConnectorIm
 import com.signalcollect.sna.gephiconnectors.LocalClusterCoefficientSignalCollectGephiConnectorImpl;
 import com.signalcollect.sna.gephiconnectors.PageRankSignalCollectGephiConnectorImpl;
 import com.signalcollect.sna.gephiconnectors.SignalCollectGephiConnector;
-import com.signalcollect.sna.gephiconnectors.TransitivitySignalCollectGephiConnectorImpl;
+import com.signalcollect.sna.gephiconnectors.TriadCensusSignalCollectGephiConnectorImpl;
 
 public class MetricsTest {
 
@@ -95,7 +95,7 @@ public class MetricsTest {
 
 	@Test
 	public void triadCensusTest() {
-		scgc = new TransitivitySignalCollectGephiConnectorImpl(testFile);
+		scgc = new TriadCensusSignalCollectGephiConnectorImpl(testFile);
 		scgc.executeGraph();
 		assertEquals(107, scgc.getAll().get(String.valueOf(1)));
 		assertEquals(1, scgc.getAll().get(String.valueOf(14)));

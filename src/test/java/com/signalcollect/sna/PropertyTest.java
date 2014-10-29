@@ -35,7 +35,7 @@ public class PropertyTest {
 
 	private GraphProperties props;
 
-	private String testFile = "/Users/flaviokeller/Documents/Uni/Bachelorarbeit/Datasets/examplegraph_separated.gml";
+	private String testFile = "/Users/flaviokeller/Documents/Uni/Bachelorarbeit/Datasets/gml/examplegraph_separated.gml";
 
 	@Test
 	public void propertyTest() {
@@ -47,7 +47,7 @@ public class PropertyTest {
 		assertEquals(13, props.calcSize());
 		assertEquals(0.135, props.calcDensity(), 0.01);
 		assertEquals(3.0, props.calcDiameter(), 0.01);
-		assertEquals(1.38, props.calcReciprocity(), 0.01);
+		assertEquals(0.243, props.calcReciprocity(), 0.01);
 	}
 
 	@Test

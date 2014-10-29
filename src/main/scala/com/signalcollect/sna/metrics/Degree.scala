@@ -22,18 +22,15 @@ package com.signalcollect.sna.metrics
 import java.math.MathContext
 import scala.BigDecimal
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.SynchronizedBuffer
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
-import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.DefaultEdge
-import scala.collection.mutable.SynchronizedSet
-import scala.collection.immutable.HashSet
-import scala.collection.mutable.SynchronizedBuffer
 
 object Degree {
 

@@ -21,7 +21,6 @@ package com.signalcollect.sna.gephiconnectors;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Iterator;
@@ -30,7 +29,6 @@ import java.util.Set;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
@@ -50,7 +48,7 @@ import com.signalcollect.sna.ClusterDistribution;
 import com.signalcollect.sna.DegreeDistribution;
 import com.signalcollect.sna.GraphProperties;
 import com.signalcollect.sna.constants.SNAClassNames;
-import com.signalcollect.sna.metrics.StepLabelPropagation;
+import com.signalcollect.sna.metrics.LabelPropagation;
 import com.signalcollect.sna.parser.ParserImplementor;
 
 public abstract class SignalCollectGephiConnector {
@@ -81,10 +79,10 @@ public abstract class SignalCollectGephiConnector {
 
 	public abstract GraphProperties getGraphProperties();
 
-	public String getFileName(){
+	public String getFileName() {
 		return signalCollectFileName;
 	}
-	
+
 	public Map<Integer, Integer> getDegreeDistribution() {
 		degreeDistribution = new DegreeDistribution(signalCollectFileName);
 		return degreeDistribution.gatherDegreeeDistribution();
@@ -96,8 +94,7 @@ public abstract class SignalCollectGephiConnector {
 	}
 
 	public JFreeChart createDegreeDistributionChart(
-			Map<Integer, Integer> degreeDistribution)
-			throws IOException {
+			Map<Integer, Integer> degreeDistribution) throws IOException {
 		XYSeries dSeries = new XYSeries("number of occurences");
 		for (Iterator it = degreeDistribution.entrySet().iterator(); it
 				.hasNext();) {
@@ -129,8 +126,7 @@ public abstract class SignalCollectGephiConnector {
 	}
 
 	public JFreeChart createClusterDistributionChart(
-			Map<Double, Integer> clusterDistribution)
-			throws IOException {
+			Map<Double, Integer> clusterDistribution) throws IOException {
 		XYSeries dSeries = new XYSeries("number of occurences");
 		for (Iterator it = clusterDistribution.entrySet().iterator(); it
 				.hasNext();) {
@@ -166,7 +162,7 @@ public abstract class SignalCollectGephiConnector {
 
 	public void getLabelPropagation() throws IOException {
 
-		Map<Integer, Map<String, Integer>> m = StepLabelPropagation.run(graph,
+		Map<Integer, Map<String, Integer>> m = LabelPropagation.run(graph,
 				signalSteps.get());
 
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
@@ -220,14 +216,15 @@ public abstract class SignalCollectGephiConnector {
 		return graph;
 	}
 
-	public static void main(String[] args) {
-		SignalCollectGephiConnector a = new LabelPropagationSignalCollectGephiConnectorImpl(
-				"/Users/flaviokeller/Desktop/examplegraph.gml",
-				scala.Option.apply(100));
-		try {
-			a.getLabelPropagation();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	// public static void main(String[] args) {
+	// SignalCollectGephiConnector a = new
+	// LabelPropagationSignalCollectGephiConnectorImpl(
+	// "/Users/flaviokeller/Desktop/examplegraph.gml",
+	// scala.Option.apply(100));
+	// try {
+	// a.getLabelPropagation();
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	// }
 }

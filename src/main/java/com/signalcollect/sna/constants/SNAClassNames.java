@@ -22,9 +22,8 @@ package com.signalcollect.sna.constants;
 public enum SNAClassNames {
 
 	DEGREE("Degree"), PAGERANK("PageRank"), CLOSENESS("Closeness"), BETWEENNESS("Betweenness"), PATH("Path"), LOCALCLUSTERCOEFFICIENT(
-			"LocalClusterCoefficient"), TRANSITIVITY("Transitivty"), LABELPROPAGATION(
-			"Label Propagation"), STEPLABELPROPAGATION(
-					"Step Label Propagation");
+			"LocalClusterCoefficient"), TRIADCENSUS("Triad Census"), LABELPROPAGATION(
+			"Label Propagation") ;
 
 	private final String className;
 

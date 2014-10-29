@@ -19,35 +19,29 @@
 
 package com.signalcollect.sna.metrics
 
+import java.math.MathContext
+import scala.BigDecimal
+import scala.collection.JavaConverters.mapAsScalaMapConverter
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SynchronizedBuffer
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
-import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
-import com.signalcollect.sna.constants.SNAClassNames
-import scala.collection.JavaConverters._
-import java.math.MathContext
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.Path
-import scala.BigDecimal
+import com.signalcollect.sna.constants.SNAClassNames
 import com.signalcollect.DataGraphVertex
 import com.signalcollect.DefaultEdge
 
 object PathCollector {
 
-  def run(pGraph: Graph[Any, Any], className: SNAClassNames): ExecutionResult = {
+  def run(graph: Graph[Any, Any], className: SNAClassNames): ExecutionResult = {
 
     var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
-    var graph: Graph[Any, Any] = null
-    if (pGraph == null) {
-      graph = GraphBuilder.build
-    } else {
-      graph = pGraph
-    }
-    val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
+    
+    val execmode = ExecutionConfiguration(ExecutionMode.Synchronous).withTimeLimit(43200000)
     val stats = graph.execute(execmode)
     graph.awaitIdle
     graph.foreachVertex(v => vertexArray += v.asInstanceOf[PathCollectorVertex])
@@ -102,7 +96,6 @@ object PathCollector {
 
   def calcAvg(valueMap: java.util.Map[String, Object]): Double = {
     val values = valueMap.asScala.asInstanceOf[scala.collection.mutable.Map[String, Double]].values.toList
-
     BigDecimal(values.foldLeft(0.0)(_ + _) / values.foldLeft(0.0)((r, c) => r + 1)).round(new MathContext(3)).toDouble
   }
 }
@@ -113,7 +106,9 @@ class PathCollectorVertex(id: Int) extends DataGraphVertex(id, Map[Int, Path]())
   var shortestPaths = scala.collection.mutable.Map[Int, Path]()
   var closeness = 0.0
   var betweenness = 0.0
+  var stepcount = 0
   def collect: State = {
+    stepcount+=1
     for (pathArray <- mostRecentSignalMap.values) {
       for (path <- pathArray) {
         if (shortestPaths.contains(path.sourceVertexId)) {

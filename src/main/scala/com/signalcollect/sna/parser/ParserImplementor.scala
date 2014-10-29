@@ -36,10 +36,8 @@ import com.signalcollect.sna.metrics.PageRankEdge
 import com.signalcollect.sna.metrics.PageRankVertex
 import com.signalcollect.sna.metrics.PathCollectorEdge
 import com.signalcollect.sna.metrics.PathCollectorVertex
-import com.signalcollect.sna.metrics.StepLabelPropagationEdge
-import com.signalcollect.sna.metrics.StepLabelPropagationVertex
-import com.signalcollect.sna.metrics.TransitivityEdge
-import com.signalcollect.sna.metrics.TransitivityVertex
+import com.signalcollect.sna.metrics.TriadCensusEdge
+import com.signalcollect.sna.metrics.TriadCensusVertex
 
 object ParserImplementor {
 
@@ -52,7 +50,7 @@ object ParserImplementor {
         case g: UndirectedGraph =>
           g.nodes.foreach({ n: Node =>
             className match {
-              case SNAClassNames.STEPLABELPROPAGATION => graph.addVertex(new StepLabelPropagationVertex(n.id, n.id.toString, signalSteps.getOrElse(0).asInstanceOf[Int]))
+              case SNAClassNames.LABELPROPAGATION => graph.addVertex(new LabelPropagationVertex(n.id, n.id.toString, signalSteps.getOrElse(0).asInstanceOf[Int]))
               case _ => graph.addVertex(createVertex(n, className))
             }
           })
@@ -65,7 +63,6 @@ object ParserImplementor {
       }
       graph
     } catch {
-//      graph.sh
       case p: ParseException => throw new IllegalArgumentException("Error when reading graph file " + fileName +": "+ p.getMessage())
     }
     //    graph.shutdown
@@ -79,8 +76,7 @@ object ParserImplementor {
       case SNAClassNames.BETWEENNESS => new PathCollectorVertex(node.id)
       case SNAClassNames.CLOSENESS => new PathCollectorVertex(node.id)
       case SNAClassNames.LOCALCLUSTERCOEFFICIENT => new LocalClusterCoefficientVertex(node.id)
-      case SNAClassNames.TRANSITIVITY => new TransitivityVertex(node.id)
-      case SNAClassNames.LABELPROPAGATION => new LabelPropagationVertex(node.id, node.label)
+      case SNAClassNames.TRIADCENSUS => new TriadCensusVertex(node.id)
     }
   }
   def createEdge(targetId: Int, edgeClass: SNAClassNames): DefaultEdge[_] = {
@@ -91,9 +87,8 @@ object ParserImplementor {
       case SNAClassNames.BETWEENNESS => new PathCollectorEdge(targetId)
       case SNAClassNames.CLOSENESS => new PathCollectorEdge(targetId)
       case SNAClassNames.LOCALCLUSTERCOEFFICIENT => new LocalClusterCoefficientEdge(targetId)
-      case SNAClassNames.TRANSITIVITY => new TransitivityEdge(targetId)
+      case SNAClassNames.TRIADCENSUS => new TriadCensusEdge(targetId)
       case SNAClassNames.LABELPROPAGATION => new LabelPropagationEdge(targetId)
-      case SNAClassNames.STEPLABELPROPAGATION => new StepLabelPropagationEdge(targetId)
     }
   }
 

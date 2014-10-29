@@ -21,19 +21,19 @@ package com.signalcollect.sna.metrics
 
 import java.math.MathContext
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.SynchronizedBuffer
 import scala.math.BigDecimal
 import com.signalcollect.DataGraphVertex
-import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
 import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
-import scala.collection.mutable.SynchronizedBuffer
+import com.signalcollect.DefaultEdge
 
 object PageRank {
-  final def run(graph: Graph[Any, Any]): ExecutionResult = {
+  def run(graph: Graph[Any, Any]): ExecutionResult = {
     val avgVertex = new AveragePageRankVertex("Average")
     graph.addVertex(avgVertex)
     graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(v.id, new AveragePageRankEdge(avgVertex.id)))
