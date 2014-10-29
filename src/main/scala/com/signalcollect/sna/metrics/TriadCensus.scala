@@ -21,7 +21,10 @@ package com.signalcollect.sna.metrics
 
 import scala.collection.SortedMap
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.SynchronizedBuffer
+
 import com.signalcollect.DataGraphVertex
+import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
 import com.signalcollect.Vertex
@@ -29,8 +32,6 @@ import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.constants.SignalCollectSNAConstants
-import com.signalcollect.DefaultEdge
-import scala.collection.mutable.SynchronizedBuffer
 
 object Transitivity {
 
@@ -82,7 +83,6 @@ object Transitivity {
               countValue = countMap.get(triadType).getOrElse(0)
               countMap += ((triadType, countValue + 1.toLong))
             }
-
           }
         }
       }
@@ -91,7 +91,6 @@ object Transitivity {
         sum += countMap.get(i).getOrElse(0.toLong)
       }
       countMap += ((1, ((vertexMap.size.toLong * (vertexMap.size - 1).toLong * (vertexMap.size - 2).toLong) / 6).toLong - sum))
-      //TODO: find out which .toLong are necessary
     }
 
     for (count <- countMap) {
@@ -99,7 +98,7 @@ object Transitivity {
     }
     for (i <- 1 to 16) {
       if (treeMap.get(i.toString) == null) {
-        treeMap.put(i.toString, Integer.valueOf(0))
+        treeMap.put(i.toString, 0.toLong.asInstanceOf[Object])
       }
     }
     new ExecutionResult(new ComputationResults(0.0, treeMap), vertexArray, stats)
