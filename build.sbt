@@ -1,9 +1,9 @@
 import AssemblyKeys._ 
 assemblySettings
 
-name := "SignalCollectSNA"
+name := "signal-collect-sna"
  
-version := "0.1-SNAPSHOT"
+version := "1.0"
  
 organization := "com.signalcollect"
  
@@ -19,7 +19,7 @@ EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
 
 EclipseKeys.withSource := true
 
-jarName in assembly := "signal-collect-sna-0.1-SNAPSHOT.jar"
+jarName in assembly := "signal-collect-sna-1.0.jar"
 
 /** Dependencies */
 libraryDependencies ++= Seq(
