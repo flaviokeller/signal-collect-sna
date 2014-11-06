@@ -23,14 +23,27 @@ import java.util.Map;
 import com.signalcollect.sna.GraphProperties;
 import com.signalcollect.sna.constants.SNAClassNames;
 
+/**
+ * The {@link SignalCollectGephiConnector} implementation for Label Propagation
+ * @author flaviokeller
+ *
+ */
 public class LabelPropagationSignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {
 
+	/**
+	 * 
+	 * @param fileName
+	 * @param steps
+	 */
 	public LabelPropagationSignalCollectGephiConnectorImpl(String fileName,
 			scala.Option<Integer> steps) {
 		super(fileName, SNAClassNames.LABELPROPAGATION, steps);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void executeGraph() {
 		try {
@@ -41,18 +54,30 @@ public class LabelPropagationSignalCollectGephiConnectorImpl extends
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * extend by description why not used
+	 */
 	@Override
 	public double getAverage() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * extend by description why not used
+	 */
 	@Override
 	public Map<String, Object> getAll() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * extend by description why not used
+	 */
 	@Override
 	public GraphProperties getGraphProperties() {
 		// TODO Auto-generated method stub

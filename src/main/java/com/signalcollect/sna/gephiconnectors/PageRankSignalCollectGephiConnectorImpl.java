@@ -27,23 +27,41 @@ import com.signalcollect.sna.GraphProperties;
 import com.signalcollect.sna.constants.SNAClassNames;
 import com.signalcollect.sna.metrics.PageRank;
 
+/**
+ * The {@link SignalCollectGephiConnector} implementation for PageRank
+ * @author flaviokeller
+ *
+ */
 public class PageRankSignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {
 
+	/** The result of the execution */
 	private ExecutionResult pageRankResult;
+	
+	/** The properties of the graph */
 	private GraphProperties graphProps;
 
+	/**
+	 * The constructor
+	 * @param fileName
+	 */
 	public PageRankSignalCollectGephiConnectorImpl(String fileName) {
 		super(fileName, SNAClassNames.PAGERANK);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void executeGraph() {
 		if (pageRankResult == null) {
 			pageRankResult = PageRank.run(getGraph());
 		}
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public double getAverage() {
 		if (pageRankResult == null) {
@@ -52,6 +70,9 @@ public class PageRankSignalCollectGephiConnectorImpl extends
 		return pageRankResult.compRes().average();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Map<String, Object> getAll() {
 		if (pageRankResult == null) {
@@ -64,6 +85,9 @@ public class PageRankSignalCollectGephiConnectorImpl extends
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public GraphProperties getGraphProperties() {
 		if (pageRankResult == null) {

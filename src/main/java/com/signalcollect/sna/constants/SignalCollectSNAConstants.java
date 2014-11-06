@@ -19,7 +19,16 @@
 
 package com.signalcollect.sna.constants;
 
+/**
+ * Contains some static constants which are used
+ * by the SNA methods
+ *
+ */
 public class SignalCollectSNAConstants {
+	
+	/**
+	 * Integer array of size 64 that is used for determining the triad census type
+	 */
 	public static final int[] codeToType = new int[] { 1, 2, 2, 3, 2, 4, 6, 8,
 			2, 6, 5, 7, 3, 8, 7, 11, 2, 6, 4, 8, 5, 9, 9, 13, 6, 10, 9, 14, 7,
 			14, 12, 15, 2, 5, 6, 7, 6, 9, 10, 14, 4, 9, 9, 12, 8, 13, 14, 15,

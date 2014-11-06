@@ -27,16 +27,31 @@ import com.signalcollect.sna.GraphProperties;
 import com.signalcollect.sna.constants.SNAClassNames;
 import com.signalcollect.sna.metrics.PathCollector;
 
+/**
+ * The {@link SignalCollectGephiConnector} implementation for Closeness centrality
+ * @author flaviokeller
+ *
+ */
 public class ClosenessSignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {
 
+	/** The result of the execution */
 	private ExecutionResult closenessResult;
+	
+	/** The properties of the graph */
 	private GraphProperties graphProps;
 
+	/**
+	 * The constructor
+	 * @param fileName
+	 */
 	public ClosenessSignalCollectGephiConnectorImpl(String fileName) {
 		super(fileName, SNAClassNames.PATH);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void executeGraph() {
 		if (closenessResult == null) {
@@ -45,6 +60,9 @@ public class ClosenessSignalCollectGephiConnectorImpl extends
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public double getAverage() {
 		if (closenessResult == null) {
@@ -53,6 +71,9 @@ public class ClosenessSignalCollectGephiConnectorImpl extends
 		return closenessResult.compRes().average();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Map<String, Object> getAll() {
 		if (closenessResult == null) {
@@ -64,6 +85,9 @@ public class ClosenessSignalCollectGephiConnectorImpl extends
 		return result;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public GraphProperties getGraphProperties() {
 		if (closenessResult == null) {

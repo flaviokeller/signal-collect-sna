@@ -28,17 +28,31 @@ import com.signalcollect.sna.GraphProperties;
 import com.signalcollect.sna.constants.SNAClassNames;
 import com.signalcollect.sna.metrics.Degree;
 
+/**
+ * The {@link SignalCollectGephiConnector} implementation for Degree centrality
+ * @author flaviokeller
+ *
+ */
 public class DegreeSignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {
 
+	/** The result of the execution */
 	private ExecutionResult degreeResult;
+	
+	/** The properties of the graph */
 	private GraphProperties graphProps;
-	private DegreeDistribution degreeDistribution;
-
+	
+	/**
+	 * The constructor
+	 * @param fileName
+	 */
 	public DegreeSignalCollectGephiConnectorImpl(String fileName) {
 		super(fileName, SNAClassNames.DEGREE);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public double getAverage() {
 		if (degreeResult == null) {
@@ -47,6 +61,9 @@ public class DegreeSignalCollectGephiConnectorImpl extends
 		return degreeResult.compRes().average();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Map<String, Object> getAll() {
 		if (degreeResult == null) {
@@ -58,6 +75,9 @@ public class DegreeSignalCollectGephiConnectorImpl extends
 		return result;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void executeGraph() {
 		if (degreeResult == null) {
@@ -65,6 +85,9 @@ public class DegreeSignalCollectGephiConnectorImpl extends
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public GraphProperties getGraphProperties() {
 		if (degreeResult == null) {
@@ -75,6 +98,9 @@ public class DegreeSignalCollectGephiConnectorImpl extends
 		return graphProps;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Map<Integer, Integer> getDegreeDistribution() {
 		if (degreeResult == null) {

@@ -24,22 +24,37 @@ import scala.collection.JavaConverters.mapAsScalaMapConverter
 import com.signalcollect.sna.constants.SNAClassNames
 import com.signalcollect.sna.metrics.LocalClusterCoefficient
 import com.signalcollect.sna.parser.ParserImplementor
+/**
+ * Class that creates a map of the distribution of the local cluster coefficient in a graph
+ */
 class ClusterDistribution(fileName: String) {
 
+  /**
+   * Map containing the vertex' ids and its clustering values
+   * @note a map is used here because the LocalClusterCoefficient returns a vertexArray
+   * whose vertices states are not the values but a map with neighbours
+   */
   var clusterVertexMap = Map[String, Object]()
 
-  var clusterDistribution = new java.util.TreeMap[Integer, Integer]()
-
+  /**
+   * The clusterVertexMap may be set with this function
+   * only possible if local cluster coefficient values are already calculated
+   */
   def setClusterMap(cvm: java.util.Map[String, Object]) = clusterVertexMap = cvm.asScala.toMap
-  override def toString(): String = "cluster Distribution: " + clusterDistribution
 
+  /**
+   * Function that returns the cluster distribution as a map (key = cluster coefficient value, value = number of occurrences)
+   * @note The clusterVertexMap has to be created first, if was not yet set
+   */
   def gatherClusterDistribution(): java.util.TreeMap[java.lang.Double, Integer] = {
 
     if (clusterVertexMap == null || clusterVertexMap.isEmpty) {
-      val clusteringGraph = ParserImplementor.getGraph(fileName, SNAClassNames.LOCALCLUSTERCOEFFICIENT,None)
+      val clusteringGraph = ParserImplementor.getGraph(fileName, SNAClassNames.LOCALCLUSTERCOEFFICIENT, None)
       clusterVertexMap = LocalClusterCoefficient.run(clusteringGraph).compRes.vertexMap.asScala.toMap
     }
+
     val clusteringMap = new java.util.TreeMap[java.lang.Double, Integer]()
+
     for (clusterVertex <- clusterVertexMap) {
       if (clusteringMap.keySet().contains(java.lang.Double.valueOf(clusterVertex._2.toString()))) {
         clusteringMap.put(clusterVertex._2.asInstanceOf[Double], clusteringMap.get(clusterVertex._2) + 1)

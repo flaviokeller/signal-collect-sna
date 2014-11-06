@@ -29,14 +29,31 @@ import org.junit.Test;
 import com.signalcollect.sna.gephiconnectors.DegreeSignalCollectGephiConnectorImpl;
 import com.signalcollect.sna.gephiconnectors.SignalCollectGephiConnector;
 
+/**
+ * 
+ * @author flaviokeller
+ *
+ */
 public class PropertyTest {
 
+	/**
+	 * The generic Signal/Collect Social Network Analysis metrics execution instance
+	 */
 	private SignalCollectGephiConnector scgc;
 
+	/**
+	 * Instance to store the Graph's properties
+	 */
 	private GraphProperties props;
 
+	/**
+	 * File path for the graph tested
+	 */
 	private String testFile = "/Users/flaviokeller/Documents/Uni/Bachelorarbeit/Datasets/gml/examplegraph_separated.gml";
 
+	/**
+	 * Test case for the properties in Signal/Collect
+	 */
 	@Test
 	public void propertyTest() {
 		if (scgc == null) {
@@ -50,6 +67,9 @@ public class PropertyTest {
 		assertEquals(0.243, props.calcReciprocity(), 0.01);
 	}
 
+	/**
+	 * Test case for the degree distribution in Signal/Collect
+	 */
 	@Test
 	public void degreeDistributionTest() {
 		if (scgc == null) {
@@ -62,6 +82,9 @@ public class PropertyTest {
 		assertNull(dd.get(Integer.valueOf(1)));
 	}
 
+	/**
+	 * Test case for the cluster distribution in Signal/Collect
+	 */
 	@Test
 	public void clusterDistributionTest() {
 		if (scgc == null) {
@@ -73,7 +96,5 @@ public class PropertyTest {
 		assertEquals(5, cd.get(0.5).intValue());
 		assertEquals(1, cd.get(0.133).intValue());
 		assertEquals(1, cd.get(0.25).intValue());
-
 	}
-
 }

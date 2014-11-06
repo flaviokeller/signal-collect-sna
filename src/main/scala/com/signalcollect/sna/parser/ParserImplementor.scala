@@ -39,35 +39,61 @@ import com.signalcollect.sna.metrics.PathCollectorVertex
 import com.signalcollect.sna.metrics.TriadCensusEdge
 import com.signalcollect.sna.metrics.TriadCensusVertex
 
+/**
+ * Makes use of the {@link com.signalcollect.sna.parser.GMLParser}
+ * in order to parse files to a Signal/Collect graph
+ */
 object ParserImplementor {
 
+  /**
+   * creates a graph out of a gml-File by using the {@link com.signalcollect.sna.parser.GMLParser}
+   * @param fileName: a path to a File that should be parsed
+   * @param className: determines what kind of graph should be created
+   * @param signalSteps: only used for Label Propagation, indicates how many signal and collect steps should be done
+   * @return The built graph
+   */
   def getGraph(fileName: String, className: SNAClassNames, signalSteps: Option[Integer]): com.signalcollect.Graph[Any, Any] = {
     val parser = new GmlParser
     try {
       val parsedGraphs: List[Graph] = parser.parse(Source.fromFile(fileName)("ISO8859_1")) //Kann auch ein File-Objekt sein
       val graph = GraphBuilder.build
       parsedGraphs foreach {
-        case g: UndirectedGraph =>
-          g.nodes.foreach({ n: Node =>
+        case ug: UndirectedGraph =>
+          ug.nodes.foreach({ n: Node =>
             className match {
               case SNAClassNames.LABELPROPAGATION => graph.addVertex(new LabelPropagationVertex(n.id, n.id.toString, signalSteps.getOrElse(0).asInstanceOf[Int]))
               case _ => graph.addVertex(createVertex(n, className))
             }
           })
-          g.edges.foreach({ e: Edge =>
+          ug.edges.foreach({ e: Edge =>
             graph.addEdge(e.source, createEdge(e.target, className))
-            g match {
-              case ug: UndirectedGraph => //add edges (Gegenrichtung, falls undirected graph)
+          })
+          ug.edges.foreach({ e: Edge =>
+            graph.addEdge(e.target, createEdge(e.source, className))
+          })
+        case dg: DirectedGraph =>
+          dg.nodes.foreach({ n: Node =>
+            className match {
+              case SNAClassNames.LABELPROPAGATION => graph.addVertex(new LabelPropagationVertex(n.id, n.id.toString, signalSteps.getOrElse(0).asInstanceOf[Int]))
+              case _ => graph.addVertex(createVertex(n, className))
             }
+          })
+          dg.edges.foreach({ e: Edge =>
+            graph.addEdge(e.source, createEdge(e.target, className))
           })
       }
       graph
     } catch {
-      case p: ParseException => throw new IllegalArgumentException("Error when reading graph file " + fileName +": "+ p.getMessage())
+      case p: ParseException => throw new IllegalArgumentException("Error when reading graph file " + fileName + ": " + p.getMessage())
     }
-    //    graph.shutdown
   }
 
+  /**
+   * Creates a vertex object for a graph
+   * @param node: the node object of the parsed graph
+   * @param vertexClass: determines what kind of vertex should be created
+   * @return the vertex object
+   */
   def createVertex(node: Node, vertexClass: SNAClassNames): Vertex[Any, _, Any, Any] = {
     vertexClass match {
       case SNAClassNames.DEGREE => new DegreeVertex(node.id)
@@ -77,8 +103,16 @@ object ParserImplementor {
       case SNAClassNames.CLOSENESS => new PathCollectorVertex(node.id)
       case SNAClassNames.LOCALCLUSTERCOEFFICIENT => new LocalClusterCoefficientVertex(node.id)
       case SNAClassNames.TRIADCENSUS => new TriadCensusVertex(node.id)
+      //case LABELPROPAGATION omitted (is treated above)
     }
   }
+
+  /**
+   * Creates an edge object for a graph
+   * @param targetId: the id of the target vertex
+   * @param edgeClass: determines what kind of edge should be created
+   * @return the edge object
+   */
   def createEdge(targetId: Int, edgeClass: SNAClassNames): DefaultEdge[_] = {
     edgeClass match {
       case SNAClassNames.DEGREE => new DegreeEdge(targetId)

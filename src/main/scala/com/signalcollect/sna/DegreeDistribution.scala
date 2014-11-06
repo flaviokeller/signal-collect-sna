@@ -28,21 +28,32 @@ import com.signalcollect.sna.parser.ParserImplementor
 
 class DegreeDistribution(fileName: String) {
 
-  var degreeVertexArray = new ArrayBuffer[Vertex[Any, _,Any,Any]]()
+  /**
+   * Array containing the vertex' objects
+   */
+  var degreeVertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]]()
 
-  var degreeDistribution = new java.util.TreeMap[Integer, Integer]()
+  /**
+   * The degreeVertexArray may be set with this function
+   * only possible if local cluster coefficient values are already calculated
+   */
+  def setVertexArray(dva: ArrayBuffer[Vertex[Any, _, Any, Any]]) = degreeVertexArray = dva
 
-  def setVertexArray(dva: ArrayBuffer[Vertex[Any, _,Any,Any]]) = degreeVertexArray = dva
-  override def toString(): String = "degree Distribution: " + degreeDistribution
-
+  /**
+   * Function that returns the degree distribution as a map (key = degree centrality value, value = number of occurrences)
+   * @note The degreeVertexArray has to be created first, if was not yet set
+   */
   def gatherDegreeeDistribution(): java.util.TreeMap[Integer, Integer] = {
 
     if (degreeVertexArray == null || degreeVertexArray.isEmpty) {
-      val degreeGraph = ParserImplementor.getGraph(fileName, SNAClassNames.DEGREE,None)
+      val degreeGraph = ParserImplementor.getGraph(fileName, SNAClassNames.DEGREE, None)
       degreeVertexArray = Degree.run(degreeGraph).vertexArray
     }
     val degreeDistrMap = new java.util.TreeMap[Integer, Integer]()
     for (degreeVertex <- degreeVertexArray) {
+      /*
+       * the vertex' value must be of Integer (average vertex may occur)
+       */
       if (degreeVertex.state.isInstanceOf[Int]) {
         if (degreeDistrMap.keySet().contains(degreeVertex.state)) {
           degreeDistrMap.put(degreeVertex.state.asInstanceOf[Int], degreeDistrMap.get(degreeVertex.state) + 1)

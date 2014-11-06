@@ -27,16 +27,31 @@ import com.signalcollect.sna.GraphProperties;
 import com.signalcollect.sna.constants.SNAClassNames;
 import com.signalcollect.sna.metrics.PathCollector;
 
+/**
+ * The {@link SignalCollectGephiConnector} implementation for Betweenness centrality
+ * @author flaviokeller
+ *
+ */
 public class BetweennessSignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {
 
+	/** The result of the execution */
 	private ExecutionResult betweennessResult;
+	
+	/** The properties of the graph */
 	private GraphProperties graphProps;
 
+	/**
+	 * The constructor
+	 * @param fileName
+	 */
 	public BetweennessSignalCollectGephiConnectorImpl(String fileName) {
 		super(fileName, SNAClassNames.BETWEENNESS);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void executeGraph() {
 		if (betweennessResult == null) {
@@ -45,6 +60,9 @@ public class BetweennessSignalCollectGephiConnectorImpl extends
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public double getAverage() {
 		if (betweennessResult == null) {
@@ -53,6 +71,9 @@ public class BetweennessSignalCollectGephiConnectorImpl extends
 		return betweennessResult.compRes().average();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Map<String, Object> getAll() {
 		if (betweennessResult == null) {
@@ -64,6 +85,9 @@ public class BetweennessSignalCollectGephiConnectorImpl extends
 		return result;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public GraphProperties getGraphProperties() {
 		if (betweennessResult == null) {

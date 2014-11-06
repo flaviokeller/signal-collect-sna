@@ -25,7 +25,7 @@ import java.util.TreeMap;
 import com.signalcollect.sna.ExecutionResult;
 import com.signalcollect.sna.GraphProperties;
 import com.signalcollect.sna.constants.SNAClassNames;
-import com.signalcollect.sna.metrics.Transitivity;
+import com.signalcollect.sna.metrics.TriadCensus;
 
 public class TriadCensusSignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {
@@ -40,7 +40,7 @@ public class TriadCensusSignalCollectGephiConnectorImpl extends
 	@Override
 	public void executeGraph() {
 		if (transitivityResult == null) {
-			transitivityResult = Transitivity.run(getGraph());
+			transitivityResult = TriadCensus.run(getGraph());
 		}
 	}
 

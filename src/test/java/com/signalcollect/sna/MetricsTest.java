@@ -31,12 +31,24 @@ import com.signalcollect.sna.gephiconnectors.PageRankSignalCollectGephiConnector
 import com.signalcollect.sna.gephiconnectors.SignalCollectGephiConnector;
 import com.signalcollect.sna.gephiconnectors.TriadCensusSignalCollectGephiConnectorImpl;
 
+/**
+ * Test case for the different Social Network Analysis metrics
+ */
 public class MetricsTest {
 
+	/**
+	 * The generic Signal/Collect Social Network Analysis metrics execution instance
+	 */
 	private SignalCollectGephiConnector scgc;
 
+	/**
+	 * File path for the graph tested
+	 */
 	private String testFile = "/Users/flaviokeller/Documents/Uni/Bachelorarbeit/Datasets/gml/examplegraph_separated.gml";
 
+	/**
+	 * Test for the degree centrality in Signal/Collect
+	 */
 	@Test
 	public void degreeTest() {
 		scgc = new DegreeSignalCollectGephiConnectorImpl(testFile);
@@ -48,6 +60,9 @@ public class MetricsTest {
 		assertEquals(2, scgc.getAll().get(String.valueOf(20)));
 	}
 
+	/**
+	 * Test for the PageRank in Signal/Collect
+	 */
 	@Test
 	public void pageRankTest() {
 		scgc = new PageRankSignalCollectGephiConnectorImpl(testFile);
@@ -59,6 +74,9 @@ public class MetricsTest {
 		assertEquals(0.946, scgc.getAll().get(String.valueOf(20)));
 	}
 
+	/**
+	 * Test for the closeness centrality in Signal/Collect
+	 */
 	@Test
 	public void closenessTest() {
 		scgc = new ClosenessSignalCollectGephiConnectorImpl(testFile);
@@ -70,6 +88,9 @@ public class MetricsTest {
 		assertEquals(1.5, scgc.getAll().get(String.valueOf(20)));
 	}
 
+	/**
+	 * Test for the betweenness centrality in Signal/Collect
+	 */
 	@Test
 	public void betweennessTest() {
 		scgc = new BetweennessSignalCollectGephiConnectorImpl(testFile);
@@ -81,6 +102,9 @@ public class MetricsTest {
 		assertEquals(0.027, scgc.getAll().get(String.valueOf(20)));
 	}
 
+	/**
+	 * Test for the local cluster coefficient in Signal/Collect
+	 */
 	@Test
 	public void localClusterCoefficientTest() {
 		scgc = new LocalClusterCoefficientSignalCollectGephiConnectorImpl(
@@ -93,6 +117,9 @@ public class MetricsTest {
 		assertEquals(0.5, scgc.getAll().get(String.valueOf(20)));
 	}
 
+	/**
+	 * Test for the triad census in Signal/Collect
+	 */
 	@Test
 	public void triadCensusTest() {
 		scgc = new TriadCensusSignalCollectGephiConnectorImpl(testFile);
@@ -104,5 +131,4 @@ public class MetricsTest {
 		assertEquals(2l, scgc.getAll().get(String.valueOf(10)));
 		assertEquals(6l, scgc.getAll().get(String.valueOf(9)));
 	}
-
 }

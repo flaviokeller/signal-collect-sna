@@ -19,6 +19,10 @@
 
 package com.signalcollect.sna.constants;
 
+/**
+ * Enumeration for the different classes that can occur
+ * when running a SNA method algorithm
+ */
 public enum SNAClassNames {
 
 	DEGREE("Degree"), PAGERANK("PageRank"), CLOSENESS("Closeness"), BETWEENNESS("Betweenness"), PATH("Path"), LOCALCLUSTERCOEFFICIENT(

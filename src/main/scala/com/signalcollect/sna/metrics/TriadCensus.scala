@@ -22,9 +22,7 @@ package com.signalcollect.sna.metrics
 import scala.collection.SortedMap
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.SynchronizedBuffer
-
 import com.signalcollect.DataGraphVertex
-import com.signalcollect.DefaultEdge
 import com.signalcollect.ExecutionConfiguration
 import com.signalcollect.Graph
 import com.signalcollect.Vertex
@@ -32,9 +30,24 @@ import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.sna.constants.SignalCollectSNAConstants
+import com.signalcollect.DefaultEdge
 
-object Transitivity {
+/**
+ * Executes the Triad Census Algorithm for Signal/Collect
+ */
+object TriadCensus {
 
+  /**
+   * Function responsible for the execution of the algorithm
+   * @param the parsed graph, instance of {@link com.signalcollect.Graph}
+   * @return {@link com.signalcollect.sna.ExecutionResult} object
+   *
+   * Parts of this code is an adaption of the triad census algorithm for signal/collect and scala.
+   * Originally implemented by Batagelj and Mrvar at the University of Ljubljana, Slovenia
+   *
+   * @see <a href="http://vlado.fmf.uni-lj.si/vlado/papers/triads.pdf">Triad Census algorithm</a>
+   *
+   */
   def run(graph: Graph[Any, Any]): ExecutionResult = {
     val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
     val stats = graph.execute(execmode)
@@ -42,17 +55,34 @@ object Transitivity {
 
     var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
     graph.foreachVertex(v => vertexArray += v)
+
+    /*
+     * scala SortedMap with the vertex' id as key and the actual vertex object as value
+     * It is important to use a SortedMap here because the algorithm needs to iterate
+     * through the vertices in ascending id order
+     */
     var vertexMap = SortedMap[Int, TriadCensusVertex]()
+
     for (vertex <- vertexArray) {
       vertexMap += ((vertex.id.asInstanceOf[Int], vertex.asInstanceOf[TriadCensusVertex]))
     }
     graph.shutdown
-    var treeMap = new java.util.TreeMap[String, Object]()
-    var countMap = SortedMap[Int, Long]()
+
     /*
-   * this code part is an adaption of the triad census algorithm for signal/collect and scala. 
-   * Originally implemented by Batagelj and Mrvar at the University of Ljubljana, Slovenia
-   */
+     * java TreeMap in order to package the values into a generic ExecutionResult object 
+     * which should be returned at the end
+     */
+    var treeMap = new java.util.TreeMap[String, Object]()
+
+    /*
+     * scala SortedMap to work with the values and determine the triad type distribution
+     * the map values are of type Long because some really high numbers may be reached with large graphs
+     */
+    var countMap = SortedMap[Int, Long]()
+
+    /*
+     * The following code part is an adaption of the triad census algorithm for Signal/Collect and Scala. 
+     */
     for (vertex <- vertexMap.toMap) {
       if (vertex._2.neighbours.isEmpty) {
         for (outgoingneighbour <- vertex._2.outgoingEdges) {
@@ -64,7 +94,10 @@ object Transitivity {
           var triadType = -1;
           val neighbourVertex = vertexMap.get(neighbour).get
 
-          val neighboursOfBothVertices = vertex._2.neighbours union neighbourVertex.neighbours diff Set(vertex._1, neighbour) //all neighbours of the two vertices
+          /*
+           * vertices neighbouring to either the vertex or the current neighbourVertex (excluding the vertex and the current neighbour)
+           */
+          val neighboursOfBothVertices = vertex._2.neighbours union neighbourVertex.neighbours diff Set(vertex._1, neighbour)
 
           if (vertex._2.outgoingEdges.contains(neighbourVertex.id) && neighbourVertex.outgoingEdges.contains(vertex._2.id)) {
             triadType = 3;
@@ -78,6 +111,9 @@ object Transitivity {
             if (neighbour < neighbourOfBoth || (vertex._2.id.asInstanceOf[Int] < neighbourOfBoth && neighbourOfBoth < neighbour && !vertex._2.neighbours.contains(neighbourOfBoth))) {
               val neighbourOfBothVertex = vertexMap.get(neighbourOfBoth).get
 
+              /*
+               * The triadType is determined by the constant codeToType array by using the triCode function
+               */
               triadType = SignalCollectSNAConstants.codeToType(triCode(vertex._2, neighbourVertex, neighbourOfBothVertex))
 
               countValue = countMap.get(triadType).getOrElse(0)
@@ -96,14 +132,27 @@ object Transitivity {
     for (count <- countMap) {
       treeMap.put(count._1.toString, count._2.asInstanceOf[Object])
     }
+
+    /*
+     * If a triad type has no occurences in a graph, the value 0 has to be explicitly put in the map for it
+     */
     for (i <- 1 to 16) {
       if (treeMap.get(i.toString) == null) {
         treeMap.put(i.toString, 0.toLong.asInstanceOf[Object])
       }
     }
+
     new ExecutionResult(new ComputationResults(0.0, treeMap), vertexArray, stats)
   }
 
+  /**
+   * Determines a triad code among three vertices according to how they are linked
+   *
+   * @param u: vertex 1
+   * @param v: vertex 2
+   * @param w: vertex 3
+   * @return the Triad code
+   */
   def triCode(u: TriadCensusVertex, v: TriadCensusVertex, w: TriadCensusVertex): Int = {
     var i = 0
     if (link(v, u)) i += 1
@@ -115,15 +164,35 @@ object Transitivity {
     i
   }
 
+  /**
+   * Determines if a vertex belongs to the target vertices of another vertex' outgoing edges
+   * @param u: vertex 1
+   * @param v: vertex 2
+   * @return true if v is among the targets of u's outgoing edges, false otherwise
+   */
   def link(u: TriadCensusVertex, v: TriadCensusVertex): Boolean = {
     u.outgoingEdges.contains(v.id)
   }
 
 }
+
+/**
+ * Represents a vertex of a Triad Census graph
+ * Extends {@link com.signalcollect.DataGraphVertex}
+ * @param the vertex' id
+ */
 class TriadCensusVertex(id: Int) extends DataGraphVertex(id, 0) {
   type Signal = Int
   type State = Int
+
+  /*
+   * this set stores all ids of the vertex' neighbours
+   */
   var neighbours = scala.collection.mutable.Set[Int]()
+
+  /**
+   * The collect function puts all incoming and outgoing neighbours into a set
+   */
   def collect: State = {
     for (incomingneighbour <- mostRecentSignalMap) {
       neighbours += incomingneighbour._1.asInstanceOf[Int]
@@ -135,7 +204,17 @@ class TriadCensusVertex(id: Int) extends DataGraphVertex(id, 0) {
   }
 
 }
+
+/**
+ * Represents an edge of a Triad census graph
+ * Extends {@link com.signalcollect.DefaultEdge}
+ * @param the target vertex' id
+ */
 class TriadCensusEdge(t: Int) extends DefaultEdge(t) {
   type Source = DataGraphVertex[Any, Any]
+
+  /**
+   * The signal function sends the source vertex' id to its target vertex
+   */
   def signal = source.id
 }

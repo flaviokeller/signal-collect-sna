@@ -19,6 +19,10 @@
 
 package com.signalcollect.sna
 
+/**
+ * Class which is responsible to store the average value and the single vertex values
+ * of an execution of a sna method
+ */
 class ComputationResults(val average: Double, val vertexMap: java.util.Map[String, Object]) {
 
 }

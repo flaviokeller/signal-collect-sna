@@ -20,7 +20,9 @@
 package com.signalcollect.sna
 
 import scala.collection.mutable.ArrayBuffer
-
+/**
+ * Class that stores a path between two vertices (including source and target and all vertex ids on this path)
+ */
 class Path(val sourceVertexId: Int, val targetVertexId: Int) {
   var path = ArrayBuffer(sourceVertexId, targetVertexId)
   override def toString(): String = {

@@ -32,8 +32,21 @@ import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
 import com.signalcollect.DefaultEdge
 
+/**
+ * Executes the calculation of the degree centrality values of a graph's vertices
+ */
 object PageRank {
+
+  /**
+   * Function responsible for the execution
+   * @param graph: the parsed graph, instance of @see com.signalcollect.Graph
+   * @return {@link com.signalcollect.sna.ExecutionResult} object
+   */
   def run(graph: Graph[Any, Any]): ExecutionResult = {
+
+    /*
+     * This vertex is responsible for the calculation of the PageRank average of the graph
+     */
     val avgVertex = new AveragePageRankVertex("Average")
     graph.addVertex(avgVertex)
     graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(v.id, new AveragePageRankEdge(avgVertex.id)))
@@ -47,6 +60,9 @@ object PageRank {
     new ExecutionResult(new ComputationResults(avgVertex.state, filterInteger(vertexArray)), vertexArray, stats)
   }
 
+  /**
+   * Function that creates an ordered Key-Value map out of the vertex array in order to have the PageRank values packaged in order
+   */
   def filterInteger(vertexArray: ArrayBuffer[Vertex[Any, _, Any, Any]]): java.util.Map[String, Object] = {
     var vertices = new java.util.TreeMap[String, Object]
     for (vertex <- vertexArray) {
@@ -56,13 +72,18 @@ object PageRank {
   }
 }
 
+/**
+ * Represents a vertex of a PageRank graph, extends {@link com.signalcollect.DataGraphVertex}
+ * @param id: the vertex' id
+ */
 class PageRankVertex(id: Any, dampingFactor: Double = 0.85) extends DataGraphVertex(id, 1 - dampingFactor) {
 
   type Signal = Tuple2[Any, Any]
   type State = Double
+
   /**
    * The collect function calculates the rank of this vertex based on the rank
-   *  received from neighbors and the damping factor.
+   * received from neighbors and the damping factor.
    */
   def collect: State = {
     val pageRankSignals = mostRecentSignalMap.filter(signal => !signal._1.equals("Average")).values.toList //getClass.toString().contains("Average")).values.toList
@@ -76,6 +97,10 @@ class PageRankVertex(id: Any, dampingFactor: Double = 0.85) extends DataGraphVer
       BigDecimal.valueOf(1 - dampingFactor + dampingFactor * sum).round(new MathContext(3)).toDouble
     }
   }
+
+  /**
+   * @inheritDoc
+   */
   override def scoreSignal: Double = {
     lastSignalState match {
       case None => 1
@@ -84,12 +109,17 @@ class PageRankVertex(id: Any, dampingFactor: Double = 0.85) extends DataGraphVer
   }
 
 }
+
+/**
+ * Represents an edge of a PageRank graph, extends {@link com.signalcollect.DefaultEdge}
+ * @param t: the traget vertex' id
+ */
 class PageRankEdge(t: Any) extends DefaultEdge(t) {
   type Source = PageRankVertex
 
   /**
-   * The signal function calculates how much rank the source vertex
-   *  transfers to the target vertex.
+   * The signal function calculates how much rank the source vertex.
+   * Transfers the source id and the source's  rank to the target vertex.
    */
   def signal = {
     if (source.outgoingEdges.contains("Average")) {
@@ -101,13 +131,23 @@ class PageRankEdge(t: Any) extends DefaultEdge(t) {
   }
 }
 
+/**
+ * Represents a vertex of a PageRank graph, which is concerned with calculating the average PageRank.
+ * Extends {@link com.signalcollect.DataGraphVertex}
+ * @param id: the vertex' id
+ */
 class AveragePageRankVertex(id: String) extends DataGraphVertex(id, 0.0) {
 
   type Signal = Tuple2[Any, Any]
   type State = Double
 
+  /**
+   * The collect function calculates the average PageRank value.
+   * It takes the states of all incoming edges (except those with a {@link com.signalcollect.sna.metrics.AveragePageRankVertex} as source)
+   * and calculates the average out of them
+   */
   def collect: State = {
-    val pageRankSignals = mostRecentSignalMap.filter(signal => !signal._1.equals("Average")).values.toList //getClass.toString().contains("Average")).values.toList
+    val pageRankSignals = mostRecentSignalMap.filter(signal => !signal._1.equals("Average")).values.toList
     var sum = 0.0
     for (signal <- pageRankSignals) {
       sum += signal._2.asInstanceOf[Double]
@@ -116,7 +156,17 @@ class AveragePageRankVertex(id: String) extends DataGraphVertex(id, 0.0) {
   }
 }
 
+/**
+ * Represents an edge of a PageRank graph, which is concerned with the calculation of the average PageRank.
+ * Extends {@link com.signalcollect.DefaultEdge}
+ * @param t: the target vertex' id
+ */
 class AveragePageRankEdge(t: Any) extends DefaultEdge(t) {
   type Source = DataGraphVertex[Any, Any]
+
+  /**
+   * The signal function passes the whole vertex object ant the vertex' state of the source vertex to its target,
+   * such that the target vertex is able to distinguish what type the source vertex has.
+   */
   def signal = Tuple2(source, source.state)
 }

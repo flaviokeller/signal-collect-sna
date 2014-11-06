@@ -28,13 +28,24 @@ import com.signalcollect.sna.GraphProperties;
 import com.signalcollect.sna.constants.SNAClassNames;
 import com.signalcollect.sna.metrics.LocalClusterCoefficient;
 
+/**
+ * The {@link SignalCollectGephiConnector} implementation for the Local Cluster Coefficient
+ * @author flaviokeller
+ *
+ */
 public class LocalClusterCoefficientSignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {
 
+	/** The result of the execution */
 	private ExecutionResult localClusterCoefficientResult;
+	
+	/** The properties of the graph */
 	private GraphProperties graphProps;
-	private ClusterDistribution clusterDistribution;
-
+	
+	/**
+	 * The constructor
+	 * @param fileName
+	 */
 	public LocalClusterCoefficientSignalCollectGephiConnectorImpl(
 			String fileName) {
 		super(fileName, SNAClassNames.LOCALCLUSTERCOEFFICIENT);
@@ -48,6 +59,9 @@ public class LocalClusterCoefficientSignalCollectGephiConnectorImpl extends
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public double getAverage() {
 		if (localClusterCoefficientResult == null) {
@@ -56,6 +70,9 @@ public class LocalClusterCoefficientSignalCollectGephiConnectorImpl extends
 		return localClusterCoefficientResult.compRes().average();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Map<String, Object> getAll() {
 		if (localClusterCoefficientResult == null) {
@@ -67,6 +84,9 @@ public class LocalClusterCoefficientSignalCollectGephiConnectorImpl extends
 		return result;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public GraphProperties getGraphProperties() {
 		if (localClusterCoefficientResult == null) {
@@ -77,6 +97,9 @@ public class LocalClusterCoefficientSignalCollectGephiConnectorImpl extends
 		return graphProps;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Map<Double, Integer> getClusterDistribution() {
 		if (localClusterCoefficientResult == null) {

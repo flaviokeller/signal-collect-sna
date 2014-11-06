@@ -21,7 +21,18 @@ package com.signalcollect.sna.gephiconnectors;
 
 import java.util.Comparator;
 
-class NumbersThenWordsComparator implements Comparator<String> {
+/**
+ * 
+ * @author flaviokeller
+ *
+ */
+public class NumbersThenWordsComparator implements Comparator<String> {
+	
+	/**
+	 * 
+	 * @param s
+	 * @return
+	 */
 	private static Integer intValue(String s) {
 		try {
 			return Integer.valueOf(s);
@@ -30,6 +41,9 @@ class NumbersThenWordsComparator implements Comparator<String> {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int compare(String s1, String s2) {
 		Integer i1 = intValue(s1);
