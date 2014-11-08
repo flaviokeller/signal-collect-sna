@@ -21,7 +21,6 @@ package com.signalcollect.sna.parser
 
 import scala.io.Codec.string2codec
 import scala.io.Source
-
 import com.signalcollect.DefaultEdge
 import com.signalcollect.GraphBuilder
 import com.signalcollect.Vertex
@@ -38,6 +37,7 @@ import com.signalcollect.sna.metrics.PathCollectorEdge
 import com.signalcollect.sna.metrics.PathCollectorVertex
 import com.signalcollect.sna.metrics.TriadCensusEdge
 import com.signalcollect.sna.metrics.TriadCensusVertex
+import com.signalcollect.Graph
 
 /**
  * Makes use of the {@link com.signalcollect.sna.parser.GMLParser}
@@ -54,9 +54,9 @@ object ParserImplementor {
    */
   def getGraph(fileName: String, className: SNAClassNames, signalSteps: Option[Integer]): com.signalcollect.Graph[Any, Any] = {
     val parser = new GmlParser
+    val graph = GraphBuilder.build
     try {
       val parsedGraphs: List[Graph] = parser.parse(Source.fromFile(fileName)("ISO8859_1")) //Kann auch ein File-Objekt sein
-      val graph = GraphBuilder.build
       parsedGraphs foreach {
         case ug: UndirectedGraph =>
           ug.nodes.foreach({ n: Node =>
@@ -84,7 +84,14 @@ object ParserImplementor {
       }
       graph
     } catch {
-      case p: ParseException => throw new IllegalArgumentException("Error when reading graph file " + fileName + ": " + p.getMessage())
+      case p: ParseException => {
+        graph.shutdown
+        throw new IllegalArgumentException("Error when reading graph file " + fileName + ": " + p.getMessage())
+      }
+      case t: Throwable => {
+        graph.shutdown
+        throw new IllegalArgumentException("Error when reading graph file " + fileName + ": " + t.getMessage())
+      }
     }
   }
 
