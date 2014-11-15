@@ -43,14 +43,14 @@ class GmlParser extends StdTokenParsers
   val lexical = new StdLexical
 
   lexical.delimiters ++= List("=", "[", "]", "{", "}", ".", ",", "//", "(", ")", "\n", "\r")
-  lexical.reserved ++= List("graph", "node", "edge", "id", "source", "target", "label", "value", "directed", "Creator")
+  lexical.reserved ++= List("graph", "node", "edge", "id", "source", "target", "label", "value", "directed", "Creator", "graphics")
 
   lazy val gmlFile: Parser[List[Graph]] = {
-    opt("Creator" ~ stringLit) ~> rep(graph)
+    opt("Creator" ~ (stringLit | ident)) ~> rep(graph)
   }
 
   lazy val graph: Parser[Graph] = {
-    "graph" ~ "[" ~> opt("directed" ~> bool) ~ rep(node) ~ rep(edge) <~ "]" ^^ {
+    "graph" ~ "[" ~> opt("Creator" ~ (stringLit | ident)) ~> opt("directed" ~> bool) ~ rep(node) ~ rep(edge) <~ "]" ^^ {
       case optDirected ~ nodes ~ edges => {
         val directed = optDirected.getOrElse(false)
         if (directed)
@@ -67,8 +67,8 @@ class GmlParser extends StdTokenParsers
     }
   }
   lazy val node: Parser[Node] = {
-    "node" ~ "[" ~> id ~ opt(label) ~ opt(value) <~ "]" ^^ {
-      case id ~ labelOpt ~ valueOpt => {
+    "node" ~ "[" ~> id ~ opt(label) ~ opt(value) ~ opt(graphics) <~ "]" ^^ {
+      case id ~ labelOpt ~ valueOpt ~ graphicsOpt=> {
         val label = labelOpt.getOrElse(id.toString)
         val value = valueOpt.getOrElse("0")
         Node(id, label, value)
@@ -83,6 +83,9 @@ class GmlParser extends StdTokenParsers
   }
   lazy val value: Parser[String] = {
     "value" ~> (ident | stringLit | numericLit) //TODO find out how to parse decimals!
+  }
+  lazy val graphics: Parser[String] = {
+    "graphics" ~ "[" ~> rep(ident | stringLit | numericLit) <~"]" ^^{_.toString}//TODO find out how to parse decimals!
   }
   lazy val edgePart: Parser[Int] = {
     ("source" | "target") ~> numericLit ^^ { _.toInt }
