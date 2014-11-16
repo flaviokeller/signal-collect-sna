@@ -309,21 +309,10 @@ public abstract class SignalCollectGephiConnector {
 	/**
 	 * Gets the {@link Graph} instance
 	 * 
-	 * @return
+	 * @return the graph instance
 	 */
 	public Graph getGraph() {
 		return graph;
 	}
 
-	// public static void main(String[] args) {
-	// SignalCollectGephiConnector a = new
-	// LabelPropagationSignalCollectGephiConnectorImpl(
-	// "/Users/flaviokeller/Desktop/examplegraph.gml",
-	// scala.Option.apply(100));
-	// try {
-	// a.getLabelPropagation();
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
 }

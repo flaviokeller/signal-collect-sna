@@ -20,18 +20,18 @@
 package com.signalcollect.sna.gephiconnectors;
 
 import java.util.Comparator;
+import java.util.TreeMap;
 
 /**
- * 
+ * This comparator sorts {@link TreeMap} keys with ascending numbers followed by words
  * @author flaviokeller
  *
  */
 public class NumbersThenWordsComparator implements Comparator<String> {
 	
 	/**
-	 * 
-	 * @param s
-	 * @return
+	 * @param a string object
+	 * @return the numeric integer value of a string
 	 */
 	private static Integer intValue(String s) {
 		try {

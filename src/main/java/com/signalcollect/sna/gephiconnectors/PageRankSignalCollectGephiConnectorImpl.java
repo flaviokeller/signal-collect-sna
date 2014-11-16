@@ -98,48 +98,4 @@ public class PageRankSignalCollectGephiConnectorImpl extends
 		return graphProps;
 	}
 
-	// public static void main(String[] args) {
-	// long startTime = System.currentTimeMillis();
-	// SignalCollectGephiConnector a = new
-	// PageRankSignalCollectGephiConnectorImpl(
-	// "/Users/flaviokeller/Desktop/examplegraph.gml");
-	// a.executeGraph();
-	// double d = a.getAverage();
-	// Map<String, Object> l = a.getAll();
-	// long intermediate = System.currentTimeMillis();
-	// double intermediateTime = Double.valueOf(intermediate - startTime) /
-	// 1000d;
-	// System.out.println("execution time: " + intermediateTime + " seconds");
-	//
-	// GraphProperties p = a.getGraphProperties();
-	// p.toString();
-	// long intermediate2 = System.currentTimeMillis();
-	// intermediateTime = Double.valueOf(intermediate2 - intermediate) / 1000d;
-	// System.out.println("properties time: " + intermediateTime + " seconds");
-	//
-	// Map<Integer, Integer> dd = a.getDegreeDistribution();
-	// Map<Double, Integer> cd = a.getClusterDistribution();
-	//
-	// long intermediate3 = System.currentTimeMillis();
-	// intermediateTime = Double.valueOf(intermediate3 - startTime) / 1000d;
-	// System.out.println("elapsed time until image creation: "
-	// + intermediateTime + " seconds");
-	//
-	// try {
-	// a.createDegreeDistributionChart(dd);
-	// a.createClusterDistributionChart(cd);
-	// long stopTime = System.currentTimeMillis();
-	// double elapsedTime = Double.valueOf(stopTime - startTime) / 1000d;
-	// System.out.println("full elapsed time: " + elapsedTime
-	// + " seconds\n");
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// System.out.println("The average degree is: " + d);
-	// System.out.println("The single vertex degree values are: " + l);
-	// System.out.println(p);
-	// System.out.println("The degree distribution is: " + dd);
-	// System.out.println("The local cluster coefficient distribution is: "
-	// + cd);
-	// }
 }

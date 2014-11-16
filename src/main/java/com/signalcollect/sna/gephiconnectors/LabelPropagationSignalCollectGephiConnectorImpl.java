@@ -25,13 +25,15 @@ import com.signalcollect.sna.constants.SNAClassNames;
 
 /**
  * The {@link SignalCollectGephiConnector} implementation for Label Propagation
+ * 
  * @author flaviokeller
- *
+ * 
  */
 public class LabelPropagationSignalCollectGephiConnectorImpl extends
 		SignalCollectGephiConnector {
 
 	/**
+	 * Constructor
 	 * 
 	 * @param fileName
 	 * @param steps
@@ -55,32 +57,29 @@ public class LabelPropagationSignalCollectGephiConnectorImpl extends
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * extend by description why not used
+	 * {@inheritDoc} not implemented/returns 0 because label propagation does
+	 * not need to calculate an average vertex value
 	 */
 	@Override
 	public double getAverage() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * extend by description why not used
+	 * {@inheritDoc} not implemented/returns null because label propagation does
+	 * not need to gather all vertex values
 	 */
 	@Override
 	public Map<String, Object> getAll() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * extend by description why not used
+	 * {@inheritDoc} not implemented/returns null because label propagation does
+	 * not need to get the graph properties
 	 */
 	@Override
 	public GraphProperties getGraphProperties() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
