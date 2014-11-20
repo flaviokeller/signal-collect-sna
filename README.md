@@ -10,16 +10,15 @@ How to Compile the Project and develop in Eclipse
 Download the [signal-collect](https://github.com/uzh/signal-collect) project and this project to your computer and put them both in the same folder.
 
 Ensure Java 8 is available on the system, verify with "java -version" on the command line.
-Additionally, 
+Additionally, [Download and Install SBT] (http://www.scala-sbt.org/download.html)
 
-[Download and Install SBT] (http://www.scala-sbt.org/download.html)
+Navigate to the signal-collect project folder and start SBT on the command line. The output should end with: "[info] Set current project to signal-collect (in build file:XYZ/signal-collect/)".
 
-Navigate to the signal-collect project folder and start SBT on the command line. The output should end with: "[info] Set current project to signal-collect (in build file:XYZ/signal-collect/)"
 Compile the signal-collect project by using the "compile" command on the SBT prompt.
 
-Navigate to the signal-collect-sna project folder and start SBT on the command line. The output should end with: "[info] Set current project to signal-collect (in build file:XYZ/signal-collect-sna/)"
-Compile the signal-collect-sna project by using the "compile" command on the SBT prompt. 
-If "Cannot run program "javac"" exception occurs, try to set your JAVA_HOME environment variable to a jdk, since the sna project also contains Java code which has to be compiled.
+Navigate to the signal-collect-sna project folder and start SBT on the command line. The output should end with: "[info] Set current project to signal-collect (in build file:XYZ/signal-collect-sna/)".
+
+Compile the signal-collect-sna project by using the "compile" command on the SBT prompt. If a "Cannot run program "javac"" exception occurs, try to set your JAVA_HOME environment variable to a jdk, since the sna project also contains Java code which has to be compiled.
 
 To generate a .jar file with dependencies, use the "assembly" command on the SBT prompt.
 
