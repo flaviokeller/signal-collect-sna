@@ -188,7 +188,7 @@ public abstract class SignalCollectGephiConnector {
 		dataset.setAutoWidth(true);
 
 		JFreeChart chart = ChartFactory.createHistogram("Degree Distribution",
-				"degree value", "number of occurences", dataset,
+				"Degree centrality value", "number of occurences", dataset,
 				PlotOrientation.VERTICAL, true, true, true);
 
 		XYPlot plot = chart.getXYPlot();
@@ -229,8 +229,8 @@ public abstract class SignalCollectGephiConnector {
 		dataset.setAutoWidth(true);
 
 		JFreeChart chart = ChartFactory.createHistogram(
-				"Cluster Coefficient Distribution",
-				"cluster coefficient value", "number of occurences", dataset,
+				"Local Cluster Coefficient Distribution",
+				"Local Cluster Coefficient value", "number of occurences", dataset,
 				PlotOrientation.VERTICAL, true, true, true);
 
 		XYPlot plot = chart.getXYPlot();

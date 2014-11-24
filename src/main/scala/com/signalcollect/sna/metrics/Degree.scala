@@ -30,6 +30,7 @@ import com.signalcollect.Vertex
 import com.signalcollect.configuration.ExecutionMode
 import com.signalcollect.sna.ComputationResults
 import com.signalcollect.sna.ExecutionResult
+import com.signalcollect.sna.constants.SignalCollectSNAConstants
 import com.signalcollect.DefaultEdge
 
 /**
@@ -37,40 +38,39 @@ import com.signalcollect.DefaultEdge
  */
 object Degree {
 
-  /**
-   * Function responsible for the execution
-   * @param graph: the parsed graph, instance of {@link com.signalcollect.Graph}
-   * @return {@link com.signalcollect.sna.ExecutionResult} object
-   */
-  def run(graph: Graph[Any, Any]): ExecutionResult = {
+	/**
+	 * Function responsible for the execution
+	 * @param graph: the parsed graph, instance of {@link com.signalcollect.Graph}
+	 * @return {@link com.signalcollect.sna.ExecutionResult} object
+	 */
+	def run(graph: Graph[Any, Any]): ExecutionResult = {
 
-    /*
-     * This vertex is responsible for the calculation of the PageRank average of the graph
-     */
-    val avgVertex = new AverageDegreeVertex("Average")
+		/* This vertex is responsible for the calculation of the PageRank average of the graph */
+		val avgVertex = new AverageDegreeVertex(SignalCollectSNAConstants.avgVertexId)
 
-    graph.addVertex(avgVertex)
-    graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(v.id, new AverageDegreeEdge(avgVertex.id)))
-    graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(avgVertex.id, new AverageDegreeEdge(v.id)))
-    val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
-    val stats = graph.execute(execmode)
-    graph.awaitIdle
-    var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
-    graph.foreachVertex(v => vertexArray += v)
-    graph.shutdown
-    new ExecutionResult(new ComputationResults(BigDecimal(avgVertex.state).round(new MathContext(3)).toDouble, createTreeMap(vertexArray)), vertexArray, stats)
-  }
+		graph.addVertex(avgVertex)
+		graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(v.id, new AverageDegreeEdge(avgVertex.id)))
+		graph.foreachVertex((v: Vertex[Any, _, Any, Any]) => graph.addEdge(avgVertex.id, new AverageDegreeEdge(v.id)))
+		val execmode = ExecutionConfiguration(ExecutionMode.Synchronous)
+		val stats = graph.execute(execmode)
+		graph.awaitIdle
+		var vertexArray = new ArrayBuffer[Vertex[Any, _, Any, Any]] with SynchronizedBuffer[Vertex[Any, _, Any, Any]]
+		graph.foreachVertex(v => vertexArray += v)
+		graph.shutdown
+		new ExecutionResult(new ComputationResults(BigDecimal(avgVertex.state).round(new MathContext(3)).toDouble, createTreeMap(vertexArray)), vertexArray, stats)
+	}
 
-  /**
-   * Function that creates an ordered Key-Value map out of the vertex array in order to have the degree values packaged in order
-   */
-  def createTreeMap(vertexArray: ArrayBuffer[Vertex[Any, _, Any, Any]]): java.util.TreeMap[String, Object] = {
-    var vertices = new java.util.TreeMap[String, Object]
-    for (vertex <- vertexArray) {
-      vertices.put(vertex.id.toString, vertex.state.asInstanceOf[Object])
-    }
-    vertices
-  }
+	/**
+	 * Function that creates an ordered Key-Value map out of the vertex array in order to have the degree values packaged in order
+	 */
+	def createTreeMap(vertexArray: ArrayBuffer[Vertex[Any, _, Any, Any]]): java.util.TreeMap[String, Object] = {
+		var vertices = new java.util.TreeMap[String, Object]
+		for (vertex <- vertexArray) {
+			vertices.put(vertex.id.toString, vertex.state.asInstanceOf[Object])
+		}
+		vertices.remove(SignalCollectSNAConstants.avgVertexId)
+		vertices
+	}
 }
 
 /**
@@ -79,23 +79,21 @@ object Degree {
  */
 class DegreeVertex(id: Any) extends DataGraphVertex(id, 0) {
 
-  type Signal = DataGraphVertex[Any, Any]
-  type State = Int
+	type Signal = DataGraphVertex[Any, Any]
+	type State = Int
 
-  lazy val edgeSet = outgoingEdges.values.toSet
+	lazy val edgeSet = outgoingEdges.values.toSet
 
-  /**
-   * The collect function calculates the vertex' degree centrality value according to its number of neighbours (incoming and outgoing)
-   */
-  def collect: State = {
-    val degreeEdges = edgeSet.filter(edge => edge.targetId.isInstanceOf[Integer])
+	/**
+	 * The collect function calculates the vertex' degree centrality value according to its number of neighbours (incoming and outgoing)
+	 */
+	def collect: State = {
+		val degreeEdges = edgeSet.filter(edge => edge.targetId.isInstanceOf[Integer])
 
-    /*
-     * The incoming edge with an @see com.signalcollect.sna.metrics.AverageDegreeVertex as source is not relevant and therefore filtered out
-     */
-    val degreeSignals = mostRecentSignalMap.values.toList.filter(signal => !signal.getClass.toString().contains("Average"))
-    degreeEdges.size + degreeSignals.size
-  }
+		/* The incoming edge with an {@link com.signalcollect.sna.metrics.AverageDegreeVertex} as source is not relevant and therefore filtered out */
+		val degreeSignals = mostRecentSignalMap.values.toList.filter(signal => !signal.getClass.toString().contains(SignalCollectSNAConstants.avgVertexId))
+		degreeEdges.size + degreeSignals.size
+	}
 
 }
 
@@ -104,13 +102,13 @@ class DegreeVertex(id: Any) extends DataGraphVertex(id, 0) {
  * @param t: the traget vertex' id
  */
 class DegreeEdge(t: Any) extends DefaultEdge(t) {
-  type Source = DataGraphVertex[Any, Any]
+	type Source = DataGraphVertex[Any, Any]
 
-  /**
-   * The signal function passes the whole vertex object of the source vertex to its target,
-   * such that the target vertex is able to distinguish what type the source vertex has.
-   */
-  def signal = source
+	/**
+	 * The signal function passes the whole vertex object of the source vertex to its target,
+	 * such that the target vertex is able to distinguish what type the source vertex has.
+	 */
+	def signal = source
 }
 
 /**
@@ -120,26 +118,24 @@ class DegreeEdge(t: Any) extends DefaultEdge(t) {
  */
 class AverageDegreeVertex(id: String) extends DataGraphVertex(id, 0.0) {
 
-  type Signal = DataGraphVertex[Any, Any]
-  type State = Double
+	type Signal = DataGraphVertex[Any, Any]
+	type State = Double
 
-  /**
-   * The collect function calculates the average degree centrality value.
-   * It takes the states of all incoming edges (except those with a {@link com.signalcollect.sna.metrics.AverageDegreeVertex} as source)
-   * and calculates the average out of them
-   */
-  def collect: State = {
+	/**
+	 * The collect function calculates the average degree centrality value.
+	 * It takes the states of all incoming edges (except those with a {@link com.signalcollect.sna.metrics.AverageDegreeVertex} as source)
+	 * and calculates the average out of them
+	 */
+	def collect: State = {
 
-    /*
-     * The incoming edge with an @see com.signalcollect.sna.metrics.AverageDegreeVertex as source is not relevant and therefore filtered out
-     */
-    val degreeSignals = mostRecentSignalMap.filter(signal => !signal._1.equals("Average")).values.toList
-    var sum = 0
-    for (signal <- degreeSignals) {
-      sum += signal.state.asInstanceOf[Int]
-    }
-    BigDecimal(sum.toDouble / degreeSignals.size.toDouble).round(new MathContext(3)).toDouble
-  }
+		/* The incoming edge with an {@link com.signalcollect.sna.metrics.AverageDegreeVertex} as source is not relevant and therefore filtered out */
+		val degreeSignals = mostRecentSignalMap.filter(signal => !signal._1.equals(SignalCollectSNAConstants.avgVertexId)).values.toList
+		var sum = 0
+		for (signal <- degreeSignals) {
+			sum += signal.state.asInstanceOf[Int]
+		}
+		BigDecimal(sum.toDouble / degreeSignals.size.toDouble).round(new MathContext(3)).toDouble
+	}
 }
 
 /**
@@ -148,11 +144,11 @@ class AverageDegreeVertex(id: String) extends DataGraphVertex(id, 0.0) {
  * @param t: the target vertex' id
  */
 class AverageDegreeEdge(t: Any) extends DefaultEdge(t) {
-  type Source = DataGraphVertex[Any, Any]
+	type Source = DataGraphVertex[Any, Any]
 
-  /**
-   * The signal function passes the whole vertex object of the source vertex to its target,
-   * such that the target vertex is able to distinguish what type the source vertex has.
-   */
-  def signal = source
+	/**
+	 * The signal function passes the whole vertex object of the source vertex to its target,
+	 * such that the target vertex is able to distinguish what type the source vertex has.
+	 */
+	def signal = source
 }
