@@ -4,6 +4,6 @@
 /project/project
 .cache
 .git
-.DS_Store
-.png
-.jpg
+*.DS_Store
+*.png
+*.jpg
