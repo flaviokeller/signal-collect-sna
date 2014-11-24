@@ -53,7 +53,6 @@ public class MetricsTest {
 	public void degreeTest() {
 		scgc = new DegreeSignalCollectGephiConnectorImpl(testFile);
 		scgc.executeGraph();
-		System.out.println(scgc.getAll());
 		assertEquals(3.23, scgc.getAverage(), 0.01);
 		assertEquals(6, scgc.getAll().get(String.valueOf(5)));
 		assertEquals(3, scgc.getAll().get(String.valueOf(3)));
@@ -68,7 +67,6 @@ public class MetricsTest {
 	public void pageRankTest() {
 		scgc = new PageRankSignalCollectGephiConnectorImpl(testFile);
 		scgc.executeGraph();
-		System.out.println(scgc.getAll());
 		assertEquals(0.768, scgc.getAverage(), 0.01);
 		assertEquals(0.15, scgc.getAll().get(String.valueOf(5)));
 		assertEquals(0.481, scgc.getAll().get(String.valueOf(3)));
