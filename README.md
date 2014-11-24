@@ -7,7 +7,7 @@ This repository contains an implementation of standard social network analysis m
 
 How to Compile the Project and develop in Eclipse
 --------------------------
-- Download the [signal-collect](https://github.com/uzh/signal-collect) project and this project to your computer and put them both in the same folder.
+- Download the [signal-collect](https://github.com/uzh/signal-collect) project (if problems occur, try alternatively [this older version](https://github.com/fkzrh/signal-collect) where the sna project was built on) and the project of this repository to your computer and put them both in the same folder.
 
 - Ensure Java 8 is available on the system, verify with "java -version" on the command line.
 - Additionally, [Download and Install SBT] (http://www.scala-sbt.org/download.html)
