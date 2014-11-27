@@ -68,7 +68,7 @@ object LabelPropagation {
  * Represents a vertex of a Label Propagation graph, extends {@link com.signalcollect.DataGraphVertex}
  * @param the vertex' id
  */
-class LabelPropagationVertex(id: Int, var label: String, val signalSteps: Int) extends DataGraphVertex(id, 0) {
+class LabelPropagationVertex(id: Int, var label: String, val signalSteps: Int) extends DataGraphVertex(id, 1) {
 
   type Signal = String
   type State = Int
@@ -115,16 +115,16 @@ class LabelPropagationEdge(t: Any) extends DefaultEdge(t) {
 }
 
 /**
- * Represents a vertex of a Label Propagation graph, 
+ * Represents a vertex of a Label Propagation graph,
  * which is concerned with keeping track of how the labels are distributed in a graph.
  * Extends {@link com.signalcollect.DataGraphVertex}
  * @param the vertex' id
  */
-class CountLabelPropagationVertex(id: String, var label: String, val signalSteps: Int) extends DataGraphVertex(id, 0) {
+class CountLabelPropagationVertex(id: String, var label: String, val signalSteps: Int) extends DataGraphVertex(id, 1) {
 
   type Signal = String
   type State = Int
-  
+
   /*
    * This map keeps track of the distribution of labels in the whole graph at different numbers of steps
    */
@@ -140,8 +140,8 @@ class CountLabelPropagationVertex(id: String, var label: String, val signalSteps
     for (x <- relevantSignals) {
       labelMap.put(x, labelMap.get(x) + 1)
     }
-    state += 1
     evolvingMap += ((state, labelMap.asInstanceOf[java.util.Map[String, Int]]))
+    state += 1
     if (state < signalSteps) {
       state
     } else {
@@ -151,7 +151,7 @@ class CountLabelPropagationVertex(id: String, var label: String, val signalSteps
 }
 
 /**
- * Represents an edge of a Label Propagation graph, 
+ * Represents an edge of a Label Propagation graph,
  * which is concerned with keeping track of how the labels are distributed in a graph.
  * Extends {@link com.signalcollect.DefaultEdge}
  * @param the target vertex' id
